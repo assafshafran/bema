@@ -40,3 +40,4 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 - **Jumping to a slide in PowerPoint steps one slide at a time.** PowerPoint's `go to slide` fails during a slideshow on Mac.
 - **The name is Bema** (βῆμα, the speaker's platform in Athens, root of the Hebrew *bimah*). "MacPoint" was considered and dropped: Apple doesn't allow "Mac" in third-party app names.
 - **PowerPoint runs the show rather than Bema rendering slides.** Animations, transitions, video and fonts stay exactly as the deck's author made them.
+- **The website's Dock uses our own icons, styled like current macOS, not Apple's or Microsoft's app icons.** Their icon artwork is trademarked and copyrighted, and the repository and site are public.
