@@ -82,12 +82,15 @@ struct StageToolsPanel: View {
                 }
 
                 section("Camera") {
-                    Button {
-                        NotificationCenter.default.post(name: .openSelfView, object: nil)
-                    } label: {
-                        Label(camera.selfViewOpen ? "Self view is open" : "Show a self view only you can see", systemImage: "person.crop.square")
+                    HStack {
+                        Button {
+                            SelfViewToggle.run(open: camera.selfViewOpen)
+                        } label: {
+                            Label(camera.selfViewOpen ? "Close the self view" : "Show a self view only you can see", systemImage: "person.crop.square")
+                        }
+                        Button { CameraModel.showVideoEffects() } label: { Label("Video effects…", systemImage: "camera.filters") }
+                            .help("Edge Light, Portrait and Studio Light are macOS effects. Turn them on or off here.")
                     }
-                    .disabled(camera.selfViewOpen)
                     Text("A small mirror of your camera that floats above everything and stays out of screen sharing.")
                         .font(.system(size: 11)).foregroundStyle(Theme.dim).fixedSize(horizontal: false, vertical: true)
                     Toggle("Show my camera on the slides (the audience sees this)", isOn: $camera.enabled)

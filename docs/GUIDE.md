@@ -67,7 +67,9 @@ A dark "backstage" theme that's easy on the eyes in a dim room, with one amber a
 - **Live poll:** type a question and answers, then show it on the audience screen. People scan its QR code to vote (one vote per phone, changeable), and live results appear over the slide.
 - Phones must be on the same network. Some office or guest Wi-Fi networks block phone-to-laptop traffic.
 
-**Self view:** a small mirror of your camera that only you see: it floats above the slideshow and your call app and is excluded from screen sharing, recordings and screenshots. Open it from Stage tools, **Slideshow → Self View** (⌥⌘V), the menu bar or `bema://selfview`. Drag to move, resize from the edges; hover for round or rectangle, **move under the camera**, and close.
+**Self view:** a small mirror of your camera that only you see: it floats above the slideshow and your call app and is excluded from screen sharing, recordings and screenshots. Open it from Stage tools, **Slideshow → Self View** (⌥⌘V), the menu bar or `bema://selfview`. Drag to move, resize from the edges; hover for round or rectangle, **move under the camera**, video effects and close. Closing it turns the camera off unless the camera bubble is on.
+
+**Video effects:** macOS adds its own camera effects (Edge Light, Portrait, Studio Light, reactions) to any app using the camera, Bema included. Bema can't switch them itself, so **Effects** in the top bar (while the camera is on), the self view's hover controls and Stage tools open macOS's Video Effects menu, where you turn them on or off.
 
 **Camera bubble:** a round, mirrored webcam view in a corner of the audience slide, for recorded or hybrid talks.
 

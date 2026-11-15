@@ -71,6 +71,12 @@ final class CameraModel: ObservableObject {
     let session = AVCaptureSession()
     private var configured = false
 
+    /// macOS's own video effects menu (Edge Light, Portrait, Studio Light, reactions). These effects
+    /// belong to macOS and apply while Bema uses the camera; Bema can only open the menu.
+    static func showVideoEffects() {
+        AVCaptureDevice.showSystemUserInterface(.videoEffects)
+    }
+
     /// The camera runs while the bubble or the self view needs it.
     private func update() {
         if enabled || selfViewOpen { start() } else { stop() }
@@ -236,6 +242,7 @@ struct SelfViewWindow: View {
                             camera.selfViewRound.toggle()
                         }
                         SelfViewButton(symbol: "web.camera", help: "Move under the camera") { SelfViewWindowRef.placeUnderCamera() }
+                        SelfViewButton(symbol: "camera.filters", help: "Video effects: Edge Light, Portrait, Studio Light…") { CameraModel.showVideoEffects() }
                         SelfViewButton(symbol: "xmark", help: "Close the self view") { SelfViewWindowRef.window?.close() }
                     }
                     Spacer()
@@ -277,6 +284,22 @@ private struct SelfViewButton: View {
 enum SelfViewWindowRef {
     static weak var window: NSWindow?
 
+    static var isVisible: Bool { window?.isVisible ?? false }
+
+    /// SwiftUI's window opener, kept from the first Bema view that appears, so the self view can
+    /// open even after the main window was closed (from the menu bar, ⌥⌘V or a bema:// link).
+    static var opener: OpenWindowAction?
+
+    static func open() {
+        if let opener { opener(id: "selfview") }
+        else { NotificationCenter.default.post(name: .openSelfView, object: nil) }
+    }
+
+    static func closed() {
+        window = nil
+        CameraModel.shared.selfViewOpen = false
+    }
+
     /// Top centre of the display with the built-in camera, just below the menu bar.
     static func placeUnderCamera() {
         guard let w = window else { return }
@@ -291,10 +314,20 @@ enum SelfViewWindowRef {
 /// Borderless look, floating, on every Space, and never captured by screen sharing.
 private struct SelfViewConfigurator: NSViewRepresentable {
     final class Probe: NSView {
+        private var closeObserver: NSObjectProtocol?
+        deinit { if let closeObserver { NotificationCenter.default.removeObserver(closeObserver) } }
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
             guard let w = window else { return }
             SelfViewWindowRef.window = w
+            CameraModel.shared.selfViewOpen = true
+            // SwiftUI's onDisappear doesn't always run when a Window scene closes; without this the
+            // camera kept running and Bema thought the self view was still open.
+            if closeObserver == nil {
+                closeObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: w, queue: .main) { _ in
+                    MainActor.assumeIsolated { SelfViewWindowRef.closed() }
+                }
+            }
             w.sharingType = .none
             w.level = .floating
             w.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]

@@ -152,3 +152,19 @@ final class FeatureRenderTests: XCTestCase {
         XCTAssertTrue(MenuBarIcon.image.isTemplate)
     }
 }
+
+final class SelfViewToggleTests: XCTestCase {
+    func testClosesOnlyWhenTheWindowIsReallyOpen() {
+        XCTAssertEqual(SelfViewToggle.action(flagOpen: true, windowVisible: true), .close)
+    }
+
+    func testReopensWhenTheCloseWasMissed() {
+        // The flag still says open but the window is gone: the button must open it again, not do nothing.
+        XCTAssertEqual(SelfViewToggle.action(flagOpen: true, windowVisible: false), .open)
+    }
+
+    func testOpensWhenClosed() {
+        XCTAssertEqual(SelfViewToggle.action(flagOpen: false, windowVisible: false), .open)
+        XCTAssertEqual(SelfViewToggle.action(flagOpen: false, windowVisible: true), .open)
+    }
+}

@@ -59,7 +59,7 @@ struct MenuBarPanel: View {
                 .disabled(model.openInPowerPoint == nil)
                 Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }
                 Button { showMainWindow() } label: { Label("Show Bema window", systemImage: "macwindow") }
-                Button { openWindow(id: "selfview") } label: { Label("Self view (only you see it)", systemImage: "person.crop.square") }
+                Button { SelfViewWindowRef.opener = openWindow; SelfViewToggle.run(open: CameraModel.shared.selfViewOpen) } label: { Label(CameraModel.shared.selfViewOpen ? "Close self view" : "Self view (only you see it)", systemImage: "person.crop.square") }
                 Button { showMainWindow(); model.stageToolsOpen = true } label: {
                     Label("Stage tools: remote, poll, camera…", systemImage: "slider.horizontal.3")
                 }

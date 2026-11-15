@@ -95,7 +95,7 @@ struct BemaApp: App {
                 Button("Stage Tools…") { NSApp.activate(); model.stageToolsOpen = true }
                     .keyboardShortcut("t", modifiers: [.command, .shift])
                 Button("Self View (Hidden from Screen Sharing)") {
-                    NotificationCenter.default.post(name: .openSelfView, object: nil)
+                    SelfViewWindowRef.open()
                 }
                 .keyboardShortcut("v", modifiers: [.command, .option])
                 Divider()
@@ -208,7 +208,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate()
         let items = URLComponents(url: link, resolvingAgainstBaseURL: false)?.queryItems ?? []
         if link.host?.lowercased() == "selfview" {
-            NotificationCenter.default.post(name: .openSelfView, object: nil)
+            SelfViewWindowRef.open()
             return
         }
         if link.host?.lowercased() == "prompter" {

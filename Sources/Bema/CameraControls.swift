@@ -18,11 +18,36 @@ struct CameraControls: View {
             }
             .buttonStyle(.plain)
             .help(camera.enabled ? "Remove your camera from the slides" : "Show your camera in a bubble on the slides the audience sees")
+            if camera.selfViewOpen || camera.enabled {
+                Button { CameraModel.showVideoEffects() } label: {
+                    LabeledIcon(symbol: "camera.filters", label: "Effects", on: false)
+                }
+                .buttonStyle(.plain)
+                .help("macOS video effects for Bema's camera: turn Edge Light, Portrait or Studio Light on or off")
+            }
         }
     }
 
     private func toggleSelfView() {
-        if camera.selfViewOpen { SelfViewWindowRef.window?.close() }
-        else { NotificationCenter.default.post(name: .openSelfView, object: nil) }
+        SelfViewToggle.run(open: camera.selfViewOpen)
+    }
+}
+
+/// What the Self view button does. Trusts the window, not just the flag, so a missed close can't
+/// leave the button stuck.
+enum SelfViewToggle {
+    enum Action: Equatable { case open, close }
+
+    static func action(flagOpen: Bool, windowVisible: Bool) -> Action {
+        flagOpen && windowVisible ? .close : .open
+    }
+
+    @MainActor static func run(open: Bool) {
+        switch action(flagOpen: open, windowVisible: SelfViewWindowRef.isVisible) {
+        case .close: SelfViewWindowRef.window?.close()
+        case .open:
+            if open { SelfViewWindowRef.closed() }
+            SelfViewWindowRef.open()
+        }
     }
 }
