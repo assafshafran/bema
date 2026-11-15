@@ -94,6 +94,10 @@ struct BemaApp: App {
                 Divider()
                 Button("Stage Tools…") { NSApp.activate(); model.stageToolsOpen = true }
                     .keyboardShortcut("t", modifiers: [.command, .shift])
+                Button("Self View (Hidden from Screen Sharing)") {
+                    NotificationCenter.default.post(name: .openSelfView, object: nil)
+                }
+                .keyboardShortcut("v", modifiers: [.command, .option])
                 Divider()
                 Toggle("Rehearsal Mode (Report When the Show Ends)", isOn: $coach.rehearsalMode)
                 Toggle("Speech Coach (Speaking Speed and Filler Words)", isOn: $coach.listen)
@@ -133,6 +137,13 @@ struct BemaApp: App {
             PrompterWindow().id(themeName)
         }
         .defaultSize(width: 760, height: 260)
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentMinSize)
+
+        Window("Self View", id: "selfview") {
+            SelfViewWindow()
+        }
+        .defaultSize(width: 320, height: 240)
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentMinSize)
 
@@ -185,6 +196,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let model = PresenterModel.shared
         NSApp.activate()
         let items = URLComponents(url: link, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        if link.host?.lowercased() == "selfview" {
+            NotificationCenter.default.post(name: .openSelfView, object: nil)
+            return
+        }
         if link.host?.lowercased() == "prompter" {
             // bema://prompter[?place=camera] opens the detached prompter.
             NotificationCenter.default.post(name: .openPrompterWindow, object: nil,
@@ -254,6 +269,7 @@ final class ServiceProvider: NSObject {
 
 extension Notification.Name {
     static let openPrompterWindow = Notification.Name("BemaOpenPrompterWindow")
+    static let openSelfView = Notification.Name("BemaOpenSelfView")
 }
 
 enum NotesFont {

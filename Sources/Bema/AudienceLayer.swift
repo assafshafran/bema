@@ -53,7 +53,13 @@ final class CameraModel: ObservableObject {
         }
     }
 
+    /// The camera bubble on the audience slide.
     @Published var enabled = false { didSet { update() } }
+    /// The self-view window (only you see it; hidden from screen sharing).
+    @Published var selfViewOpen = false { didSet { update() } }
+    @Published var selfViewRound: Bool = UserDefaults.standard.bool(forKey: "selfViewRound") {
+        didSet { UserDefaults.standard.set(selfViewRound, forKey: "selfViewRound") }
+    }
     @Published var corner: Corner = Corner(rawValue: UserDefaults.standard.string(forKey: "cameraCorner") ?? "") ?? .bottomRight {
         didSet { UserDefaults.standard.set(corner.rawValue, forKey: "cameraCorner") }
     }
@@ -65,14 +71,15 @@ final class CameraModel: ObservableObject {
     let session = AVCaptureSession()
     private var configured = false
 
+    /// The camera runs while the bubble or the self view needs it.
     private func update() {
-        if enabled { start() } else { stop() }
+        if enabled || selfViewOpen { start() } else { stop() }
     }
 
     private func start() {
         Task {
             guard await AVCaptureDevice.requestAccess(for: .video) else {
-                error = "The camera bubble needs camera access: System Settings → Privacy & Security → Camera."
+                error = "The camera needs access: System Settings → Privacy & Security → Camera."
                 enabled = false
                 return
             }
@@ -202,4 +209,109 @@ struct PollOverlay: View {
         }
         .allowsHitTesting(false)
     }
+}
+
+// MARK: - Self view
+
+/// Your own camera in a small floating window that only you see: it's excluded from screen sharing,
+/// recordings and screenshots, floats above the slideshow and your call app, and is mirrored.
+struct SelfViewWindow: View {
+    @ObservedObject private var camera = CameraModel.shared
+    @State private var hovering = false
+
+    var body: some View {
+        ZStack {
+            Color.black
+            CameraPreview(session: camera.session)
+            if let error = camera.error {
+                Text(error).font(.system(size: 12)).foregroundStyle(.white).multilineTextAlignment(.center).padding(12)
+            }
+            // Drag anywhere to move; controls appear on hover.
+            WindowDragArea()
+            if hovering {
+                VStack {
+                    HStack(spacing: 6) {
+                        Spacer()
+                        SelfViewButton(symbol: camera.selfViewRound ? "rectangle" : "circle", help: camera.selfViewRound ? "Rectangle" : "Circle") {
+                            camera.selfViewRound.toggle()
+                        }
+                        SelfViewButton(symbol: "web.camera", help: "Move under the camera") { SelfViewWindowRef.placeUnderCamera() }
+                        SelfViewButton(symbol: "xmark", help: "Close the self view") { SelfViewWindowRef.window?.close() }
+                    }
+                    Spacer()
+                    Label("Only you see this", systemImage: "eye.slash")
+                        .font(.system(size: 10, weight: .semibold))
+                        .padding(.horizontal, 8).padding(.vertical, 3)
+                        .background(Capsule().fill(.black.opacity(0.55)))
+                        .foregroundStyle(.white)
+                }
+                .padding(8)
+            }
+        }
+        .clipShape(camera.selfViewRound ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 14)))
+        .contentShape(Rectangle())
+        .onHover { hovering = $0 }
+        .background(SelfViewConfigurator())
+        .frame(minWidth: 140, minHeight: 105)
+        .ignoresSafeArea()
+        .onAppear { camera.selfViewOpen = true }
+        .onDisappear { camera.selfViewOpen = false }
+    }
+}
+
+private struct SelfViewButton: View {
+    let symbol: String
+    let help: String
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol).font(.system(size: 11, weight: .bold)).foregroundStyle(.white)
+                .frame(width: 24, height: 24).background(Circle().fill(.black.opacity(0.55)))
+        }
+        .buttonStyle(.plain)
+        .help(help)
+    }
+}
+
+@MainActor
+enum SelfViewWindowRef {
+    static weak var window: NSWindow?
+
+    /// Top centre of the display with the built-in camera, just below the menu bar.
+    static func placeUnderCamera() {
+        guard let w = window else { return }
+        let screen = NSScreen.screens.first { $0.localizedName.localizedCaseInsensitiveContains("built-in") } ?? NSScreen.main ?? w.screen
+        guard let vf = screen?.visibleFrame else { return }
+        let size = w.frame.size
+        w.setFrame(NSRect(x: vf.midX - size.width / 2, y: vf.maxY - size.height - 8, width: size.width, height: size.height),
+                   display: true, animate: true)
+    }
+}
+
+/// Borderless look, floating, on every Space, and never captured by screen sharing.
+private struct SelfViewConfigurator: NSViewRepresentable {
+    final class Probe: NSView {
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            guard let w = window else { return }
+            SelfViewWindowRef.window = w
+            w.sharingType = .none
+            w.level = .floating
+            w.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+            w.titlebarAppearsTransparent = true
+            w.titleVisibility = .hidden
+            w.styleMask.insert(.fullSizeContentView)
+            w.standardWindowButton(.closeButton)?.isHidden = true
+            w.standardWindowButton(.miniaturizeButton)?.isHidden = true
+            w.standardWindowButton(.zoomButton)?.isHidden = true
+            w.isOpaque = false
+            w.backgroundColor = .clear
+            w.hasShadow = true
+            w.hidesOnDeactivate = false
+            w.isMovableByWindowBackground = true
+            w.aspectRatio = NSSize(width: 4, height: 3)
+        }
+    }
+    func makeNSView(context: Context) -> NSView { Probe() }
+    func updateNSView(_ nsView: NSView, context: Context) {}
 }

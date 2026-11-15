@@ -67,6 +67,8 @@ A dark "backstage" theme that's easy on the eyes in a dim room, with one amber a
 - **Live poll:** type a question and answers, then show it on the audience screen. People scan its QR code to vote (one vote per phone, changeable), and live results appear over the slide.
 - Phones must be on the same network. Some office or guest Wi-Fi networks block phone-to-laptop traffic.
 
+**Self view:** a small mirror of your camera that only you see: it floats above the slideshow and your call app and is excluded from screen sharing, recordings and screenshots. Open it from Stage tools, **Slideshow → Self View** (⌥⌘V), the menu bar or `bema://selfview`. Drag to move, resize from the edges; hover for round or rectangle, **move under the camera**, and close.
+
 **Camera bubble:** a round, mirrored webcam view in a corner of the audience slide, for recorded or hybrid talks.
 
 **Themes and menu bar:** View → Theme: *Backstage* (dark), *Daylight* (bright rooms) or *High contrast*. A small Bema in the menu bar shows the deck, timer, pace and the main controls.

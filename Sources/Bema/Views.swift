@@ -41,6 +41,9 @@ struct RootView: View {
         .tint(Theme.accent)
         .navigationTitle(model.deckURL == nil ? "Bema" : model.deckName)
         .background(WindowStyler(hideFromSharing: hidePresenterFromSharing, theme: themeName))
+        .onReceive(NotificationCenter.default.publisher(for: .openSelfView)) { _ in
+            openWindow(id: "selfview")
+        }
         .onReceive(NotificationCenter.default.publisher(for: .openPrompterWindow)) { note in
             openWindow(id: "prompter")
             if (note.userInfo?["place"] as? String) == "camera" {

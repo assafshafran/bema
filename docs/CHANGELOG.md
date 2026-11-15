@@ -4,6 +4,11 @@ What was built, newest first. The reasons behind choices are in [DECISIONS.md](D
 
 Each entry says what changed and, where it applies, what was **not verified**.
 
+## 2026-11-16
+
+### Self view
+- A floating, mirrored camera window that only you see (excluded from screen sharing: a direct capture of it is refused), round or rectangular, movable under the camera. It shares the camera with the camera bubble. Not verified: the picture itself (it can't be captured by design) and inside Zoom, Teams or Meet shares.
+
 ## 2026-11-15
 
 ### Menu bar app and Open at Login
