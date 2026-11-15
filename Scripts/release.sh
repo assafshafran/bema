@@ -36,6 +36,9 @@ NAME="Bema-$VERSION"
 SPARKLE_BIN="$ROOT/.build/artifacts/sparkle/Sparkle/bin"
 
 log() { printf '\n==> %s\n' "$*"; }
+jsonget() { /usr/bin/python3 -I -c 'import json,sys
+try: print(json.load(open(sys.argv[1])).get(sys.argv[2],""))
+except Exception: print("")' "$1" "$2"; }
 
 if ! security find-identity -v -p codesigning | grep -q "$IDENTITY"; then
   echo "No signing identity matching \"$IDENTITY\" in the keychain." >&2
@@ -109,9 +112,6 @@ fi
 log "Sending to Apple to be notarised (usually a few minutes)"
 # Upload, then poll the submission. A single long `--wait` dies when the connection drops while
 # Apple is slow, though the submission carries on; polling survives that.
-jsonget() { /usr/bin/python3 -I -c 'import json,sys
-try: print(json.load(open(sys.argv[1])).get(sys.argv[2],""))
-except Exception: print("")' "$1" "$2"; }
 ID=""
 for attempt in 1 2 3; do
   xcrun notarytool submit "$OUT/$NAME.dmg" --keychain-profile "$PROFILE" --output-format json > "$OUT/$NAME.notary.json" || true
