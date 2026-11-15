@@ -11,7 +11,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ### Interactive demos on getbema.dev
 - The pointer tools section is now a live demo: the same toolbar as Bema (laser, spotlight, magnifier, pen, highlighter, stamps, confetti, clear, black screen) drawing on the demo slide, with the same keys while it's on screen.
-- The detached prompter section shows a call on a laptop with the prompter under the camera and a self view, and a toggle to **What the call sees**, where both are gone. The prompter highlights the script word by word. Plain JavaScript, no dependencies; animation stops for reduced motion.
+- The detached prompter section shows your screen during a call (Bema's presenter window, the prompter under the camera, your self view and the people on the call) and a toggle to **What the call sees**: just the slide, your camera bubble and the laser pointer. The prompter highlights the script word by word. Plain JavaScript, no dependencies; animation stops for reduced motion.
 - A square avatar for the GitHub organization (`site/brand/bema-avatar.png`, from `Scripts/make_avatar.swift`).
 - Not verified: touch drawing on a real phone.
 
