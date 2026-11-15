@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
-### Self view reopens; a control for macOS's video effects
+### Self view reopens; a control for macOS's video effects (Bema 0.1.2)
 - Closing the self view now always turns the camera off and lets it open again. Before, closing it could leave Bema thinking it was still open: the camera kept running and the Self view button did nothing. Bema now watches the window itself close, and the button checks the window, not only its own flag. The self view also opens when Bema's main window is closed (menu bar, ⌥⌘V, `bema://selfview`).
 - **Effects** in the top bar (while the camera is on), in the self view's hover controls and in Stage tools opens macOS's Video Effects menu, where Edge Light, Portrait and Studio Light are turned on or off.
 - Not verified: the fix live (it's a window-closing timing issue), and the Video Effects menu opening from Bema.
