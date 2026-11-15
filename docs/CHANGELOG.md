@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-15
 
+### Website deploys leave out Wrangler's folder
+- `site/.assetsignore` now excludes `.wrangler/`. Earlier deploys had published Wrangler's local account cache file with the site; getbema.dev was redeployed without it and the file now returns 404.
+
 ### Ready for a public repository
 - The app's bundle ID is now `dev.getbema.Bema` (from getbema.dev). macOS asks for Bema's permissions again once, and its settings start fresh.
 - Links point at the public repository, `assafshafran/bema`.
