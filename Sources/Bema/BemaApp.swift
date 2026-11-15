@@ -54,6 +54,9 @@ struct BemaApp: App {
                     .keyboardShortcut("o")
                 Button("Present Deck Open in PowerPoint or Keynote") { model.presentOpenDeck() }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
+                Divider()
+                Button("Add Bema Button to PowerPoint…") { model.installPowerPointButton() }
+                Button("Remove Bema Button from PowerPoint") { model.removePowerPointButton() }
                 Menu("Open Recent") {
                     ForEach(model.recents, id: \.self) { url in
                         Button(url.lastPathComponent) { model.load(url) }

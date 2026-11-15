@@ -61,6 +61,7 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Framewor
 cp "$BINDIR/Bema" "$APP/Contents/MacOS/Bema"
 cp "$PLIST" "$APP/Contents/Info.plist"
 cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/"
+cp "$ROOT/site/office/manifest.xml" "$APP/Contents/Resources/PowerPointAddin.xml"
 ditto "$BINDIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 # Only the app's own Frameworks folder and the system's Swift libraries: drop the build machine's toolchain path.
 for rp in $(otool -l "$APP/Contents/MacOS/Bema" | awk '/LC_RPATH/{getline; getline; print $2}' | grep -v -e '^@executable_path' -e '^/usr/lib/swift$' | sort -u); do

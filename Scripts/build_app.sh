@@ -20,6 +20,8 @@ cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
 mkdir -p "$APP/Contents/Frameworks"
 ditto "$(dirname "$BIN")/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 [[ -f "$ROOT/Resources/AppIcon.icns" ]] && cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/"
+# The PowerPoint button's add-in manifest (installed from the File menu).
+cp "$ROOT/site/office/manifest.xml" "$APP/Contents/Resources/PowerPointAddin.xml"
 
 # Sign with a stable identity when one is available, so macOS remembers the Automation and
 # Accessibility permissions across rebuilds. Override with SIGN_IDENTITY=...; falls back to ad-hoc.

@@ -24,7 +24,7 @@ PowerPoint for Mac locks its presenter view to full screen: you can't resize it,
 - **Coach and rehearse.** Pace against a time budget for each slide, words per minute, filler words, and a report after a rehearsal.
 - **Phone remote and live polls.** Scan a QR code to drive the show from your phone, or let the audience vote from theirs, over your Wi-Fi.
 
-One keystroke from PowerPoint or Keynote (⌃⌥P) hands the deck to Bema. Or right-click a `.pptx` or `.key` in Finder and choose **Present with Bema**.
+A **Present with Bema** button on PowerPoint's Home tab (File → Add Bema Button to PowerPoint…), or one keystroke from PowerPoint or Keynote (⌃⌥P), hands the deck to Bema. Or right-click a `.pptx` or `.key` in Finder and choose **Present with Bema**.
 
 <!-- Screenshot placeholder: add a render of the presenter window in docs/images once one is made from the sample deck. -->
 

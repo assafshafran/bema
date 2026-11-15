@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The "Present with Bema" button on PowerPoint's Home tab. Installed by Bema (Bema menu →
+     Add Bema Button to PowerPoint…) or by copying this file into PowerPoint's add-in folder:
+     ~/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef/
+     Clicking the button hands the open deck to Bema through a bema:// link. Nothing else is read or sent. -->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+           xsi:type="TaskPaneApp">
+  <Id>c33b393d-2839-4e95-ab9e-1628fd0c5671</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Bema</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Bema"/>
+  <Description DefaultValue="Present this deck with Bema: a presenter view you control, with a voice-following prompter."/>
+  <IconUrl DefaultValue="https://getbema.dev/office/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://getbema.dev/office/icon-64.png"/>
+  <SupportUrl DefaultValue="https://getbema.dev/docs"/>
+  <AppDomains>
+    <AppDomain>https://getbema.dev</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://getbema.dev/office/taskpane"/>
+  </DefaultSettings>
+  <Permissions>ReadDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="Bema.Group">
+                <Label resid="Group.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16"/>
+                  <bt:Image size="32" resid="Icon.32"/>
+                  <bt:Image size="80" resid="Icon.80"/>
+                </Icon>
+                <Control xsi:type="Button" id="Bema.Present">
+                  <Label resid="Button.Label"/>
+                  <Supertip>
+                    <Title resid="Button.Label"/>
+                    <Description resid="Button.Tip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>presentWithBema</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://getbema.dev/office/icon-16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://getbema.dev/office/icon-32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://getbema.dev/office/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="https://getbema.dev/office/commands"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Group.Label" DefaultValue="Bema"/>
+        <bt:String id="Button.Label" DefaultValue="Present with Bema"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="Button.Tip" DefaultValue="Open this deck in Bema: your presenter window, voice-following prompter and pointer tools. Same as Control-Option-P."/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

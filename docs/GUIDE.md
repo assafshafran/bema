@@ -6,6 +6,11 @@ A native macOS presenter for **PowerPoint and Keynote** decks, built to replace 
 
 PowerPoint still runs the slideshow on the audience display, so animations, transitions and video keep working. Bema drives it through AppleScript and gives you your own presenter window that you can resize, move and put on any display.
 
+## The PowerPoint button
+**File → Add Bema Button to PowerPoint…** adds a **Present with Bema** button, with Bema's mark, to PowerPoint's **Home** tab. Quit and reopen PowerPoint to see it. Clicking it hands the open deck to Bema (the same as ⌃⌥P). **File → Remove Bema Button from PowerPoint** takes it away again.
+
+It's a small Office add-in served from `https://getbema.dev/office/` (`site/office/` in this repository). Its manifest goes in PowerPoint's add-in folder, `~/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef/`, which you can also do by hand: download `https://getbema.dev/office/manifest.xml` into that folder. The button reads only the deck's location and opens a `bema://` link; nothing is sent anywhere.
+
 ## Keynote
 Open a `.key` file (Finder → Open With → Bema, drag it in, ⌘O, or ⌃⌥P with the deck in front in Keynote) and everything works the same: presenter window, prompter, pointer tools, coach, phone remote.
 - Slides, titles, skipped slides and presenter notes are read through Keynote. Previews come from Keynote's PDF export.

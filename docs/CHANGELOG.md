@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-15
 
+### A Present with Bema button in PowerPoint
+- An Office add-in (`site/office/`, served from getbema.dev) adds **Present with Bema** to PowerPoint's Home tab; clicking it opens the deck in Bema through a `bema://` link (or, if PowerPoint won't open the link itself, through the browser). Installed and removed from Bema's File menu. Ribbon icons in the A2 mark (`Scripts/make_office_icons.swift`). **Not verified yet: the button in a live PowerPoint**, and whether PowerPoint for Mac opens the link directly.
+
 ### Share cards
 - `site/brand/bema-social.png` (1280×640, drawn by `Scripts/make_social.swift`) is the GitHub social preview and getbema.dev's share card (Open Graph and X tags on the home and docs pages), plus an iPhone home-screen icon. Not verified: how each app (Slack, X, LinkedIn, iMessage) renders the card.
 

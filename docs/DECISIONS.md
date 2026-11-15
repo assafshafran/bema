@@ -4,6 +4,9 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-15
 
+- **The PowerPoint button is an Office add-in installed by Bema itself.** PowerPoint only adds ribbon buttons through add-ins loaded from an https address; getbema.dev serves it. Bema copies the manifest into PowerPoint's add-in folder rather than sending people to an add-in store, so it works without a Microsoft account and stays tied to the app.
+- **The button passes a link, not data.** It reads only the deck's location and opens `bema://present?path=…`; if PowerPoint won't open custom links from an add-in, it falls back to the browser, which hands the link to Bema.
+
 - **Automatic updates with Sparkle, checked once a day** (asked for by the maintainer). The only network traffic Bema starts on its own; it sends only the version, and an update installs only with Bema's EdDSA signature. Its own key account (`bema`), separate from Didja's. Development builds have no feed URL so they never replace themselves with a release.
 - **The feed lives on getbema.dev, the files on GitHub Releases.** The site is already deployed from the repository; GitHub hosts the DMG under a stable name (`Bema.dmg`), so the site's Download button and the feed always point at the newest release.
 - **Universal builds** (Apple silicon and Intel). SwiftPM builds both at no extra cost, and macOS 14 still runs on Intel Macs.
