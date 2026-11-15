@@ -98,12 +98,31 @@ if [[ "$MODE" == "--local" ]]; then
 fi
 
 log "Sending to Apple to be notarised (usually a few minutes)"
-xcrun notarytool submit "$OUT/$NAME.dmg" --keychain-profile "$PROFILE" --wait --output-format json > "$OUT/$NAME.notary.json" || true
-STATUS=$(/usr/bin/python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1])).get("status",""))' "$OUT/$NAME.notary.json" 2>/dev/null || true)
+# Upload, then poll the submission. A single long `--wait` dies when the connection drops while
+# Apple is slow, though the submission carries on; polling survives that.
+jsonget() { /usr/bin/python3 -I -c 'import json,sys
+try: print(json.load(open(sys.argv[1])).get(sys.argv[2],""))
+except Exception: print("")' "$1" "$2"; }
+ID=""
+for attempt in 1 2 3; do
+  xcrun notarytool submit "$OUT/$NAME.dmg" --keychain-profile "$PROFILE" --output-format json > "$OUT/$NAME.notary.json" || true
+  ID=$(jsonget "$OUT/$NAME.notary.json" id)
+  [[ -n "$ID" ]] && break
+  echo "Upload failed (try $attempt of 3); trying again in 30 seconds." >&2
+  sleep 30
+done
+[[ -n "$ID" ]] || { echo "Notarisation: the upload didn't reach Apple." >&2; exit 1; }
+echo "Submission $ID; checking every 30 seconds for up to two hours."
+STATUS=""
+for _ in $(seq 1 240); do
+  xcrun notarytool info "$ID" --keychain-profile "$PROFILE" --output-format json > "$OUT/$NAME.notary.json" 2>/dev/null || true
+  STATUS=$(jsonget "$OUT/$NAME.notary.json" status)
+  [[ "$STATUS" == "Accepted" || "$STATUS" == "Invalid" || "$STATUS" == "Rejected" ]] && break
+  sleep 30
+done
 if [[ "$STATUS" != "Accepted" ]]; then
-  echo "Notarisation: ${STATUS:-failed}. Apple's log:" >&2
-  ID=$(/usr/bin/python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1])).get("id",""))' "$OUT/$NAME.notary.json" 2>/dev/null || true)
-  [[ -n "$ID" ]] && xcrun notarytool log "$ID" --keychain-profile "$PROFILE" >&2
+  echo "Notarisation: ${STATUS:-no answer} (submission $ID). Apple's log:" >&2
+  xcrun notarytool log "$ID" --keychain-profile "$PROFILE" >&2 || true
   exit 1
 fi
 
