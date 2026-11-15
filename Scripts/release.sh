@@ -7,6 +7,9 @@
 #   Scripts/release.sh --local     # sign with any identity (IDENTITY=...), skip notarising: to test signing
 #   Scripts/release.sh --publish   # the same, then create GitHub release v<version> with Bema.dmg
 #                                  # (notes from docs/release-notes/v<version>.md) and deploy getbema.dev
+#   NOTARY_ID=<id> Scripts/release.sh --publish
+#                                  # resume after notarisation gave up: reuse dist/Bema-<version>.dmg and
+#                                  # wait for that submission (xcrun notarytool history lists the ids)
 #
 # Needs: a "Developer ID Application" certificate in the keychain; notarytool credentials stored under
 # a keychain profile (xcrun notarytool store-credentials <name> ...), named in NOTARY_PROFILE or in a
@@ -47,6 +50,12 @@ if [[ "$MODE" == "--publish" ]]; then
   gh release view "v$VERSION" --repo "$REPO" > /dev/null 2>&1 && { echo "v$VERSION is already released. Bump the version in Resources/Info.plist." >&2; exit 1; }
 fi
 
+if [[ -n "${NOTARY_ID:-}" ]]; then
+  # Resume: the DMG was built and uploaded by an earlier run whose wait gave up; carry on from it.
+  [[ -f "$OUT/$NAME.dmg" ]] || { echo "NOTARY_ID is set but $OUT/$NAME.dmg isn't there." >&2; exit 1; }
+  ID="$NOTARY_ID"
+  log "Resuming with $OUT/$NAME.dmg and submission $ID"
+else
 log "Testing"
 swift test > "$ROOT/build/release-tests.log" 2>&1 || { tail -30 "$ROOT/build/release-tests.log"; echo "Tests failed." >&2; exit 1; }
 
@@ -112,6 +121,7 @@ for attempt in 1 2 3; do
   sleep 30
 done
 [[ -n "$ID" ]] || { echo "Notarisation: the upload didn't reach Apple." >&2; exit 1; }
+fi
 echo "Submission $ID; checking every 30 seconds for up to two hours."
 STATUS=""
 for _ in $(seq 1 240); do

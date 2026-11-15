@@ -10,7 +10,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 - Closing the self view now always turns the camera off and lets it open again. Before, closing it could leave Bema thinking it was still open: the camera kept running and the Self view button did nothing. Bema now watches the window itself close, and the button checks the window, not only its own flag. The self view also opens when Bema's main window is closed (menu bar, ⌥⌘V, `bema://selfview`).
 - **Effects** in the top bar (while the camera is on), in the self view's hover controls and in Stage tools opens macOS's Video Effects menu, where Edge Light, Portrait and Studio Light are turned on or off.
 - Not verified: the fix live (it's a window-closing timing issue), and the Video Effects menu opening from Bema.
-- `Scripts/release.sh` uploads for notarisation and then checks the submission every 30 seconds (up to two hours), retrying a failed upload. A single long wait failed twice when the connection dropped while Apple was slow.
+- `Scripts/release.sh` uploads for notarisation and then checks the submission every 30 seconds (up to two hours), retrying a failed upload, and `NOTARY_ID=<id>` resumes a release from the DMG already uploaded. A single long wait failed twice when the connection dropped while Apple was slow.
 
 ### A designed sample deck
 - `Samples/Sample.pptx` is now the dark six-slide talk from the website ("The slide is the easy part"), with notes written to be read aloud, instead of plain white title slides. `Scripts/make_sample_deck.py` builds it; the separate website copy of the generator is gone. Not verified: the deck in Keynote.
