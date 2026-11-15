@@ -28,6 +28,16 @@
 	<true/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<!-- Updates: Sparkle reads this feed once a day (can be turned off); the public key checks each update's signature.
+	     Development builds (Scripts/build_app.sh) remove SUFeedURL, so they never update themselves. -->
+	<key>SUFeedURL</key>
+	<string>https://getbema.dev/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>K/32RqgIVO+ofxszylxXUj9h9MaV53B7eHFQyCPWN7c=</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 	<key>NSCameraUsageDescription</key>
 	<string>Bema shows your camera in a bubble on the slides when you turn on the camera bubble.</string>
 	<key>NSLocalNetworkUsageDescription</key>

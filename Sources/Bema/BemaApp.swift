@@ -8,6 +8,7 @@ struct BemaApp: App {
     @ObservedObject private var model = PresenterModel.shared
     @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = false
     @ObservedObject private var coach = CoachModel.shared
+    @ObservedObject private var updates = Updates.shared
     @AppStorage("theme") private var themeName = Theme.Name.backstage.rawValue
     @AppStorage("showMenuBar") private var showMenuBar = true
     @ObservedObject private var voice = VoiceCommands.shared
@@ -39,6 +40,15 @@ struct BemaApp: App {
         .defaultSize(width: 1360, height: 840)
         .windowStyle(.hiddenTitleBar)
         .commands {
+            CommandGroup(after: .appInfo) {
+                if updates.isAvailable {
+                    Button("Check for Updates…") { updates.checkForUpdates() }
+                        .disabled(!updates.canCheck)
+                    Toggle("Check for Updates Automatically", isOn: Binding(
+                        get: { updates.automaticallyChecks },
+                        set: { updates.automaticallyChecks = $0 }))
+                }
+            }
             CommandGroup(replacing: .newItem) {
                 Button("Open Presentation…") { model.openPanel() }
                     .keyboardShortcut("o")

@@ -4,6 +4,10 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-15
 
+- **Automatic updates with Sparkle, checked once a day** (asked for by the maintainer). The only network traffic Bema starts on its own; it sends only the version, and an update installs only with Bema's EdDSA signature. Its own key account (`bema`), separate from Didja's. Development builds have no feed URL so they never replace themselves with a release.
+- **The feed lives on getbema.dev, the files on GitHub Releases.** The site is already deployed from the repository; GitHub hosts the DMG under a stable name (`Bema.dmg`), so the site's Download button and the feed always point at the newest release.
+- **Universal builds** (Apple silicon and Intel). SwiftPM builds both at no extra cost, and macOS 14 still runs on Intel Macs.
+
 - **The mark is A2, "the reading line"** (chosen by the maintainer on the design canvas). A letter with a dot beside it is a common shape (Booking.com's "B."); the amber line inside the screen-shaped bowl is unique to Bema, says "presenter" and "prompter" at once, and stays one shape at 16 px. Never put it inside a circle or a red disc (Beats, Bitly). The geometry lives in `site/brand/bema-mark.svg`; `BemaMark` and `Scripts/make_icon.swift` draw the same shape.
 
 - **The public repository is `assafshafran/bema`** (it can move to an organization later; GitHub redirects). Like Didja, the private development history moves to a private history repository, and work continues in the public one through the privacy hooks.

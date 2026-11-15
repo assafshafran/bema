@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- What Bema needs under the hardened runtime. Each is still asked for by macOS on first use.
+	     Nothing else: never get-task-allow, which notarisation refuses. -->
+	<!-- Drive PowerPoint and Keynote with AppleScript. -->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+	<!-- The prompter, speech coach, captions and voice commands. -->
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
+	<!-- The camera bubble. -->
+	<key>com.apple.security.device.camera</key>
+	<true/>
+</dict>
+</plist>

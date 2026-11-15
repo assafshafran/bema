@@ -1,6 +1,7 @@
-wrangler.jsonc
 .assetsignore
-README.md
-demo-deck
 .wrangler
 .wrangler/**
+README.md
+appcast.xml.bak
+demo-deck
+wrangler.jsonc

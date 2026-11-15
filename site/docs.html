@@ -73,8 +73,8 @@ td:first-child{white-space:nowrap;width:1%}
 Bema <small>docs</small></a>
 <div class="navlinks">
 <a class="hide-s" href="./">Home</a>
-<a class="hide-s" href="#build">GitHub</a>
-<a class="btn" href="#install">Download</a>
+<a class="hide-s" href="https://github.com/assafshafran/bema">GitHub</a>
+<a class="btn" href="https://github.com/assafshafran/bema/releases/latest">Download</a>
 </div>
 </nav>
 </header>
@@ -94,15 +94,15 @@ Bema <small>docs</small></a>
 
 <main class="content">
 <h1 class="h1">Docs</h1>
-<p class="lede">Getting Bema running next to PowerPoint, what it asks your Mac for and why, and every shortcut.</p>
+<p class="lede">Getting Bema running next to PowerPoint or Keynote, what it asks your Mac for and why, and every shortcut.</p>
 
 <section class="doc" id="install" style="margin-top: 40px">
 <h2 class="h2">Install</h2>
-<p>You need macOS 14 Sonoma or later and Microsoft PowerPoint for Mac.</p>
+<p>You need macOS 14 Sonoma or later and Microsoft PowerPoint or Apple Keynote.</p>
 <ol class="steps">
-<li>Download <strong>Bema</strong> from <a href="https://github.com/assafshafran/bema/releases/latest">GitHub Releases</a> and drag it to Applications.</li>
-<li>Open a deck: right-click a <code>.pptx</code> in Finder and choose <strong>Open With → Bema</strong>, drag it onto Bema's window or Dock icon, or use <strong>File → Open</strong> <kbd>⌘O</kbd>.</li>
-<li>Already have the deck open in PowerPoint? Press <kbd>⌃⌥P</kbd> from anywhere to present it.</li>
+<li>Download the latest release from <a href="https://github.com/assafshafran/bema/releases/latest">GitHub Releases</a> and drag Bema to Applications.</li>
+<li>Open a deck: right-click a <code>.pptx</code> or <code>.key</code> in Finder and choose <strong>Open With → Bema</strong>, drag it onto Bema's window or Dock icon, or use <strong>File → Open</strong> <kbd>⌘O</kbd>.</li>
+<li>Already have the deck open in PowerPoint or Keynote? Press <kbd>⌃⌥P</kbd> from anywhere to present it.</li>
 </ol>
 <h3 class="h3">Present with Bema in Finder</h3>
 <p>Right-click a deck and look under <strong>Quick Actions</strong> or <strong>Services</strong>. If it isn't there, turn it on in <strong>System Settings → Keyboard → Keyboard Shortcuts → Services → Files and Folders</strong>.</p>
@@ -113,14 +113,14 @@ Bema <small>docs</small></a>
 <p>macOS asks for each one the first time a feature needs it. Only Automation is required.</p>
 <div class="perm">
 <div class="pcard">
-<h3 class="h3">Automation → PowerPoint</h3>
+<h3 class="h3">Automation</h3>
 <p class="when">Asked when you first open a deck · required</p>
-<p>Lets Bema open the deck, export slide previews, and start and step the slideshow through AppleScript.</p>
+<p>Lets Bema control PowerPoint or Keynote: open the deck, export slide previews, and start and step the slideshow through AppleScript.</p>
 </div>
 <div class="pcard">
 <h3 class="h3">Accessibility</h3>
 <p class="when">Asked when you first present on a second display</p>
-<p>Lets Bema switch PowerPoint's slideshow window to true full screen on that display. Without it, the slides still show, with a title bar.</p>
+<p>Lets Bema switch the slideshow window to true full screen on that display. Without it, the slides still show, with a title bar.</p>
 </div>
 <div class="pcard">
 <h3 class="h3">Microphone</h3>
@@ -158,17 +158,17 @@ Bema <small>docs</small></a>
 <tr><td><kbd>⌘+</kbd> <kbd>⌘−</kbd></td><td>Notes size</td></tr>
 <tr><td><kbd>⌥⌘P</kbd></td><td>Start or pause the prompter</td></tr>
 <tr><td><kbd>⇧⌘P</kbd></td><td>Present the deck open in PowerPoint</td></tr>
-<tr><td><kbd>⌃⌥P</kbd></td><td>Same, from any app, PowerPoint included</td></tr>
+<tr><td><kbd>⌃⌥P</kbd></td><td>Present the deck in front, from any app, PowerPoint and Keynote included</td></tr>
 <tr><td><kbd>⇧⌘R</kbd></td><td>Show the last talk report</td></tr>
 </tbody>
 </table>
 </div>
-<p>Before the show starts, the arrows step through slides and notes locally, so you can rehearse without PowerPoint playing.</p>
+<p>Before the show starts, the arrows step through slides and notes locally, so you can rehearse without the slideshow playing.</p>
 </section>
 
 <section class="doc" id="links">
 <h2 class="h2">bema:// links</h2>
-<p>Open these from Shortcuts, a Stream Deck button, a script or Terminal.</p>
+<p>Open these from Shortcuts, a Stream Deck button, a script or the command line.</p>
 <div class="tbox">
 <table>
 <thead><tr><th>Link</th><th>What it does</th></tr></thead>
@@ -185,8 +185,8 @@ Bema <small>docs</small></a>
 
 <section class="doc" id="build">
 <h2 class="h2">Build from source</h2>
-<p>Needs Xcode, or the Xcode command line tools with Swift 6.</p>
-<pre class="term"><span class="p">$</span> git clone https://github.com/assafshafran/bema.git
+<p>Needs Xcode 16 or later, or the Swift 6 command line tools.</p>
+<pre class="term"><span class="p">$</span> git clone https://github.com/assafshafran/bema
 <span class="p">$</span> cd bema
 <span class="p">$</span> ./Scripts/build_app.sh --install
 <span class="c"># builds build/Bema.app, copies it to ~/Applications, registers it with Finder</span>
@@ -199,8 +199,8 @@ Bema <small>docs</small></a>
 </section>
 
 <footer class="foot">
-<span>Bema · open source under the MIT license</span>
-<span><a href="./">Home</a> · <a href="https://github.com/assafshafran/bema">GitHub</a></span>
+<span>Bema · open source under the MIT licence</span>
+<span><a href="./">Home</a> · <a href="https://github.com/assafshafran/bema">github.com/assafshafran/bema</a></span>
 </footer>
 </main>
 </div>

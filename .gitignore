@@ -32,3 +32,5 @@ xcuserdata/
 # Website build and Cloudflare caches
 site/.wrangler/
 site/node_modules/
+dist/
+.release.env

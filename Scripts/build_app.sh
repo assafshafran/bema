@@ -14,6 +14,11 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/Bema"
 cp "$ROOT/Resources/Info.plist" "$APP/Contents/Info.plist"
+# Development builds never update themselves: no feed URL (Scripts/release.sh keeps it).
+/usr/libexec/PlistBuddy -c "Delete :SUFeedURL" "$APP/Contents/Info.plist" 2>/dev/null || true
+# Sparkle, found next to the built executable.
+mkdir -p "$APP/Contents/Frameworks"
+ditto "$(dirname "$BIN")/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 [[ -f "$ROOT/Resources/AppIcon.icns" ]] && cp "$ROOT/Resources/AppIcon.icns" "$APP/Contents/Resources/"
 
 # Sign with a stable identity when one is available, so macOS remembers the Automation and
@@ -25,6 +30,7 @@ if [[ -z "$IDENTITY" ]]; then
   [[ -z "$IDENTITY" ]] && IDENTITY="$(echo "$IDS" | grep -m1 'Apple Development' | awk '{print $2}')"
   [[ -z "$IDENTITY" ]] && IDENTITY="-"
 fi
+codesign --force --deep --sign "$IDENTITY" "$APP/Contents/Frameworks/Sparkle.framework"
 codesign --force --sign "$IDENTITY" "$APP"
 echo "Signed with: $IDENTITY"
 echo "Built $APP"

@@ -12,7 +12,8 @@ A native macOS presenter for PowerPoint and Keynote decks: the presentation app 
 
 ```bash
 swift test                                   # tests
-./Scripts/build_app.sh --install             # build, sign, install to ~/Applications
+./Scripts/build_app.sh --install             # development build (never updates itself), install to ~/Applications
+Scripts/release.sh --publish                 # Developer ID, notarised, Sparkle-signed; GitHub release + appcast + site deploy
 open ~/Applications/Bema.app Samples/Sample.pptx
 python3 -I -m unittest discover -s Scripts -p 'test_*.py'   # the privacy checker's tests
 python3 -I Scripts/privacy_check.py tree     # scan everything tracked for personal content
@@ -21,7 +22,7 @@ python3 -I Scripts/privacy_check.py tree     # scan everything tracked for perso
 ## Hard rules
 
 - The presentation app renders what the audience sees; Bema never re-renders slides for them.
-- Nothing leaves the Mac unless the person turned it on: no analytics, no accounts, no dependencies that phone home. Speech is on-device when the language supports it, and Bema says when it isn't. The local web server (phone remote, polls) runs only while one is on, under random secret paths.
+- Nothing leaves the Mac unless the person turned it on: no analytics, no accounts, no dependencies that phone home. The one exception, chosen by the maintainer: Sparkle's update check, once a day to https://getbema.dev/appcast.xml (only the app's version), on by default and off from the Bema menu, never in development builds (`Scripts/build_app.sh` removes the feed) or tests; an update installs only with a valid EdDSA signature (`SUPublicEDKey`, key account `bema`). Speech is on-device when the language supports it, and Bema says when it isn't. The local web server (phone remote, polls) runs only while one is on, under random secret paths.
 - Never write audio to disk. Transcripts are kept only as the last few caption words; talk reports hold timings and counts only.
 - The microphone opens only for a listening feature that is on (`SpeechHub` consumers) and closes when none needs it. Don't touch `AVAudioEngine.inputNode` before then: creating it can trigger the microphone prompt.
 - Windows marked hidden from screen sharing (`sharingType = .none`) must stay hidden.

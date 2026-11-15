@@ -6,6 +6,11 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-15
 
+### First release and automatic updates
+- `Scripts/release.sh`: a universal build signed with Developer ID and the hardened runtime, notarised and stapled, in a DMG; the update signed with Sparkle and added to `site/appcast.xml`; `--publish` creates the GitHub release and deploys the site.
+- Sparkle checks for updates once a day; **Check for Updates…** and **Check for Updates Automatically** are in the Bema menu. Development builds never update themselves.
+- The homepage has no placeholders left: the two missing images are illustrations with honest captions, the copy covers Keynote, and Download fetches the DMG.
+
 ### The A2 mark in the app
 - The app icon, the mark on the welcome and loading screens and the menu bar panel now use A2, the logo chosen for the website: a lowercase b whose bowl is a screen, with the amber reading line inside. The README shows it too.
 

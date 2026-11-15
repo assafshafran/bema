@@ -1,7 +1,7 @@
 # Bema website
 
-Static landing page and docs, live at https://getbema.dev (and www.getbema.dev).
-Hosted on Cloudflare Workers static assets (`wrangler.jsonc`); no build step. To redeploy after a change:
+The landing page and docs for Bema, served at https://getbema.dev (and www.getbema.dev).
+Plain static files, no build step. They're hosted on Cloudflare Workers static assets; `wrangler.jsonc` holds the config and the two custom domains. To redeploy after a change:
 
 ```bash
 cd site && npx wrangler deploy
@@ -9,13 +9,15 @@ cd site && npx wrangler deploy
 
 `.assetsignore` keeps this README, `wrangler.jsonc` and `demo-deck/` off the live site.
 
-Links point at the GitHub repository and its releases (the first signed release is still to come). The hero's Dock uses generic icons, never other companies' app icons. Remaining placeholders: the `[PHOTO NEEDED]` / `[SCREENSHOT NEEDED]` boxes, if any.
-`img/presenter.jpg` is a real capture of the presenter window rehearsing `Samples/Sample.pptx`.
-The design source lives on the private Claude Design canvas "Bema website".
+## Before the first release
+The Download buttons point to https://github.com/assafshafran/bema/releases/latest. There's no release yet, so that link returns a 404 until the first one is published.
+
+## What's real and what's drawn
+- `img/presenter.jpg` is a capture of Bema's presenter window running the demo deck, and `img/slide-projected.jpg` is that deck's title slide. `demo-deck/make_demo_deck.py` builds the deck (needs `python-pptx`).
+- The hero's desktop, meeting window, Dock icons and prompter strip are drawn in HTML and CSS. They're generic on purpose: no other company's icons or logos.
+- The detached prompter is shown as an illustration: macOS keeps that window out of screenshots.
+- `brand/` holds the logo mark (dark and light versions).
 
 ## Photo credits
-The call participants in the hero are free photos from Unsplash (https://unsplash.com/license):
+The people in the hero's meeting window are free photos from Unsplash (https://unsplash.com/license), shown with made-up first names:
 noa.jpg Wcp5t-CdH4E · daniel.jpg cMsdRjEApeo · amir.jpg rmzF0er-JeY · omer.jpg Vr9hsELbhu8 · lior.jpg lDQFD3t3oGk · you.jpg 5ruK7pUXzrA (photo ids, at https://unsplash.com/photos/<id>).
-
-## Dock icons
-`img/dock/*.png` are the real macOS, Microsoft and Bema app icons, rendered from the apps installed on the design machine. Apple and Microsoft icons are their owners' trademarks: check their guidelines before the site goes public, or swap in a real screenshot of a desktop.

@@ -44,12 +44,13 @@ Bema runs on your Mac. No account, no cloud service, no analytics.
 - **Nothing is recorded.** Audio is never saved, and neither is any transcript beyond the last few words shown as captions.
 - **The phone remote and polls** run a small web server on your Mac only while they're on, reachable from your local network through a link with a random secret.
 - **Talk reports** (time per slide, word counts) are saved on your Mac only.
+- **Updates:** once a day Bema checks https://getbema.dev/appcast.xml for a new version, sending only its version number. An update installs only with Bema's signature. Turn it off in the Bema menu: **Check for Updates Automatically**.
 
 Full detail is in [docs/GUIDE.md](docs/GUIDE.md).
 
 ## Build from source
 
-You need Xcode 16 or later (or the Swift 6 command line tools).
+You need Xcode 16 or later (or the Swift 6 command line tools). Releases are made with `Scripts/release.sh` (see the script for what it needs).
 
 ```bash
 swift test                       # run the tests
