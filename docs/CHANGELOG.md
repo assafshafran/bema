@@ -6,6 +6,11 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### Help, camera controls in the top bar, presenter window hidden from sharing
+- A Help page on getbema.dev (getting started, every feature, troubleshooting) and a Help menu in Bema that opens it, plus Report a Problem and What's New.
+- **Self view** and **On slides** camera buttons in the top bar and on the welcome screen.
+- The presenter window is hidden from screen sharing by default, so a screen share on a call shows the slides, not the notes. It can be turned off in Stage tools.
+
 ### Self view
 - A floating, mirrored camera window that only you see (excluded from screen sharing: a direct capture of it is refused), round or rectangular, movable under the camera. It shares the camera with the camera bubble. Not verified: the picture itself (it can't be captured by design) and inside Zoom, Teams or Meet shares.
 

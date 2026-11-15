@@ -2,6 +2,11 @@
 
 Choices made while building Bema, with the reason, so they are not re-argued or quietly undone. Newest first. Add one whenever a choice is made that the code alone would not explain.
 
+## 2026-11-16
+
+- **The presenter window is hidden from screen sharing by default** (asked for by the maintainer). People share their screen on calls; notes, the timer and the prompter should never show. Turning it off is one switch in Stage tools.
+- **Help lives on getbema.dev, not inside the app.** It stays current without an update, can be linked from issues and the troubleshooting answers, and the Help menu opens the right section.
+
 ## 2026-11-15
 
 - **The PowerPoint button is an Office add-in installed by Bema itself.** PowerPoint only adds ribbon buttons through add-ins loaded from an https address; getbema.dev serves it. Bema copies the manifest into PowerPoint's add-in folder rather than sending people to an add-in store, so it works without a Microsoft account and stays tied to the app.

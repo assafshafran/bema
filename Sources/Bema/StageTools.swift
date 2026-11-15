@@ -28,7 +28,7 @@ struct StageToolsPanel: View {
     @ObservedObject private var voice = VoiceCommands.shared
     @ObservedObject private var captions = Captions.shared
     @ObservedObject private var presenter = PresenterModel.shared
-    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = false
+    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = true
     @State private var optionsText = PollModel.shared.options.joined(separator: "\n")
 
     var body: some View {

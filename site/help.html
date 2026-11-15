@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bema help</title>
+<meta name="description" content="Help for Bema: getting started, presenting, the voice prompter, your camera, the PowerPoint button, the phone remote, and fixes for common problems.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bema">
+<meta property="og:title" content="Bema help">
+<meta property="og:description" content="Help for Bema: getting started, presenting, the voice prompter, your camera, the PowerPoint button, the phone remote, and fixes for common problems.">
+<meta property="og:url" content="https://getbema.dev/help">
+<meta property="og:image" content="https://getbema.dev/brand/bema-social.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="Bema: a presenter view you control, for PowerPoint and Keynote on Mac">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bema help">
+<meta name="twitter:description" content="Help for Bema: getting started, presenting, the voice prompter, your camera, the PowerPoint button, the phone remote, and fixes for common problems.">
+<meta name="twitter:image" content="https://getbema.dev/brand/bema-social.png">
+<meta name="theme-color" content="#0E1014">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#F4F2EC}
+a{color:#0E1014}a:hover{color:#5A4A1E}
+.pg{font-family:Inter,system-ui,sans-serif;color:#0E1014;background:#F4F2EC;font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.pg *{box-sizing:border-box}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid #DAD6CC}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Schibsted Grotesk',Inter,sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.02em;text-decoration:none;color:#0E1014}
+.brand small{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:13px;letter-spacing:0;color:#5B5F66;margin-left:4px}
+.navlinks{display:flex;align-items:center;gap:24px;font-size:15px;font-weight:500}
+.navlinks a{text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:10px;font-weight:600;font-size:15px;text-decoration:none;border:1.5px solid #0E1014;background:#0E1014;color:#F4F2EC}.btn:hover{color:#F5A524}
+.layout{display:flex;flex-wrap:wrap;gap:56px;padding-top:56px;padding-bottom:120px}
+.side{flex:1 1 220px;max-width:240px}
+.side p{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5B5F66;margin:0 0 12px}
+.side ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;border-left:1px solid #DAD6CC}
+.side a{display:block;padding:8px 14px;text-decoration:none;font-size:15px;color:#2A2E35;margin-left:-1px;border-left:2px solid transparent}
+.side a.on{border-left-color:#F5A524;color:#0E1014;font-weight:600}
+.content{flex:999 1 560px;min-width:0;max-width:780px}
+.h1{font-family:'Schibsted Grotesk',Inter,sans-serif;font-weight:800;font-size:52px;line-height:1.04;letter-spacing:-0.03em;margin:0 0 16px}
+.h2{font-family:'Schibsted Grotesk',Inter,sans-serif;font-weight:800;font-size:30px;line-height:1.15;letter-spacing:-0.02em;margin:0 0 14px;scroll-margin-top:24px}
+.h3{font-family:'Schibsted Grotesk',Inter,sans-serif;font-weight:700;font-size:18px;margin:24px 0 6px}
+.lede{font-size:19px;color:#2A2E35;margin:0}
+.doc{padding:48px 0;border-top:1px solid #DAD6CC}
+.doc p{margin:0 0 12px;color:#2A2E35}
+.doc ul,.doc ol.steps{margin:0 0 12px;padding-left:22px;color:#2A2E35}
+.doc li{margin:6px 0}
+kbd{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.82em;font-weight:500;padding:1px 7px;border:1px solid #B9B4A8;border-bottom-width:2px;border-radius:6px;background:#FBFAF6;color:#0E1014;white-space:nowrap}
+code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.88em;background:#E9E6DD;padding:1px 5px;border-radius:4px}
+.term{background:#0E1014;color:#E9EBEF;border-radius:12px;padding:20px 22px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:14px;line-height:1.7;overflow-x:auto;margin:12px 0 16px}
+.term .p{color:#F5A524}.term .c{color:#9BA3AF}
+.tbox{overflow-x:auto;border:1px solid #DAD6CC;border-radius:12px;background:#FBFAF6;margin:8px 0 16px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5B5F66;font-weight:500;padding:12px 16px;border-bottom:1px solid #DAD6CC}
+td{padding:11px 16px;border-bottom:1px solid #E6E2D8;vertical-align:top;color:#2A2E35}
+tr:last-child td{border-bottom:none}
+td:first-child{white-space:nowrap;width:1%}
+.perm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0}
+.pcard{background:#FBFAF6;border:1px solid #DAD6CC;border-radius:12px;padding:20px}
+.pcard h3{margin:0 0 4px}
+.pcard .when{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#5B5F66;margin:0 0 8px}
+.note{background:#FBF1DC;border:1px solid #E8C77E;border-radius:12px;padding:16px 18px;margin:16px 0;color:#3A2D10}
+.note p{color:#3A2D10;margin:0}
+.foot{border-top:1px solid #DAD6CC;padding:28px 0;font-size:14px;color:#4A4F57;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+@media (max-width:820px){
+.wrap{padding:0 16px}
+.navlinks .hide-s{display:none}
+.layout{gap:32px;padding-top:32px;padding-bottom:80px}
+.side{max-width:none}
+.h1{font-size:38px}
+.h2{font-size:26px}
+.perm{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="pg">
+
+<header class="wrap">
+<nav class="nav" aria-label="Main">
+<a class="brand" href="./">
+<svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><path d="M16 8v44" stroke="currentColor" stroke-width="8" stroke-linecap="round"></path><rect x="16" y="25" width="33" height="27" rx="10" fill="none" stroke="currentColor" stroke-width="8"></rect><path d="M26.5 38.5h12" stroke="#F5A524" stroke-width="5.5" stroke-linecap="round"></path></svg>
+Bema <small>help</small></a>
+<div class="navlinks">
+<a class="hide-s" href="./">Home</a>
+<a class="hide-s" href="docs">Docs</a>
+<a class="hide-s" href="https://github.com/assafshafran/bema">GitHub</a>
+<a class="btn" href="https://github.com/assafshafran/bema/releases/latest">Download</a>
+</div>
+</nav>
+</header>
+
+<div class="wrap layout">
+
+<aside class="side" aria-label="On this page">
+<p>On this page</p>
+<ol>
+<li><a class="on" href="#start">Getting started</a></li>
+<li><a href="#presenting">Presenting</a></li>
+<li><a href="#prompter">Voice prompter</a></li>
+<li><a href="#camera">Your camera</a></li>
+<li><a href="#tools">Pointer, coach and stage tools</a></li>
+<li><a href="#remote">Phone remote and polls</a></li>
+<li><a href="#powerpoint-button">The PowerPoint button</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#contact">Still stuck?</a></li>
+</ol>
+</aside>
+
+<main class="content">
+<h1 class="h1">Help</h1>
+<p class="lede">How to use Bema, and what to do when something doesn't work.</p>
+
+<section class="doc" id="start" style="margin-top: 40px">
+<h2 class="h2">Getting started</h2>
+<ol class="steps">
+<li><strong>Install.</strong> Download Bema, open the DMG and drag Bema to Applications. It runs on macOS 14 or later with PowerPoint or Keynote.</li>
+<li><strong>Open a deck.</strong> Press <kbd>⌃⌥P</kbd> while it's open in PowerPoint or Keynote, click <strong>Present with Bema</strong> on PowerPoint's Home tab, right-click a <code>.pptx</code> or <code>.key</code> in Finder and choose <strong>Open With → Bema</strong>, or use <strong>File → Open</strong> <kbd>⌘O</kbd>.</li>
+<li><strong>Allow what it asks for.</strong> Control of PowerPoint or Keynote (so it can run the show), and Accessibility (so the slides go full screen on the audience display). The microphone and camera are asked for only when you use them.</li>
+<li><strong>Pick the audience display</strong> on the welcome screen, then press <strong>Start slideshow</strong> <kbd>⌘↩</kbd>.</li>
+</ol>
+<p>Bema lives in the menu bar (the <strong>b</strong> with the amber line) and keeps running when you close its window. <strong>Open at login</strong> is in that menu.</p>
+</section>
+
+<section class="doc" id="presenting">
+<h2 class="h2">Presenting</h2>
+<p>PowerPoint or Keynote plays the slides on the audience display; Bema shows you the current and next slide, your notes, a filmstrip and a timer.</p>
+<ul>
+<li><strong>Move:</strong> <kbd>→</kbd> <kbd>Space</kbd> <kbd>Page Down</kbd> next, <kbd>←</kbd> <kbd>Page Up</kbd> back. Clickers work. Click a thumbnail to jump.</li>
+<li><strong>Black or white screen:</strong> <kbd>B</kbd> or <kbd>W</kbd>.</li>
+<li><strong>Timer:</strong> click "of 20:00" to set your planned length. Bema then says if you're on pace, behind or ahead.</li>
+<li><strong>End the show:</strong> <kbd>Esc</kbd> or <strong>End show</strong>.</li>
+<li><strong>Screen sharing on a call:</strong> Bema's window is hidden from screen sharing by default, so people see your slides, not your notes. Change it in <strong>Stage tools</strong>.</li>
+</ul>
+</section>
+
+<section class="doc" id="prompter">
+<h2 class="h2">Voice prompter</h2>
+<p>Open the <strong>Prompter</strong> tab next to Notes and press <strong>Start</strong>. Your notes become one script that scrolls as you speak.</p>
+<ul>
+<li><strong>Voice</strong> follows what you say, <strong>Auto</strong> scrolls at a set speed, <strong>Manual</strong> moves when you scroll, drag or click a word. Clicking a word or scrolling works in every mode.</li>
+<li><strong>Follow</strong> moves the slideshow along with the script. <strong>Line</strong> sets where the reading line sits: higher shows more of what's coming.</li>
+<li><strong>Detach</strong> opens the prompter in its own window that floats under your camera and stays out of screen shares.</li>
+<li>Write <code>**bold**</code> or cues like <code>[pause]</code> in your PowerPoint notes to see them highlighted.</li>
+</ul>
+</section>
+
+<section class="doc" id="camera">
+<h2 class="h2">Your camera</h2>
+<ul>
+<li><strong>Self view</strong> (top bar, <kbd>⌥⌘V</kbd>): a small mirror of your camera that only you see. It floats above everything and stays out of screen sharing. Drag it anywhere, or hover and choose <strong>move under the camera</strong>.</li>
+<li><strong>On slides</strong> (top bar): your camera in a round bubble on the slides the audience sees, during the show. Choose the corner and size in Stage tools.</li>
+</ul>
+</section>
+
+<section class="doc" id="tools">
+<h2 class="h2">Pointer, coach and stage tools</h2>
+<ul>
+<li><strong>Pointer:</strong> <kbd>L</kbd> laser, <kbd>S</kbd> spotlight, <kbd>M</kbd> magnifier, <kbd>P</kbd> pen, <kbd>H</kbd> highlighter, <kbd>T</kbd> stamps; <kbd>E</kbd> clears. Point or draw on the slide in Bema and it shows on the audience screen. <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> fire confetti, applause or hearts.</li>
+<li><strong>Stage tools</strong> (top right, or <kbd>⇧⌘T</kbd>): phone remote, live poll, captions, voice commands, speech coach, rehearsal mode.</li>
+<li><strong>Rehearsal mode</strong> shows a report when the show ends: time per slide, speaking speed and filler words.</li>
+</ul>
+</section>
+
+<section class="doc" id="remote">
+<h2 class="h2">Phone remote and polls</h2>
+<p>In Stage tools, turn on the phone remote and scan the QR code with your phone's camera, or show a poll for the audience to scan. Phones must be on the same Wi-Fi as your Mac. Each link carries a secret code, so only people who scan it can use it.</p>
+</section>
+
+<section class="doc" id="powerpoint-button">
+<h2 class="h2">The PowerPoint button</h2>
+<ol class="steps">
+<li>In Bema's menu bar menu, choose <strong>Add the Bema button to PowerPoint…</strong> (or <strong>File → Add Bema Button to PowerPoint…</strong>). If macOS asks whether Bema may access PowerPoint's data, allow it.</li>
+<li>Quit PowerPoint with <kbd>⌘Q</kbd> and open it again.</li>
+<li>Find <strong>Present with Bema</strong> at the right end of the <strong>Home</strong> tab.</li>
+</ol>
+</section>
+
+<section class="doc" id="troubleshooting">
+<h2 class="h2">Troubleshooting</h2>
+<h3 class="h3" id="full-screen">The slides have a title bar instead of going full screen</h3>
+<p>Bema needs Accessibility. Open <strong>System Settings → Privacy &amp; Security → Accessibility</strong> and turn Bema on. If Bema is already listed but it still happens (for example after an update), select it, remove it with <strong>–</strong>, and allow it again.</p>
+<h3 class="h3" id="powerpoint-button-missing">The PowerPoint button doesn't appear</h3>
+<ul>
+<li>Quit PowerPoint completely (<kbd>⌘Q</kbd>) and reopen it; PowerPoint only loads add-ins when it starts.</li>
+<li>Check <strong>Insert → Add-ins → My Add-ins</strong> for Bema under Developer Add-ins, and click it once.</li>
+<li>In Finder, <strong>Go → Go to Folder…</strong> <code>~/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef</code> should hold <code>bema-powerpoint-button.xml</code>. If the folder is missing, add the button again from Bema and allow access when macOS asks.</li>
+<li>A work Microsoft 365 account may have add-ins turned off by your IT team. <kbd>⌃⌥P</kbd> still works.</li>
+</ul>
+<h3 class="h3" id="prompter">The prompter doesn't follow my voice</h3>
+<ul>
+<li>Make sure the mic level bars move while you speak. If they don't, allow Bema in <strong>System Settings → Privacy &amp; Security → Microphone</strong> and <strong>Speech Recognition</strong>.</li>
+<li>Choose the language you're speaking in the prompter's language menu.</li>
+<li>Lost? Click the word you're on, or scroll to it: following carries on from there.</li>
+</ul>
+<h3 class="h3" id="sharing">Is my self view or prompter visible in a screen share?</h3>
+<p>No: both windows are excluded from screen sharing, recordings and screenshots. Do a quick test share in your call app before an important talk.</p>
+<h3 class="h3" id="remote">My phone can't open the remote</h3>
+<p>The phone and the Mac need to be on the same Wi-Fi. Guest and some office networks block devices from reaching each other; use a personal hotspot or another network. If macOS asks whether Bema may accept incoming connections, choose Allow.</p>
+<h3 class="h3" id="permissions">Bema asks for permissions again</h3>
+<p>macOS remembers permissions per app. After moving Bema or installing a new copy, it may ask once more. That's expected.</p>
+<h3 class="h3" id="updates">Updates</h3>
+<p>Bema checks for updates once a day and installs only updates signed by Bema. Use <strong>Bema → Check for Updates…</strong> to check now.</p>
+</section>
+
+<section class="doc" id="contact">
+<h2 class="h2">Still stuck?</h2>
+<p><a href="https://github.com/assafshafran/bema/issues/new/choose">Report a problem on GitHub</a>. Please describe what happened, or recreate it with the sample deck, rather than attaching your real decks or notes. A privacy or security problem? Use the private form described in <a href="https://github.com/assafshafran/bema/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+</section>
+
+<footer class="foot">
+<span>Bema · open source under the MIT licence</span>
+<span><a href="./">Home</a> · <a href="https://github.com/assafshafran/bema">github.com/assafshafran/bema</a></span>
+</footer>
+</main>
+</div>
+
+</div>
+</body>
+</html>

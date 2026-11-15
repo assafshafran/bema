@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 struct RootView: View {
     @EnvironmentObject private var model: PresenterModel
     @State private var dropTargeted = false
-    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = false
+    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = true
     @AppStorage("theme") private var themeName = Theme.Name.backstage.rawValue
     @Environment(\.openWindow) private var openWindow
 
@@ -288,8 +288,17 @@ struct PreflightPanel: View {
                     }
                 }
 
+                VStack(alignment: .leading, spacing: 8) {
+                    CapsLabel("Camera")
+                    HStack(spacing: 12) {
+                        CameraControls()
+                        Text("Self view: only you see it. On slides: the audience sees it during the show.")
+                            .font(.system(size: 12)).foregroundStyle(Theme.muted).fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
                 Button { model.stageToolsOpen = true } label: {
-                    Label("Stage tools: phone remote, poll, camera bubble, captions…", systemImage: "slider.horizontal.3")
+                    Label("Stage tools: phone remote, poll, captions…", systemImage: "slider.horizontal.3")
                         .font(.system(size: 13, weight: .medium))
                 }
                 .buttonStyle(.plain)
@@ -459,6 +468,7 @@ struct TopBar: View {
             BlackScreenButton()
             Spacer(minLength: 8)
             TimerCluster()
+            CameraControls()
             StageToolsButton()
         }
         .padding(.leading, 80).padding(.trailing, 16).padding(.top, 10).padding(.bottom, 12)

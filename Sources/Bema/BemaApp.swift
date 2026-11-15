@@ -6,7 +6,7 @@ import SwiftUI
 struct BemaApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @ObservedObject private var model = PresenterModel.shared
-    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = false
+    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = true
     @ObservedObject private var coach = CoachModel.shared
     @ObservedObject private var updates = Updates.shared
     @ObservedObject private var loginItem = LoginItem.shared
@@ -36,7 +36,7 @@ struct BemaApp: App {
         Window("Bema", id: "main") {
             RootView()
                 .environmentObject(model)
-                .frame(minWidth: 1240, minHeight: 640)
+                .frame(minWidth: 1320, minHeight: 640)
         }
         .defaultSize(width: 1360, height: 840)
         .windowStyle(.hiddenTitleBar)
@@ -117,6 +117,17 @@ struct BemaApp: App {
                 Divider()
                 Toggle("Keep Presenter Window on Top", isOn: $model.alwaysOnTop)
                 Toggle("Hide Presenter Window from Screen Sharing", isOn: $hidePresenterFromSharing)
+            }
+            CommandGroup(replacing: .help) {
+                Button("Bema Help") { HelpLinks.open("help") }
+                    .keyboardShortcut("?", modifiers: .command)
+                Button("Keyboard Shortcuts") { HelpLinks.open("help#presenting") }
+                Button("Troubleshooting") { HelpLinks.open("help#troubleshooting") }
+                Button("The PowerPoint Button") { HelpLinks.open("help#powerpoint-button") }
+                Divider()
+                Button("Docs and bema:// Links") { HelpLinks.open("docs") }
+                Button("Report a Problem…") { NSWorkspace.shared.open(HelpLinks.issues) }
+                Button("What's New") { NSWorkspace.shared.open(HelpLinks.releases) }
             }
             CommandGroup(after: .toolbar) {
                 Picker("Theme", selection: $themeName) {
@@ -270,6 +281,17 @@ final class ServiceProvider: NSObject {
 extension Notification.Name {
     static let openPrompterWindow = Notification.Name("BemaOpenPrompterWindow")
     static let openSelfView = Notification.Name("BemaOpenSelfView")
+}
+
+/// Bema's help lives on getbema.dev, so it's always current and readable outside the app.
+enum HelpLinks {
+    static let site = URL(string: "https://getbema.dev/")!
+    static let issues = URL(string: "https://github.com/assafshafran/bema/issues/new/choose")!
+    static let releases = URL(string: "https://github.com/assafshafran/bema/releases")!
+
+    static func open(_ path: String) {
+        NSWorkspace.shared.open(URL(string: path, relativeTo: site)!.absoluteURL)
+    }
 }
 
 enum NotesFont {
