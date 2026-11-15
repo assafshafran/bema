@@ -2,18 +2,21 @@ import SwiftUI
 
 /// The "Stage tools" popover: phone remote, live poll, camera bubble, captions, voice commands, coach.
 struct StageToolsButton: View {
-    @State private var open = false
+    @EnvironmentObject private var model: PresenterModel
     @ObservedObject private var server = RemoteServer.shared
     @ObservedObject private var poll = PollModel.shared
     @ObservedObject private var camera = CameraModel.shared
 
     var body: some View {
-        Button { open.toggle() } label: { Image(systemName: "slider.horizontal.3") }
-            .buttonStyle(IconButtonStyle(tint: (server.remoteEnabled || poll.onScreen || camera.enabled || PresenterModel.shared.alwaysOnTop) ? Theme.accent : Theme.muted))
-            .help("Stage tools: phone remote, live poll, camera bubble, captions, voice commands")
-            .popover(isPresented: $open, arrowEdge: .bottom) {
-                StageToolsPanel().preferredColorScheme(Theme.colorScheme)
-            }
+        Button { model.stageToolsOpen.toggle() } label: {
+            LabeledIcon(symbol: "slider.horizontal.3", label: "Stage tools",
+                        on: server.remoteEnabled || poll.onScreen || camera.enabled || model.alwaysOnTop)
+        }
+        .buttonStyle(.plain)
+        .help("Stage tools (⇧⌘T): phone remote, live poll, camera bubble, captions, voice commands, rehearsal")
+        .popover(isPresented: $model.stageToolsOpen, arrowEdge: .bottom) {
+            StageToolsPanel().preferredColorScheme(Theme.colorScheme)
+        }
     }
 }
 

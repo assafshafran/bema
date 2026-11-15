@@ -45,6 +45,8 @@ final class PresenterModel: ObservableObject {
     @Published private(set) var powerPointReady = false
     @Published var notice: String?
     @Published var showAccessibilityHelp = false
+    /// The Stage tools panel (phone remote, poll, camera bubble, listening, rehearsal).
+    @Published var stageToolsOpen = false
 
     // Laser pointer and drawing
     @Published var tool: PointerTool = .none {

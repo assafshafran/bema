@@ -92,6 +92,9 @@ struct BemaApp: App {
                 Button("Reset Timer") { model.resetTimer() }
                     .keyboardShortcut("r", modifiers: [.command, .option])
                 Divider()
+                Button("Stage Tools…") { NSApp.activate(); model.stageToolsOpen = true }
+                    .keyboardShortcut("t", modifiers: [.command, .shift])
+                Divider()
                 Toggle("Rehearsal Mode (Report When the Show Ends)", isOn: $coach.rehearsalMode)
                 Toggle("Speech Coach (Speaking Speed and Filler Words)", isOn: $coach.listen)
                 Toggle("Cue a Minute Before Time Is Up", isOn: $coach.timeCue)

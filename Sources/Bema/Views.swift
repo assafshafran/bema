@@ -172,6 +172,14 @@ struct WelcomeView: View {
             PreflightPanel()
                 .frame(width: 360)
         }
+        .sheet(isPresented: $model.stageToolsOpen) {
+            VStack(spacing: 0) {
+                StageToolsPanel()
+                HStack { Spacer(); Button("Done") { model.stageToolsOpen = false }.keyboardShortcut(.defaultAction) }
+                    .padding(12).background(Theme.panel)
+            }
+            .preferredColorScheme(Theme.colorScheme)
+        }
     }
 }
 
@@ -276,6 +284,13 @@ struct PreflightPanel: View {
                         }
                     }
                 }
+
+                Button { model.stageToolsOpen = true } label: {
+                    Label("Stage tools: phone remote, poll, camera bubble, captions…", systemImage: "slider.horizontal.3")
+                        .font(.system(size: 13, weight: .medium))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Theme.accent)
 
                 VStack(alignment: .leading, spacing: 10) {
                     CapsLabel("Keys during a show")

@@ -59,6 +59,9 @@ struct MenuBarPanel: View {
                 .disabled(model.openInPowerPoint == nil)
                 Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }
                 Button { showMainWindow() } label: { Label("Show Bema window", systemImage: "macwindow") }
+                Button { showMainWindow(); model.stageToolsOpen = true } label: {
+                    Label("Stage tools: remote, poll, camera…", systemImage: "slider.horizontal.3")
+                }
             }
             .buttonStyle(.plain)
 

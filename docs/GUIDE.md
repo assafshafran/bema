@@ -62,7 +62,7 @@ A dark "backstage" theme that's easy on the eyes in a dim room, with one amber a
 - **Live captions** along the bottom of the audience slide.
 - **Note cues:** write `**bold**`, `[pause]`, `[smile]`, `[slow]` or `[look up]` in your PowerPoint notes. They show as highlights and chips in the notes and the prompter, and are never matched against your speech.
 
-**Phone remote and live poll** (Stage tools button ⚙ in the top bar). These are served from your Mac over the local Wi-Fi:
+**Phone remote and live poll** (**Stage tools**: the labelled button at the top right of the presenter view, **Slideshow → Stage Tools…** (⇧⌘T), the welcome screen or the menu bar menu). These are served from your Mac over the local Wi-Fi:
 - **Phone remote:** scan the QR code to get next/back, black screen, the timer, your notes, a slide preview, the prompter and confetti on your phone. The link holds a random secret, so others on the network can't use it.
 - **Live poll:** type a question and answers, then show it on the audience screen. People scan its QR code to vote (one vote per phone, changeable), and live results appear over the slide.
 - Phones must be on the same network. Some office or guest Wi-Fi networks block phone-to-laptop traffic.
