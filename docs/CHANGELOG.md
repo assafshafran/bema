@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-15
 
+### Share cards
+- `site/brand/bema-social.png` (1280×640, drawn by `Scripts/make_social.swift`) is the GitHub social preview and getbema.dev's share card (Open Graph and X tags on the home and docs pages), plus an iPhone home-screen icon. Not verified: how each app (Slack, X, LinkedIn, iMessage) renders the card.
+
 ### First release and automatic updates
 - `Scripts/release.sh`: a universal build signed with Developer ID and the hardened runtime, notarised and stapled, in a DMG; the update signed with Sparkle and added to `site/appcast.xml`; `--publish` creates the GitHub release and deploys the site.
 - Sparkle checks for updates once a day; **Check for Updates…** and **Check for Updates Automatically** are in the Bema menu. Development builds never update themselves.
