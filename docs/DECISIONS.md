@@ -4,6 +4,8 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-15
 
+- **The mark is A2, "the reading line"** (chosen by the maintainer on the design canvas). A letter with a dot beside it is a common shape (Booking.com's "B."); the amber line inside the screen-shaped bowl is unique to Bema, says "presenter" and "prompter" at once, and stays one shape at 16 px. Never put it inside a circle or a red disc (Beats, Bitly). The geometry lives in `site/brand/bema-mark.svg`; `BemaMark` and `Scripts/make_icon.swift` draw the same shape.
+
 - **The public repository is `assafshafran/bema`** (it can move to an organization later; GitHub redirects). Like Didja, the private development history moves to a private history repository, and work continues in the public one through the privacy hooks.
 - **The bundle ID is `dev.getbema.Bema`.** The earlier ID contained the maintainer's name; the project now has its own domain.
 - **The website lives in the repository (`site/`), like didja.dev in Didja's.** It shows generic app icons, never Apple's or Microsoft's.

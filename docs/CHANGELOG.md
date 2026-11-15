@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-15
 
+### The A2 mark in the app
+- The app icon, the mark on the welcome and loading screens and the menu bar panel now use A2, the logo chosen for the website: a lowercase b whose bowl is a screen, with the amber reading line inside. The README shows it too.
+
 ### Website deploys leave out Wrangler's folder
 - `site/.assetsignore` now excludes `.wrangler/`. Earlier deploys had published Wrangler's local account cache file with the site; getbema.dev was redeployed without it and the file now returns 404.
 

@@ -251,19 +251,25 @@ struct SegmentGroup<Content: View>: View {
     }
 }
 
-/// Bema's mark: a screen on a stand with the amber "live" dot.
+/// Bema's mark (A2, "the reading line"): a lowercase b whose bowl is a screen,
+/// with the prompter's amber reading line inside it. Same geometry as site/brand/bema-mark.svg (64-unit grid).
 struct BemaMark: View {
     var size: CGFloat = 30
+    var ink: Color = Theme.text
+
     var body: some View {
         Canvas { ctx, s in
-            let u = s.width / 32
-            let screen = Path(roundedRect: CGRect(x: 3 * u, y: 6 * u, width: 20 * u, height: 14 * u), cornerRadius: 2.5 * u)
-            ctx.stroke(screen, with: .color(Theme.text), lineWidth: 2 * u)
-            var stand = Path()
-            stand.move(to: CGPoint(x: 9 * u, y: 26 * u)); stand.addLine(to: CGPoint(x: 17 * u, y: 26 * u))
-            stand.move(to: CGPoint(x: 13 * u, y: 20 * u)); stand.addLine(to: CGPoint(x: 13 * u, y: 26 * u))
-            ctx.stroke(stand, with: .color(Theme.text), style: StrokeStyle(lineWidth: 2 * u, lineCap: .round))
-            ctx.fill(Path(ellipseIn: CGRect(x: 21 * u, y: 5 * u, width: 8 * u, height: 8 * u)), with: .color(Theme.accent))
+            let u = s.width / 64
+            // The mark spans x 12–53 and y 4–56 on the grid; centre it in the frame.
+            ctx.translateBy(x: -0.5 * u, y: 2 * u)
+            var stem = Path()
+            stem.move(to: CGPoint(x: 16 * u, y: 8 * u)); stem.addLine(to: CGPoint(x: 16 * u, y: 52 * u))
+            ctx.stroke(stem, with: .color(ink), style: StrokeStyle(lineWidth: 8 * u, lineCap: .round))
+            let bowl = Path(roundedRect: CGRect(x: 16 * u, y: 25 * u, width: 33 * u, height: 27 * u), cornerRadius: 10 * u)
+            ctx.stroke(bowl, with: .color(ink), lineWidth: 8 * u)
+            var line = Path()
+            line.move(to: CGPoint(x: 26.5 * u, y: 38.5 * u)); line.addLine(to: CGPoint(x: 38.5 * u, y: 38.5 * u))
+            ctx.stroke(line, with: .color(Theme.accent), style: StrokeStyle(lineWidth: 5.5 * u, lineCap: .round))
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)

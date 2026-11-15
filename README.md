@@ -1,4 +1,11 @@
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="site/brand/bema-mark-light.svg">
+    <img src="site/brand/bema-mark.svg" alt="" width="72" height="72">
+  </picture>
+</p>
+
 <h1 align="center">Bema</h1>
 
 <h3 align="center">A presenter view you control, for PowerPoint and Keynote on Mac.</h3>

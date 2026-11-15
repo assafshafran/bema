@@ -1,4 +1,4 @@
-// Renders Resources/AppIcon.icns: the Bema mark (a screen on a stand with an amber "live" dot)
+// Renders Resources/AppIcon.icns: the Bema mark (A2: a b whose bowl is a screen, with the amber reading line)
 // on a dark rounded square, following the macOS icon grid. Run: swift Scripts/make_icon.swift
 import AppKit
 
@@ -23,18 +23,19 @@ ctx.restoreGState()
 ctx.addPath(CGPath(roundedRect: body.insetBy(dx: 2, dy: 2), cornerWidth: 183, cornerHeight: 183, transform: nil))
 ctx.setStrokeColor(color(0x2A2F3A).cgColor); ctx.setLineWidth(4); ctx.strokePath()
 
-// The mark, drawn on a 32-unit grid scaled into the body.
-let u: CGFloat = 19, ox: CGFloat = 512 - 16 * u + 10, oy: CGFloat = 512 - 16 * u + 10
-func p(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: ox + x * u, y: oy + y * u) }
+// The mark (A2, "the reading line"), same geometry as site/brand/bema-mark.svg on a 64-unit grid:
+// a lowercase b whose bowl is a screen, with the amber reading line inside. Centred in the body.
+let u: CGFloat = 10.6
+func p(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: 512 + (x - 32.5) * u, y: 512 + (y - 30) * u) }
 ctx.setStrokeColor(color(0xE9EBEF).cgColor)
-ctx.setLineWidth(2.2 * u); ctx.setLineCap(.round)
-ctx.addPath(CGPath(roundedRect: CGRect(origin: p(3, 6), size: CGSize(width: 20 * u, height: 14 * u)), cornerWidth: 2.5 * u, cornerHeight: 2.5 * u, transform: nil))
+ctx.setLineWidth(8 * u); ctx.setLineCap(.round)
+ctx.move(to: p(16, 8)); ctx.addLine(to: p(16, 52)); ctx.strokePath()
+ctx.addPath(CGPath(roundedRect: CGRect(origin: p(16, 25), size: CGSize(width: 33 * u, height: 27 * u)),
+                   cornerWidth: 10 * u, cornerHeight: 10 * u, transform: nil))
 ctx.strokePath()
-ctx.move(to: p(9, 26)); ctx.addLine(to: p(17, 26))
-ctx.move(to: p(13, 20)); ctx.addLine(to: p(13, 26))
-ctx.strokePath()
-ctx.setFillColor(color(0xF5A524).cgColor)
-ctx.fillEllipse(in: CGRect(origin: p(21, 5), size: CGSize(width: 8 * u, height: 8 * u)))
+ctx.setStrokeColor(color(0xF5A524).cgColor)
+ctx.setLineWidth(5.5 * u)
+ctx.move(to: p(26.5, 38.5)); ctx.addLine(to: p(38.5, 38.5)); ctx.strokePath()
 image.unlockFocus()
 
 let root = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : ".")
