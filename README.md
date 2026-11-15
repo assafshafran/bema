@@ -30,7 +30,7 @@ A **Present with Bema** button on PowerPoint's Home tab (File → Add Bema Butto
 
 ## Download
 
-**[Download the latest release](https://github.com/assafshafran/bema/releases/latest)** (a signed and notarised app).
+**[Download the latest release](https://github.com/getbema/bema/releases/latest)** (a signed and notarised app).
 
 - macOS 14 or later.
 - Microsoft PowerPoint or Apple Keynote.

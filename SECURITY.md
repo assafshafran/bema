@@ -4,7 +4,7 @@ Bema controls your presentation app, listens to your microphone when you ask it 
 
 ## Reporting
 
-Please report privately with GitHub's **[Report a vulnerability](https://github.com/assafshafran/bema/security/advisories/new)** form, and don't open a public issue. Include the macOS version, the Bema version (Bema › About Bema) and the steps to reproduce. Please don't attach real decks, notes or recordings; describe them, or use made-up content.
+Please report privately with GitHub's **[Report a vulnerability](https://github.com/getbema/bema/security/advisories/new)** form, and don't open a public issue. Include the macOS version, the Bema version (Bema › About Bema) and the steps to reproduce. Please don't attach real decks, notes or recordings; describe them, or use made-up content.
 
 You'll get a reply within a few days. Once a fix ships, we'll credit you in the changelog if you'd like.
 

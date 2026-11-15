@@ -10,7 +10,7 @@ cd site && npx wrangler deploy
 `.assetsignore` keeps this README, `wrangler.jsonc` and `demo-deck/` off the live site.
 
 ## Before the first release
-The Download buttons point to https://github.com/assafshafran/bema/releases/latest. There's no release yet, so that link returns a 404 until the first one is published.
+The Download buttons point to https://github.com/getbema/bema/releases/latest. There's no release yet, so that link returns a 404 until the first one is published.
 
 ## What's real and what's drawn
 - `img/presenter.jpg` is a capture of Bema's presenter window running the demo deck, and `img/slide-projected.jpg` is that deck's title slide. `demo-deck/make_demo_deck.py` builds the deck (needs `python-pptx`).

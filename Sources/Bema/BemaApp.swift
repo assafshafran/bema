@@ -286,8 +286,8 @@ extension Notification.Name {
 /// Bema's help lives on getbema.dev, so it's always current and readable outside the app.
 enum HelpLinks {
     static let site = URL(string: "https://getbema.dev/")!
-    static let issues = URL(string: "https://github.com/assafshafran/bema/issues/new/choose")!
-    static let releases = URL(string: "https://github.com/assafshafran/bema/releases")!
+    static let issues = URL(string: "https://github.com/getbema/bema/issues/new/choose")!
+    static let releases = URL(string: "https://github.com/getbema/bema/releases")!
 
     static func open(_ path: String) {
         NSWorkspace.shared.open(URL(string: path, relativeTo: site)!.absoluteURL)

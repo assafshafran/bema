@@ -24,7 +24,7 @@ MODE="${1:-}"
 IDENTITY="${IDENTITY:-Developer ID Application}"
 PROFILE="${NOTARY_PROFILE:-}"
 [[ -n "$PROFILE" || "${1:-}" == "--local" ]] || { echo "Set NOTARY_PROFILE (or put NOTARY_PROFILE=<name> in .release.env)." >&2; exit 1; }
-REPO="${REPO:-assafshafran/bema}"
+REPO="${REPO:-getbema/bema}"
 OUT="$ROOT/dist"
 PLIST="$ROOT/Resources/Info.plist"
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$PLIST")

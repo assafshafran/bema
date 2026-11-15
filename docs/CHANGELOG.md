@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### Moved to github.com/getbema/bema
+- Every link (README, security policy, issue templates, website, help, release script, update feed, Help menu) points at the organization.
+
 ### Help, camera controls in the top bar, presenter window hidden from sharing
 - A Help page on getbema.dev (getting started, every feature, troubleshooting) and a Help menu in Bema that opens it, plus Report a Problem and What's New.
 - **Self view** and **On slides** camera buttons in the top bar and on the welcome screen.

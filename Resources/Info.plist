@@ -4,65 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleExecutable</key>
-	<string>Bema</string>
-	<key>CFBundleIdentifier</key>
-	<string>dev.getbema.Bema</string>
-	<key>CFBundleName</key>
-	<string>Bema</string>
-	<key>CFBundleIconFile</key>
-	<string>AppIcon</string>
 	<key>CFBundleDisplayName</key>
 	<string>Bema</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>0.1.0</string>
-	<key>CFBundleVersion</key>
-	<string>1</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>14.0</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.productivity</string>
-	<key>NSHighResolutionCapable</key>
-	<true/>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<!-- Updates: Sparkle reads this feed once a day (can be turned off); the public key checks each update's signature.
-	     Development builds (Scripts/build_app.sh) remove SUFeedURL, so they never update themselves. -->
-	<key>SUFeedURL</key>
-	<string>https://getbema.dev/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-	<string>K/32RqgIVO+ofxszylxXUj9h9MaV53B7eHFQyCPWN7c=</string>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
-	<key>SUScheduledCheckInterval</key>
-	<integer>86400</integer>
-	<key>NSCameraUsageDescription</key>
-	<string>Bema shows your camera in a bubble on the slides when you turn on the camera bubble.</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Bema serves the phone remote and live poll to phones on your Wi-Fi.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Bema listens while you present so the prompter can follow what you say.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Bema matches your speech to your speaker notes so the prompter scrolls with you. Recognition runs on this Mac when your language supports it.</string>
-	<key>NSAppleEventsUsageDescription</key>
-	<string>Bema controls PowerPoint or Keynote to run your slideshow on the audience display.</string>
-
-	<!-- bema://present (the deck open in PowerPoint) and bema://present?path=/path/to/deck.pptx -->
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>dev.getbema.Bema</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>bema</string>
-			</array>
-		</dict>
-	</array>
-
-	<!-- "Open With" in Finder. Rank Alternate keeps PowerPoint as the default app. -->
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -81,8 +24,47 @@
 			</array>
 		</dict>
 	</array>
-
-	<!-- Finder right-click > Quick Actions / Services > "Present with Bema" -->
+	<key>CFBundleExecutable</key>
+	<string>Bema</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIdentifier</key>
+	<string>dev.getbema.Bema</string>
+	<key>CFBundleName</key>
+	<string>Bema</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.1</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>dev.getbema.Bema</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bema</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>2</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Bema controls PowerPoint or Keynote to run your slideshow on the audience display.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Bema shows your camera in a bubble on the slides when you turn on the camera bubble.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Bema serves the phone remote and live poll to phones on your Wi-Fi.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Bema listens while you present so the prompter can follow what you say.</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
 	<key>NSServices</key>
 	<array>
 		<dict>
@@ -106,5 +88,15 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Bema matches your speech to your speaker notes so the prompter scrolls with you. Recognition runs on this Mac when your language supports it.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://getbema.dev/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>K/32RqgIVO+ofxszylxXUj9h9MaV53B7eHFQyCPWN7c=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>

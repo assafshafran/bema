@@ -4,6 +4,8 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-16
 
+- **The repository moved to the `getbema` organization** (asked for by the maintainer), like Didja's `didja-dev`. GitHub redirects the old `assafshafran/bema` links, so 0.1.0's update feed and downloads keep working.
+
 - **The presenter window is hidden from screen sharing by default** (asked for by the maintainer). People share their screen on calls; notes, the timer and the prompter should never show. Turning it off is one switch in Stage tools.
 - **Help lives on getbema.dev, not inside the app.** It stays current without an update, can be linked from issues and the troubleshooting answers, and the Help menu opens the right section.
 
