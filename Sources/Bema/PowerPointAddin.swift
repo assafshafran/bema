@@ -36,8 +36,15 @@ enum PowerPointAddin {
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
             if FileManager.default.fileExists(atPath: installedURL.path) { try FileManager.default.removeItem(at: installedURL) }
             try FileManager.default.copyItem(at: source, to: installedURL)
+        } catch let error as NSError where error.code == NSFileWriteNoPermissionError || error.code == NSFileReadNoPermissionError
+                    || (error.domain == NSPOSIXErrorDomain && error.code == Int(EPERM)) {
+            throw Failure.cantWrite("macOS didn't let Bema into PowerPoint's folder. Allow it in System Settings → Privacy & Security → Files & Folders → Bema → Microsoft PowerPoint, then try again.")
         } catch {
             throw Failure.cantWrite(error.localizedDescription)
+        }
+        // macOS can ask for access while the copy is already refused: make sure the file really landed.
+        guard FileManager.default.fileExists(atPath: installedURL.path) else {
+            throw Failure.cantWrite("macOS may still be asking for permission. Allow Bema to access PowerPoint's data, then try again.")
         }
     }
 
