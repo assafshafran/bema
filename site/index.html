@@ -129,9 +129,46 @@ a{color:#0E1014}a:hover{color:#5A4A1E}
 .mini-prompt .prompt-line{font-size:3.4cqw;margin:0 -3.5cqw;padding:.3cqw 3.5cqw}
 .mini-prompt .prompt-next{font-size:3.4cqw}
 .mini-tag{position:absolute;left:50%;top:38%;transform:translateX(-50%);margin:0;font:500 2.2cqw/1 'IBM Plex Mono',monospace;color:#1D1D1F;background:rgba(255,255,255,.8);border:1px dashed #5A606C;border-radius:4cqw;padding:1cqw 2cqw;white-space:nowrap}
+.pview{display:inline-flex;gap:2px;padding:3px;border-radius:10px;background:#15181E;border:1px solid #2A2F3A;margin:0 0 12px}
+.pv{min-height:36px;padding:0 14px;border:0;border-radius:8px;background:transparent;color:#9BA3AF;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.pv.on{background:#2B2F3A;color:#E9EBEF}
+.pv:focus-visible{outline:2px solid #F5A524;outline-offset:1px}
+.pscene{aspect-ratio:16/10}
+.pmenubar{position:absolute;left:0;right:0;top:0;height:4.2cqw;display:flex;align-items:center;gap:2.4cqw;padding:0 2.4cqw;background:rgba(240,241,243,.82);font:600 1.6cqw/1 Inter,sans-serif;color:#1D1D1F}
+.pmenubar i{flex:1}.pmenubar .ptime{font-weight:500}
+.pscene .mini-cam{z-index:4}
+.pcall{position:absolute;left:8%;right:8%;top:30%;bottom:6%;background:#1B1D22;border-radius:1.6cqw;box-shadow:0 2cqw 5cqw rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column}
+.pcall-top{display:flex;align-items:center;gap:.8cqw;padding:1.2cqw 1.6cqw;font:500 1.5cqw/1 Inter,sans-serif;color:#C9CED6}
+.pcall-top b{font-weight:600;margin-left:1cqw}.pcall-top em{margin-left:auto;font-style:normal;color:#fff;background:#C93B37;border-radius:1cqw;padding:.5cqw 1cqw;font-size:1.3cqw}
+.pdot{width:1.2cqw;height:1.2cqw;border-radius:50%;background:#5A606C}
+.pcall-grid{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8cqw;padding:0 1.2cqw 1.2cqw}
+.pcall-grid figure{position:relative;margin:0;border-radius:1cqw;overflow:hidden;background:#2A2D33}
+.pcall-grid img{width:100%;height:100%;object-fit:cover;display:block}
+.pcall-grid span{position:absolute;left:.8cqw;bottom:.8cqw;font:600 1.3cqw/1 Inter,sans-serif;color:#fff;background:rgba(0,0,0,.55);border-radius:.6cqw;padding:.4cqw .8cqw}
+.pscene .pprompt{left:20%;width:60%;top:5.4%;z-index:3;transition:opacity .35s ease,transform .35s ease}
+.pscene .pprompt .prompt-line{font-size:2.6cqw}.pscene .pprompt .prompt-next{font-size:2.6cqw}
+.pprompt .prompt-line b{transition:color .15s}
+.pself{position:absolute;right:4%;top:6%;width:14%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:.4cqw solid #fff;box-shadow:0 1cqw 3cqw rgba(0,0,0,.35);z-index:3;transition:opacity .35s ease,transform .35s ease}
+.pself img{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.ptag{top:25%;z-index:3;transition:opacity .35s}
+.pcalltag{top:25%;z-index:3;opacity:0;transition:opacity .35s;border-color:#C93B37}
+.pscene[data-view="call"] .pprompt,.pscene[data-view="call"] .pself{opacity:0;transform:scale(.96)}
+.pscene[data-view="call"] .ptag{opacity:0}
+.pscene[data-view="call"] .pcalltag{opacity:1}
+@media (prefers-reduced-motion: reduce){.pscene *{transition:none!important}}
 .aud{position:relative;border-radius:12px;overflow:hidden;border:1px solid #232731}
 .aud img{display:block;width:100%;height:auto}
-.aud-ink{position:absolute;inset:0;width:100%;height:100%}
+.demo{margin:0;display:flex;flex-direction:column;gap:16px}
+.dtools{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:6px;border-radius:12px;background:#15181E;border:1px solid #232731}
+.dbtn{width:38px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:9px;background:transparent;color:#9BA3AF;cursor:pointer}
+.dbtn svg{width:20px;height:20px}
+.dbtn:hover{color:#E9EBEF;background:#1D2129}
+.dbtn.on{background:#2B2F3A;color:#F5A524}
+.dbtn.on[data-tool="laser"]{color:#FF6B60}
+.dbtn:focus-visible{outline:2px solid #F5A524;outline-offset:1px}
+.dsep{width:1px;height:22px;background:#2A2F3A;margin:0 3px}
+.dstage{touch-action:none;user-select:none;-webkit-user-select:none}
+.dstage canvas{position:absolute;inset:0;width:100%;height:100%}
 .aud-laser{position:absolute;left:43%;top:44%;width:12px;height:12px;border-radius:50%;background:#FF5A4F;box-shadow:0 0 0 4px rgba(255,90,79,.35),0 0 18px 6px rgba(255,90,79,.55)}
 .wall-floor{height:10px;margin:0 6%;border-radius:50%;background:rgba(14,16,20,.10);filter:blur(4px)}
 .wall-note{font-size:14px;line-height:1.45;color:#4A4F57;margin:14px 0 0}
@@ -393,17 +430,33 @@ Bema</a>
 <section class="sec dark" id="detached">
 <div class="wrap">
 <div class="two">
-<figure style="margin: 0">
-<div class="mini" role="img" aria-label="Illustration: the detached prompter sitting at the top centre of a laptop screen, just under the camera, marked as hidden from screen sharing.">
+<figure style="margin: 0" id="share-demo">
+<div class="pview" role="group" aria-label="Choose a view">
+<button type="button" class="pv on" data-view="you" aria-pressed="true">Your screen</button>
+<button type="button" class="pv" data-view="call" aria-pressed="false">What the call sees</button>
+</div>
+<div class="mini pscene" data-view="you" aria-label="Your laptop screen during a call: Bema's prompter sits under the camera and your self view beside it, while the call shows four people.">
 <div class="mini-cam" aria-hidden="true"></div>
-<div class="mini-prompt">
+<div class="pmenubar" aria-hidden="true"><span>Bema</span><span>File</span><span>Slideshow</span><i></i><span class="ptime">10:42</span></div>
+<div class="pcall" aria-hidden="true">
+<div class="pcall-top"><span class="pdot"></span><span class="pdot"></span><span class="pdot"></span><b>Weekly review</b><em>Sharing screen</em></div>
+<div class="pcall-grid">
+<figure><img src="img/call/noa.jpg" alt=""><span>Noa</span></figure>
+<figure><img src="img/call/daniel.jpg" alt=""><span>Daniel</span></figure>
+<figure><img src="img/call/amir.jpg" alt=""><span>Amir</span></figure>
+<figure><img src="img/call/omer.jpg" alt=""><span>Omer</span></figure>
+</div>
+</div>
+<div class="mini-prompt pprompt" aria-hidden="true">
 <div class="prompt-bar"><span></span></div>
-<p class="prompt-line"><b>Welcome</b> everyone. Tonight I want to</p>
-<p class="prompt-next">talk about the part of presenting</p>
+<p class="prompt-line" id="pline"><b>Welcome</b> everyone. Tonight I want to</p>
+<p class="prompt-next" id="pnext">talk about the part of presenting</p>
 </div>
-<p class="mini-tag">Hidden from screen sharing</p>
+<div class="pself" aria-hidden="true"><img src="img/call/you.jpg" alt=""></div>
+<p class="mini-tag ptag">Only you see these</p>
+<p class="mini-tag pcalltag">The call sees no prompter and no self view</p>
 </div>
-<figcaption class="cap">An illustration, not a screenshot: macOS keeps this window out of every capture.</figcaption>
+<figcaption class="cap">An illustration: macOS keeps the prompter and your self view out of every capture, so we can't screenshot them. Switch views to see what a screen share shows.</figcaption>
 </figure>
 <div>
 <p class="eyebrow">Detached prompter</p>
@@ -432,14 +485,26 @@ Bema</a>
 <li><kbd>T</kbd> stamps a ✓, ✗, ★ or a circle. <kbd>B</kbd> or <kbd>W</kbd> blanks the screen black or white.</li>
 </ul>
 </div>
-<figure style="margin: 0; display: flex; flex-direction: column; gap: 16px">
-<div class="crop crop-tools" role="img" aria-label="Bema's toolbar: pointer, laser, spotlight, magnifier, pen, highlighter, stamps, reactions and eraser, then the Black screen button."></div>
-<div class="aud" role="img" aria-label="The demo deck's title slide on the audience display, with a red laser dot and an amber pen underline.">
-<img src="img/slide-projected.jpg" alt="">
-<svg class="aud-ink" viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true"><path d="M10 59 C 30 62, 52 61, 70 58" fill="none" stroke="#F5A524" stroke-width="1.6" stroke-linecap="round"></path></svg>
-<span class="aud-laser" aria-hidden="true"></span>
+<figure class="demo" id="pointer-demo">
+<div class="dtools" role="toolbar" aria-label="Try Bema's pointer tools">
+<button type="button" class="dbtn" data-tool="pointer" aria-label="Pointer off" title="Pointer off"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 3l12 9-5.5 1.2L10 19z"/></svg></button>
+<button type="button" class="dbtn" data-tool="laser" aria-label="Laser (L)" title="Laser (L)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></svg></button>
+<button type="button" class="dbtn" data-tool="spotlight" aria-label="Spotlight (S)" title="Spotlight (S)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" cx="12" cy="12" r="8" stroke-dasharray="2.5 2.5"/><circle cx="12" cy="12" r="4.5" fill="currentColor"/></svg></button>
+<button type="button" class="dbtn" data-tool="magnifier" aria-label="Magnifier (M)" title="Magnifier (M)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" cx="10.5" cy="10.5" r="6"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M15 15l5 5M10.5 8v5M8 10.5h5"/></svg></button>
+<button type="button" class="dbtn" data-tool="pen" aria-label="Pen (P)" title="Pen (P)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 19l1-4L16 5l3 3L9 18z"/></svg></button>
+<button type="button" class="dbtn" data-tool="highlighter" aria-label="Highlighter (H)" title="Highlighter (H)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M9 15l-4 4h5l2-2M9 15l7-11 4 3-7 11z"/></svg></button>
+<button type="button" class="dbtn" data-tool="stamp" aria-label="Stamp (T)" title="Stamp (T)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3l2.5 2.2 3.3-.3.8 3.2 2.9 1.6-1.4 3 1.4 3-2.9 1.6-.8 3.2-3.3-.3L12 21l-2.5-2.2-3.3.3-.8-3.2-2.9-1.6 1.4-3-1.4-3 2.9-1.6.8-3.2 3.3.3z"/></svg></button>
+<span class="dsep" aria-hidden="true"></span>
+<button type="button" class="dbtn" data-tool="react" aria-label="Confetti (1)" title="Confetti (1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/></svg></button>
+<button type="button" class="dbtn" data-tool="clear" aria-label="Clear drawings (E)" title="Clear drawings (E)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M7 20h10M5 15l9-10 6 6-7 8H8z"/></svg></button>
+<span class="dsep" aria-hidden="true"></span>
+<button type="button" class="dbtn" data-tool="black" aria-label="Black screen (B)" title="Black screen (B)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="10" rx="2" fill="currentColor"/></svg></button>
 </div>
-<figcaption class="cap">Top: the real toolbar. Below: the demo slide with a laser dot and pen stroke drawn over it.</figcaption>
+<div class="aud dstage" aria-label="Demo slide: move, click or drag here to try the selected tool">
+<img src="img/slide-projected.jpg" alt="The demo deck's title slide, The slide is the easy part." draggable="false">
+<canvas aria-hidden="true"></canvas>
+</div>
+<figcaption class="cap">Try it: pick a tool, then move, click or drag on the slide. The keys work too: <kbd>L</kbd> <kbd>S</kbd> <kbd>M</kbd> <kbd>P</kbd> <kbd>H</kbd> <kbd>T</kbd> <kbd>E</kbd> <kbd>B</kbd> <kbd>1</kbd>.</figcaption>
 </figure>
 </div>
 <div class="tags" aria-label="Also in Bema">
@@ -589,5 +654,7 @@ Bema</a>
 </footer>
 
 </div>
+<script src="pointer-demo.js" defer></script>
+<script src="share-demo.js" defer></script>
 </body>
 </html>
