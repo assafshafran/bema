@@ -1,0 +1,52 @@
+name: Bug report
+description: Slides out of sync, the prompter lost you, something broke.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Please don't attach your real decks, notes or recordings.** Describe what happened, or recreate it with the sample deck or made-up text.
+        A privacy or security problem? Don't file it here: see SECURITY.md.
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "15.2"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Bema version
+      description: Bema › About Bema shows it.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: app
+    attributes:
+      label: Presentation app
+      options:
+        - PowerPoint
+        - Keynote
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: What went wrong
+      options:
+        - Slides out of sync, or the show didn't start
+        - The prompter didn't follow my voice
+        - Pointer, drawing or overlay
+        - Phone remote or poll
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+      description: Displays connected, the language you spoke, the steps to reproduce.
+    validations:
+      required: true

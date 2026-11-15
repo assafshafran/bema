@@ -1,0 +1,81 @@
+import SwiftUI
+
+/// A small Bema in the menu bar: what's on screen, the timer, and the main controls.
+struct MenuBarPanel: View {
+    @EnvironmentObject private var model: PresenterModel
+    @ObservedObject private var prompter = PrompterModel.shared
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                BemaMark(size: 22)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(model.deckURL == nil ? "No deck open" : model.deckName).font(.system(size: 13, weight: .semibold)).lineLimit(1)
+                    Text(status).font(.system(size: 11)).foregroundStyle(Theme.muted)
+                }
+                Spacer()
+                if model.phase == .presenting {
+                    Text("LIVE").font(.system(size: 9, weight: .heavy)).tracking(1).foregroundStyle(Theme.liveSoft)
+                        .padding(.horizontal, 6).padding(.vertical, 2).background(Capsule().fill(Theme.liveBg))
+                }
+            }
+
+            if model.phase == .ready || model.phase == .presenting {
+                TimelineView(.periodic(from: .now, by: 1)) { ctx in
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(TimerCluster.format(model.elapsed(at: ctx.date))).font(Theme.numeral(24))
+                        if model.targetMinutes > 0 { Text("of \(model.targetMinutes):00").font(.system(size: 11)).foregroundStyle(Theme.muted) }
+                        Spacer()
+                        PaceLabel(date: ctx.date)
+                    }
+                }
+                HStack(spacing: 8) {
+                    Button { model.previous() } label: { Image(systemName: "chevron.left") }.buttonStyle(IconButtonStyle())
+                    Text("\(model.visiblePosition) / \(model.visibleCount)").font(Theme.numeral(15, .medium)).frame(maxWidth: .infinity)
+                    Button { model.next() } label: { Image(systemName: "chevron.right") }.buttonStyle(IconButtonStyle(filled: true))
+                }
+                HStack(spacing: 8) {
+                    if model.phase == .presenting {
+                        Button("End show") { model.endShowButton() }.buttonStyle(PillButtonStyle(kind: .danger, height: 30))
+                        Button("Black") { model.toggleBlack() }.buttonStyle(PillButtonStyle(kind: model.audience == .black ? .warning : .normal, height: 30))
+                    } else {
+                        Button("Start slideshow") { model.startShow() }.buttonStyle(PillButtonStyle(kind: .accent, height: 30))
+                            .disabled(!model.powerPointReady)
+                    }
+                    Button(prompter.running ? "Pause prompter" : "Prompter") { prompter.toggle() }
+                        .buttonStyle(PillButtonStyle(kind: .normal, height: 30))
+                }
+            }
+
+            Divider()
+            Button { model.presentOpenDeck() } label: {
+                Label(model.openInPowerPoint.map { "Present “\($0.deletingPathExtension().lastPathComponent)”" } ?? "Present the deck open in PowerPoint or Keynote",
+                      systemImage: "play.rectangle")
+            }
+            .buttonStyle(.plain)
+            .disabled(model.openInPowerPoint == nil)
+            Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }.buttonStyle(.plain)
+            Button {
+                NSApp.activate()
+                model.presenterWindow?.makeKeyAndOrderFront(nil)
+            } label: { Label("Show Bema window", systemImage: "macwindow") }.buttonStyle(.plain)
+        }
+        .font(.system(size: 13))
+        .padding(14)
+        .frame(width: 300)
+        .background(Theme.panel)
+        .foregroundStyle(Theme.text)
+        .preferredColorScheme(Theme.colorScheme)
+    }
+
+    private var status: String {
+        switch model.phase {
+        case .presenting: return "Slides on \(model.presentingOn)"
+        case .ready: return "Ready to present"
+        case .loading(let m): return m
+        case .failed: return "Couldn't open the deck"
+        case .empty: return "Press ⌃⌥P in PowerPoint or Keynote"
+        }
+    }
+}

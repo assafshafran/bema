@@ -1,0 +1,246 @@
+import AppKit
+import Carbon.HIToolbox
+import SwiftUI
+
+@main
+struct BemaApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @ObservedObject private var model = PresenterModel.shared
+    @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = false
+    @ObservedObject private var coach = CoachModel.shared
+    @AppStorage("theme") private var themeName = Theme.Name.backstage.rawValue
+    @AppStorage("showMenuBar") private var showMenuBar = true
+    @ObservedObject private var voice = VoiceCommands.shared
+    @ObservedObject private var captions = Captions.shared
+
+    init() {
+        // Debug helper: `Bema --dump-notes deck.pptx` prints titles and notes, then exits.
+        let args = CommandLine.arguments
+        if let i = args.firstIndex(of: "--dump-notes"), i + 1 < args.count {
+            do {
+                for s in try PPTXReader.read(url: URL(fileURLWithPath: args[i + 1])) {
+                    print("[\(s.id)\(s.hidden ? " hidden" : "")] \(s.title.replacingOccurrences(of: "\n", with: " / "))")
+                    if !s.notes.isEmpty { print("    " + s.notes.replacingOccurrences(of: "\n", with: "\n    ")) }
+                }
+                exit(0)
+            } catch {
+                FileHandle.standardError.write(Data("\(error.localizedDescription)\n".utf8))
+                exit(1)
+            }
+        }
+    }
+
+    var body: some Scene {
+        Window("Bema", id: "main") {
+            RootView()
+                .environmentObject(model)
+                .frame(minWidth: 1240, minHeight: 640)
+        }
+        .defaultSize(width: 1360, height: 840)
+        .windowStyle(.hiddenTitleBar)
+        .commands {
+            CommandGroup(replacing: .newItem) {
+                Button("Open Presentation…") { model.openPanel() }
+                    .keyboardShortcut("o")
+                Button("Present Deck Open in PowerPoint or Keynote") { model.presentOpenDeck() }
+                    .keyboardShortcut("p", modifiers: [.command, .shift])
+                Menu("Open Recent") {
+                    ForEach(model.recents, id: \.self) { url in
+                        Button(url.lastPathComponent) { model.load(url) }
+                    }
+                }
+                .disabled(model.recents.isEmpty)
+                Divider()
+                Button("Close Presentation") { model.closeDeck() }
+                    .keyboardShortcut("w", modifiers: [.command, .shift])
+                    .disabled(model.deckURL == nil)
+            }
+            CommandMenu("Slideshow") {
+                Button("Start Slideshow") { model.startShow() }
+                    .keyboardShortcut(.return, modifiers: .command)
+                    .disabled(model.phase != .ready || !model.powerPointReady)
+                Button("End Slideshow") { model.endShowButton() }
+                    .keyboardShortcut(".", modifiers: .command)
+                    .disabled(model.phase != .presenting)
+                Divider()
+                Button("Next Slide") { model.next() }
+                    .keyboardShortcut(.rightArrow, modifiers: .command)
+                Button("Previous Slide") { model.previous() }
+                    .keyboardShortcut(.leftArrow, modifiers: .command)
+                Divider()
+                Button("Black Screen  (B)") { model.toggleBlack() }
+                    .disabled(model.phase != .presenting)
+                Button("White Screen  (W)") { model.toggleWhite() }
+                    .disabled(model.phase != .presenting)
+                Divider()
+                Button("Start / Pause Timer") { model.toggleTimer() }
+                    .keyboardShortcut("t", modifiers: [.command, .option])
+                Button("Reset Timer") { model.resetTimer() }
+                    .keyboardShortcut("r", modifiers: [.command, .option])
+                Divider()
+                Toggle("Rehearsal Mode (Report When the Show Ends)", isOn: $coach.rehearsalMode)
+                Toggle("Speech Coach (Speaking Speed and Filler Words)", isOn: $coach.listen)
+                Toggle("Cue a Minute Before Time Is Up", isOn: $coach.timeCue)
+                Toggle("Play a Soft Sound with the Cue", isOn: $coach.cueSound)
+                    .disabled(!coach.timeCue)
+                Button("Show Last Talk Report") { coach.showingReport = true }
+                    .keyboardShortcut("r", modifiers: [.command, .shift])
+                    .disabled(coach.lastReport == nil)
+                Button("Use Automatic Slide Budgets") { coach.resetBudgets() }
+                    .disabled(!coach.usingRehearsalBudgets)
+                Toggle("Voice Commands (“Next Slide”, “Go to Slide 5”)", isOn: $voice.enabled)
+                Toggle("Live Captions on the Audience Screen", isOn: $captions.enabled)
+                Divider()
+                Button("Start / Pause Prompter") { PrompterModel.shared.toggle() }
+                    .keyboardShortcut("p", modifiers: [.command, .option])
+                Divider()
+                Toggle("Keep Presenter Window on Top", isOn: $model.alwaysOnTop)
+                Toggle("Hide Presenter Window from Screen Sharing", isOn: $hidePresenterFromSharing)
+            }
+            CommandGroup(after: .toolbar) {
+                Picker("Theme", selection: $themeName) {
+                    ForEach(Theme.Name.allCases) { Text($0.label).tag($0.rawValue) }
+                }
+                Toggle("Show Bema in the Menu Bar", isOn: $showMenuBar)
+                Divider()
+                Button("Bigger Notes") { NotesFont.change(by: 2) }
+                    .keyboardShortcut("+")
+                Button("Smaller Notes") { NotesFont.change(by: -2) }
+                    .keyboardShortcut("-")
+                Divider()
+            }
+        }
+
+        Window("Prompter", id: "prompter") {
+            PrompterWindow().id(themeName)
+        }
+        .defaultSize(width: 760, height: 260)
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentMinSize)
+
+        MenuBarExtra(isInserted: $showMenuBar) {
+            MenuBarPanel().environmentObject(model).id(themeName)
+        } label: {
+            Image(systemName: model.phase == .presenting ? "play.rectangle.fill" : "play.rectangle")
+        }
+        .menuBarExtraStyle(.window)
+    }
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var keyMonitor: Any?
+    private var presentHotKey: HotKey?
+    private let services = ServiceProvider()
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.servicesProvider = services
+        NSUpdateDynamicServices()
+        // Control-Option-P anywhere: hand the deck open in PowerPoint to Bema.
+        presentHotKey = HotKey(keyCode: kVK_ANSI_P, modifiers: controlKey | optionKey) {
+            Task { @MainActor in PresenterModel.shared.presentOpenDeck() }
+        }
+        Task { @MainActor in await PresenterModel.shared.refreshOpenInPowerPoint() }
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            let handled = MainActor.assumeIsolated { PresenterModel.shared.handleKey(event) }
+            return handled ? nil : event
+        }
+    }
+
+    /// Finder "Open With", dragging onto the Dock icon, and `open -a Bema file.pptx`.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let url = urls.first else { return }
+        Task { @MainActor in
+            if url.scheme?.lowercased() == "bema" {
+                Self.handleLink(url)
+            } else {
+                PresenterModel.shared.load(url)
+            }
+        }
+    }
+
+    /// bema://prompter?place=camera         → open the detached prompter under the camera
+    /// bema://present                       → present the deck open in PowerPoint
+    /// bema://present?path=/Users/…/deck.pptx → present that file
+    /// bema://present?url=file:///…           → same, as a file URL (what Office add-ins report)
+    @MainActor
+    static func handleLink(_ link: URL) {
+        let model = PresenterModel.shared
+        NSApp.activate()
+        let items = URLComponents(url: link, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        if link.host?.lowercased() == "prompter" {
+            // bema://prompter[?place=camera] opens the detached prompter.
+            NotificationCenter.default.post(name: .openPrompterWindow, object: nil,
+                                            userInfo: ["place": items.first(where: { $0.name == "place" })?.value ?? ""])
+            return
+        }
+        var file: URL?
+        if let path = items.first(where: { $0.name == "path" })?.value, path.hasPrefix("/") {
+            file = URL(fileURLWithPath: path)
+        } else if let raw = items.first(where: { $0.name == "url" })?.value, let u = URL(string: raw), u.isFileURL {
+            file = u
+        }
+        if let file, FileManager.default.fileExists(atPath: file.path) {
+            if file.standardizedFileURL != model.deckURL?.standardizedFileURL || model.phase == .empty {
+                model.load(file)
+            }
+        } else {
+            model.presentOpenDeck()
+        }
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+
+    /// Right-click the Dock icon: "Present <deck open in PowerPoint>".
+    func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+        let menu = NSMenu()
+        let url = MainActor.assumeIsolated { PresenterModel.shared.openInPowerPoint }
+        let title = url.map { "Present “\($0.deletingPathExtension().lastPathComponent)”" } ?? "Present Deck Open in PowerPoint or Keynote"
+        let item = NSMenuItem(title: title, action: #selector(presentOpenDeckFromDock), keyEquivalent: "")
+        item.target = self
+        menu.addItem(item)
+        return menu
+    }
+
+    @objc private func presentOpenDeckFromDock() {
+        Task { @MainActor in PresenterModel.shared.presentOpenDeck() }
+    }
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        let model = MainActor.assumeIsolated { PresenterModel.shared }
+        guard MainActor.assumeIsolated({ model.phase == .presenting }) else { return .terminateNow }
+        Task { @MainActor in
+            await model.endShow()
+            NSApp.reply(toApplicationShouldTerminate: true)
+        }
+        return .terminateLater
+    }
+}
+
+/// Finder right-click → Quick Actions / Services → "Present with Bema".
+final class ServiceProvider: NSObject {
+    @objc func presentDeck(_ pboard: NSPasteboard, userData: String?, error: AutoreleasingUnsafeMutablePointer<NSString?>) {
+        let urls = pboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL]
+        guard let url = urls?.first else {
+            error.pointee = "No presentation was selected." as NSString
+            return
+        }
+        Task { @MainActor in
+            NSApp.activate()
+            PresenterModel.shared.load(url)
+        }
+    }
+}
+
+extension Notification.Name {
+    static let openPrompterWindow = Notification.Name("BemaOpenPrompterWindow")
+}
+
+enum NotesFont {
+    static let key = "notesFontSize"
+    static let range: ClosedRange<Double> = 12...72
+
+    static func change(by delta: Double) {
+        let current = UserDefaults.standard.object(forKey: key) as? Double ?? 26
+        UserDefaults.standard.set(min(max(current + delta, range.lowerBound), range.upperBound), forKey: key)
+    }
+}
