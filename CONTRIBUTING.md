@@ -12,7 +12,7 @@ swift test                        # all tests
 open ~/Applications/Bema.app Samples/Sample.pptx
 ```
 
-`Samples/Sample.pptx` is a made-up deck with speaker notes (`Scripts/make_sample_deck.py` regenerates it). The build script signs with your own Developer ID or Apple Development certificate if you have one, otherwise ad hoc. Please don't commit signing changes.
+`Samples/Sample.pptx` is a made-up six-slide talk with speaker notes (`Scripts/make_sample_deck.py` regenerates it). The build script signs with your own Developer ID or Apple Development certificate if you have one, otherwise ad hoc. Please don't commit signing changes.
 
 ## Keep your own data out
 

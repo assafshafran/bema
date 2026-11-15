@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### A designed sample deck
+- `Samples/Sample.pptx` is now the dark six-slide talk from the website ("The slide is the easy part"), with notes written to be read aloud, instead of plain white title slides. `Scripts/make_sample_deck.py` builds it; the separate website copy of the generator is gone. Not verified: the deck in Keynote.
+
 ### Interactive demos on getbema.dev
 - The pointer tools section is now a live demo: the same toolbar as Bema (laser, spotlight, magnifier, pen, highlighter, stamps, confetti, clear, black screen) drawing on the demo slide, with the same keys while it's on screen.
 - The detached prompter section shows a call on a laptop with the prompter under the camera and a self view, and a toggle to **What the call sees**, where both are gone. The prompter highlights the script word by word. Plain JavaScript, no dependencies; animation stops for reduced motion.

@@ -7,13 +7,13 @@ Plain static files, no build step. They're hosted on Cloudflare Workers static a
 cd site && npx wrangler deploy
 ```
 
-`.assetsignore` keeps this README, `wrangler.jsonc` and `demo-deck/` off the live site.
+`.assetsignore` keeps this README and `wrangler.jsonc` off the live site.
 
 ## Before the first release
 The Download buttons point to https://github.com/getbema/bema/releases/latest. There's no release yet, so that link returns a 404 until the first one is published.
 
 ## What's real and what's drawn
-- `img/presenter.jpg` is a capture of Bema's presenter window running the demo deck, and `img/slide-projected.jpg` is that deck's title slide. `demo-deck/make_demo_deck.py` builds the deck (needs `python-pptx`).
+- `img/presenter.jpg` is a capture of Bema's presenter window running the demo deck, and `img/slide-projected.jpg` is that deck's title slide. The deck is `Samples/Sample.pptx`, built by `Scripts/make_sample_deck.py` (needs `python-pptx`).
 - The hero's desktop, meeting window, Dock icons and prompter strip are drawn in HTML and CSS. They're generic on purpose: no other company's icons or logos.
 - The detached prompter is shown as an illustration: macOS keeps that window out of screenshots.
 - `brand/` holds the logo mark (dark and light versions).

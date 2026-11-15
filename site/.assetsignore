@@ -3,5 +3,4 @@
 .wrangler/**
 README.md
 appcast.xml.bak
-demo-deck
 wrangler.jsonc
