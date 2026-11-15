@@ -67,7 +67,8 @@ ditto "$BINDIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 for rp in $(otool -l "$APP/Contents/MacOS/Bema" | awk '/LC_RPATH/{getline; getline; print $2}' | grep -v -e '^@executable_path' -e '^/usr/lib/swift$' | sort -u); do
   install_name_tool -delete_rpath "$rp" "$APP/Contents/MacOS/Bema" 2>/dev/null || true
 done
-otool -l "$APP/Contents/MacOS/Bema" | grep -q "@executable_path/../Frameworks" || { echo "The app can't find Sparkle (no Frameworks rpath)." >&2; exit 1; }
+LOADS=$(otool -l "$APP/Contents/MacOS/Bema")   # captured first: grep -q closing the pipe early would fail under pipefail
+[[ "$LOADS" == *"@executable_path/../Frameworks"* ]] || { echo "The app can't find Sparkle (no Frameworks rpath)." >&2; exit 1; }
 lipo -info "$APP/Contents/MacOS/Bema"
 
 log "Signing with Developer ID and the hardened runtime"
