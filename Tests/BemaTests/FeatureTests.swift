@@ -141,4 +141,14 @@ final class FeatureRenderTests: XCTestCase {
                                 words: 610, fillers: ["um": 4, "like": 3, "you know": 1], rehearsal: true)
         try save(TalkReportView(report: report).environmentObject(PresenterModel()), "report")
     }
+
+    @MainActor func testRenderMenuBarIcon() throws {
+        let view = HStack(spacing: 16) {
+            Image(nsImage: MenuBarIcon.image).renderingMode(.template).resizable().frame(width: 36, height: 36).foregroundStyle(.black)
+            Image(nsImage: MenuBarIcon.image).renderingMode(.template).resizable().frame(width: 18, height: 18).foregroundStyle(.black)
+        }
+        .padding(12).background(Color(white: 0.93))
+        try save(view, "menubar-icon")
+        XCTAssertTrue(MenuBarIcon.image.isTemplate)
+    }
 }

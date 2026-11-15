@@ -9,6 +9,7 @@ struct BemaApp: App {
     @AppStorage("hidePresenterFromSharing") private var hidePresenterFromSharing = false
     @ObservedObject private var coach = CoachModel.shared
     @ObservedObject private var updates = Updates.shared
+    @ObservedObject private var loginItem = LoginItem.shared
     @AppStorage("theme") private var themeName = Theme.Name.backstage.rawValue
     @AppStorage("showMenuBar") private var showMenuBar = true
     @ObservedObject private var voice = VoiceCommands.shared
@@ -115,6 +116,7 @@ struct BemaApp: App {
                     ForEach(Theme.Name.allCases) { Text($0.label).tag($0.rawValue) }
                 }
                 Toggle("Show Bema in the Menu Bar", isOn: $showMenuBar)
+                Toggle("Open Bema at Login", isOn: Binding(get: { loginItem.enabled }, set: { loginItem.set($0) }))
                 Divider()
                 Button("Bigger Notes") { NotesFont.change(by: 2) }
                     .keyboardShortcut("+")
@@ -134,7 +136,7 @@ struct BemaApp: App {
         MenuBarExtra(isInserted: $showMenuBar) {
             MenuBarPanel().environmentObject(model).id(themeName)
         } label: {
-            Image(systemName: model.phase == .presenting ? "play.rectangle.fill" : "play.rectangle")
+            Image(nsImage: MenuBarIcon.image)
         }
         .menuBarExtraStyle(.window)
     }
@@ -201,7 +203,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+    /// With the menu bar icon showing, Bema keeps running after its window closes.
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        !(UserDefaults.standard.object(forKey: "showMenuBar") as? Bool ?? true)
+    }
 
     /// Right-click the Dock icon: "Present <deck open in PowerPoint>".
     func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {

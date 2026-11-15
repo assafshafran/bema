@@ -4,6 +4,8 @@ import SwiftUI
 struct MenuBarPanel: View {
     @EnvironmentObject private var model: PresenterModel
     @ObservedObject private var prompter = PrompterModel.shared
+    @ObservedObject private var loginItem = LoginItem.shared
+    @ObservedObject private var updates = Updates.shared
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
@@ -49,17 +51,39 @@ struct MenuBarPanel: View {
             }
 
             Divider()
-            Button { model.presentOpenDeck() } label: {
-                Label(model.openInPowerPoint.map { "Present “\($0.deletingPathExtension().lastPathComponent)”" } ?? "Present the deck open in PowerPoint or Keynote",
-                      systemImage: "play.rectangle")
+            VStack(alignment: .leading, spacing: 8) {
+                Button { model.presentOpenDeck() } label: {
+                    Label(model.openInPowerPoint.map { "Present “\($0.deletingPathExtension().lastPathComponent)”" } ?? "Present the deck open in PowerPoint or Keynote",
+                          systemImage: "play.rectangle")
+                }
+                .disabled(model.openInPowerPoint == nil)
+                Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }
+                Button { showMainWindow() } label: { Label("Show Bema window", systemImage: "macwindow") }
             }
             .buttonStyle(.plain)
-            .disabled(model.openInPowerPoint == nil)
-            Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }.buttonStyle(.plain)
-            Button {
-                NSApp.activate()
-                model.presenterWindow?.makeKeyAndOrderFront(nil)
-            } label: { Label("Show Bema window", systemImage: "macwindow") }.buttonStyle(.plain)
+
+            Divider()
+            VStack(alignment: .leading, spacing: 8) {
+                Toggle("Open at login", isOn: Binding(get: { loginItem.enabled }, set: { loginItem.set($0) }))
+                    .toggleStyle(.switch).controlSize(.mini)
+                if let error = loginItem.error {
+                    Text(error).font(.system(size: 11)).foregroundStyle(Theme.warnStrong).fixedSize(horizontal: false, vertical: true)
+                }
+                if PowerPointController.isInstalled {
+                    Button { model.installPowerPointButton(); showMainWindow() } label: {
+                        Label(PowerPointAddin.isInstalled ? "PowerPoint button added" : "Add the Bema button to PowerPoint…",
+                              systemImage: PowerPointAddin.isInstalled ? "checkmark.circle" : "plus.rectangle.on.rectangle")
+                    }
+                    .disabled(PowerPointAddin.isInstalled)
+                }
+                if updates.isAvailable {
+                    Button { updates.checkForUpdates() } label: { Label("Check for updates…", systemImage: "arrow.down.circle") }
+                        .disabled(!updates.canCheck)
+                }
+                Button { NSApp.terminate(nil) } label: { Label("Quit Bema", systemImage: "power") }
+                    .keyboardShortcut("q")
+            }
+            .buttonStyle(.plain)
         }
         .font(.system(size: 13))
         .padding(14)
@@ -67,6 +91,11 @@ struct MenuBarPanel: View {
         .background(Theme.panel)
         .foregroundStyle(Theme.text)
         .preferredColorScheme(Theme.colorScheme)
+    }
+
+    private func showMainWindow() {
+        NSApp.activate()
+        if let w = model.presenterWindow { w.makeKeyAndOrderFront(nil) } else { openWindow(id: "main") }
     }
 
     private var status: String {

@@ -6,6 +6,9 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-15
 
+### Menu bar app and Open at Login
+- The menu bar icon is the A2 mark (a template image, so it matches light and dark menu bars). Bema keeps running in the menu bar after its window closes. The menu adds Open at login, the PowerPoint button, Check for updates and Quit. **Open Bema at Login** uses macOS's login items. Not verified: the icon in the live menu bar (on this macOS, menu bar items aren't listed per app) and Open at Login across a restart.
+
 ### A Present with Bema button in PowerPoint
 - An Office add-in (`site/office/`, served from getbema.dev) adds **Present with Bema** to PowerPoint's Home tab; clicking it opens the deck in Bema through a `bema://` link (or, if PowerPoint won't open the link itself, through the browser). Installed and removed from Bema's File menu. Ribbon icons in the A2 mark (`Scripts/make_office_icons.swift`). **Not verified yet: the button in a live PowerPoint**, and whether PowerPoint for Mac opens the link directly.
 
