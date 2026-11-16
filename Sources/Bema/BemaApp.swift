@@ -94,8 +94,8 @@ struct BemaApp: App {
                 Divider()
                 Button("Stage Tools…") { NSApp.activate(); model.stageToolsOpen = true }
                     .keyboardShortcut("t", modifiers: [.command, .shift])
-                Button("Self View (Hidden from Screen Sharing)") {
-                    SelfViewWindowRef.open()
+                Button("Show or Hide Self View (Hidden from Screen Sharing)") {
+                    SelfViewWindowRef.toggle()
                 }
                 .keyboardShortcut("v", modifiers: [.command, .option])
                 Divider()

@@ -29,25 +29,14 @@ struct CameraControls: View {
     }
 
     private func toggleSelfView() {
-        SelfViewToggle.run(open: camera.selfViewOpen)
+        SelfViewWindowRef.toggle()
     }
 }
 
-/// What the Self view button does. Trusts the window, not just the flag, so a missed close can't
-/// leave the button stuck.
+/// What the Self view button does: decided by whether the window is really on screen, not by a flag
+/// that a missed close could leave wrong.
 enum SelfViewToggle {
     enum Action: Equatable { case open, close }
 
-    static func action(flagOpen: Bool, windowVisible: Bool) -> Action {
-        flagOpen && windowVisible ? .close : .open
-    }
-
-    @MainActor static func run(open: Bool) {
-        switch action(flagOpen: open, windowVisible: SelfViewWindowRef.isVisible) {
-        case .close: SelfViewWindowRef.window?.close()
-        case .open:
-            if open { SelfViewWindowRef.closed() }
-            SelfViewWindowRef.open()
-        }
-    }
+    static func action(windowVisible: Bool) -> Action { windowVisible ? .close : .open }
 }

@@ -34,7 +34,17 @@ final class SpeechHub: ObservableObject {
 
     private var consumers: Set<Consumer> = []
     private var locale: Locale?
-    private let engine = AVAudioEngine()
+    /// Made fresh each time listening starts, so a newly picked microphone takes effect.
+    private var engine = AVAudioEngine()
+    /// The microphone the person picked (its unique id); nil uses the system default.
+    @Published var microphoneID: String? = UserDefaults.standard.string(forKey: "microphoneID") {
+        didSet {
+            UserDefaults.standard.set(microphoneID, forKey: "microphoneID")
+            restartForNewMicrophone()
+        }
+    }
+    /// The name of the microphone being listened to, while listening.
+    @Published private(set) var microphoneName: String?
     private var recognizer: SFSpeechRecognizer?
     private var task: SFSpeechRecognitionTask?
     private var restartTimer: Timer?
@@ -110,7 +120,17 @@ final class SpeechHub: ObservableObject {
         recognizer = r
         self.locale = locale
 
+        // Only now, with listening on and the microphone allowed, is the input touched.
+        engine = AVAudioEngine()
+        let mics = CaptureDevices.microphones()
+        let chosen = DeviceChoice.resolve(saved: microphoneID, available: mics)
         let input = engine.inputNode
+        if let chosen, let deviceID = CaptureDevices.audioDeviceID(uid: chosen), let unit = input.audioUnit {
+            var id = deviceID
+            AudioUnitSetProperty(unit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0,
+                                 &id, UInt32(MemoryLayout<AudioDeviceID>.size))
+        }
+        microphoneName = DeviceChoice.label(saved: microphoneID, available: mics, defaultName: CaptureDevices.defaultMicrophoneName)
         let format = input.outputFormat(forBus: 0)
         input.removeTap(onBus: 0)
         let box = self.box
@@ -135,9 +155,17 @@ final class SpeechHub: ObservableObject {
         return nil
     }
 
+    /// A different microphone was picked while listening: listen again with it.
+    private func restartForNewMicrophone() {
+        guard listening, let locale else { return }
+        stopEngine()
+        Task { if let error = await startEngine(locale: locale) { status = error } }
+    }
+
     private func stopEngine() {
         finishUtterance()
         listening = false
+        microphoneName = nil
         status = nil
         level = 0
         restartTimer?.invalidate(); restartTimer = nil

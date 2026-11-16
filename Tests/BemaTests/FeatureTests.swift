@@ -154,17 +154,44 @@ final class FeatureRenderTests: XCTestCase {
 }
 
 final class SelfViewToggleTests: XCTestCase {
-    func testClosesOnlyWhenTheWindowIsReallyOpen() {
-        XCTAssertEqual(SelfViewToggle.action(flagOpen: true, windowVisible: true), .close)
+    func testClosesWhenTheWindowIsOnScreen() {
+        XCTAssertEqual(SelfViewToggle.action(windowVisible: true), .close)
     }
 
-    func testReopensWhenTheCloseWasMissed() {
-        // The flag still says open but the window is gone: the button must open it again, not do nothing.
-        XCTAssertEqual(SelfViewToggle.action(flagOpen: true, windowVisible: false), .open)
+    func testOpensWhenTheWindowIsNotOnScreen() {
+        // Whatever Bema last believed: a window that isn't visible gets opened, never ignored.
+        XCTAssertEqual(SelfViewToggle.action(windowVisible: false), .open)
+    }
+}
+
+final class DeviceChoiceTests: XCTestCase {
+    let devices = [DeviceChoice.Device(id: "cam-a", name: "FaceTime HD Camera"),
+                   DeviceChoice.Device(id: "cam-b", name: "Desk Camera")]
+
+    func testKeepsThePickedDeviceWhileItIsConnected() {
+        XCTAssertEqual(DeviceChoice.resolve(saved: "cam-b", available: devices), "cam-b")
+        XCTAssertEqual(DeviceChoice.label(saved: "cam-b", available: devices, defaultName: "FaceTime HD Camera"), "Desk Camera")
     }
 
-    func testOpensWhenClosed() {
-        XCTAssertEqual(SelfViewToggle.action(flagOpen: false, windowVisible: false), .open)
-        XCTAssertEqual(SelfViewToggle.action(flagOpen: false, windowVisible: true), .open)
+    func testFallsBackToTheDefaultWhenThePickedDeviceIsGone() {
+        XCTAssertNil(DeviceChoice.resolve(saved: "cam-gone", available: devices))
+        XCTAssertEqual(DeviceChoice.label(saved: "cam-gone", available: devices, defaultName: "FaceTime HD Camera"), "FaceTime HD Camera")
+    }
+
+    func testNoChoiceMeansTheDefault() {
+        XCTAssertNil(DeviceChoice.resolve(saved: nil, available: devices))
+        XCTAssertEqual(DeviceChoice.label(saved: nil, available: [], defaultName: nil), "System default")
+    }
+}
+
+final class SlideSplitTests: XCTestCase {
+    func testDraggingDownMakesTheCurrentSlideBigger() {
+        XCTAssertEqual(SlideSplit.share(start: 0.66, dragY: 100, height: 1000), 0.76, accuracy: 0.0001)
+    }
+
+    func testStaysWithinLimits() {
+        XCTAssertEqual(SlideSplit.share(start: 0.66, dragY: 900, height: 1000), SlideSplit.range.upperBound)
+        XCTAssertEqual(SlideSplit.share(start: 0.66, dragY: -900, height: 1000), SlideSplit.range.lowerBound)
+        XCTAssertEqual(SlideSplit.share(start: 0.5, dragY: 40, height: 0), 0.5)
     }
 }

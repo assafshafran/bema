@@ -779,6 +779,9 @@ struct TargetMenu: View {
 
 struct SlidesColumn: View {
     @EnvironmentObject private var model: PresenterModel
+    /// How much of the column's height the current slide may take; drag the handle under it to change.
+    @AppStorage("currentSlideShare") private var share: Double = SlideSplit.standard
+    @State private var dragStart: Double?
 
     var body: some View {
         GeometryReader { geo in
@@ -806,7 +809,18 @@ struct SlidesColumn: View {
                                 .padding(10)
                         }
                     }
-                    .frame(maxHeight: geo.size.height * 0.66)
+                    .frame(maxHeight: geo.size.height * share)
+
+                SlideResizeHandle()
+                    .padding(.vertical, -8)
+                    .gesture(DragGesture(minimumDistance: 1)
+                        .onChanged { drag in
+                            let start = dragStart ?? share
+                            dragStart = start
+                            share = SlideSplit.share(start: start, dragY: drag.translation.height, height: geo.size.height)
+                        }
+                        .onEnded { _ in dragStart = nil })
+                    .onTapGesture(count: 2) { share = SlideSplit.standard }
 
                 HStack(alignment: .top, spacing: 18) {
                     SlideImage(slide: model.nextSlide, label: "Next", ring: Theme.borderStrong)
@@ -843,6 +857,36 @@ struct SlidesColumn: View {
         case .pen: return "Pen · drag on the slide to draw"
         case .highlighter: return "Highlighter · drag on the slide to mark"
         }
+    }
+}
+
+/// The current slide's share of the slides column, set by dragging the handle under it.
+enum SlideSplit {
+    static let standard = 0.66
+    static let range = 0.35...0.9
+
+    static func share(start: Double, dragY: Double, height: Double) -> Double {
+        guard height > 0 else { return start }
+        return min(max(start + dragY / height, range.lowerBound), range.upperBound)
+    }
+}
+
+/// A thin grip under the current slide: drag down to make the slide bigger, up to give the next slide room.
+struct SlideResizeHandle: View {
+    @State private var hovering = false
+
+    var body: some View {
+        ZStack {
+            Color.clear.frame(height: 14).contentShape(Rectangle())
+            Capsule().fill(hovering ? Theme.textSoft : Theme.borderStrong).frame(width: 44, height: 4)
+        }
+        .frame(maxWidth: .infinity)
+        .onHover { inside in
+            hovering = inside
+            if inside { NSCursor.resizeUpDown.push() } else { NSCursor.pop() }
+        }
+        .help("Drag to make the current slide bigger or smaller · double-click to reset. Drag the divider beside the notes to make it wider.")
+        .accessibilityLabel("Resize the current slide")
     }
 }
 

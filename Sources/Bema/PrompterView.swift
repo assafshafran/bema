@@ -224,7 +224,7 @@ struct PrompterView: View {
             HStack(spacing: 10) {
                 switch prompter.mode {
                 case .voice:
-                    MicLevel(level: hub.listening ? hub.level : 0)
+                    MicrophoneMenu()
                     Menu {
                         ForEach(PrompterModel.Language.allCases) { lang in
                             Button { prompter.language = lang } label: {
@@ -461,6 +461,40 @@ struct ScriptBody: View, Equatable {
             }
             Color.clear.frame(height: 2000)
         }
+    }
+}
+
+/// The level meter, which is also the microphone picker: click it to choose which microphone the
+/// prompter (and everything else that listens) uses.
+struct MicrophoneMenu: View {
+    @ObservedObject private var hub = SpeechHub.shared
+    @State private var microphones: [DeviceChoice.Device] = []
+
+    var body: some View {
+        Menu {
+            Section("Microphone") {
+                Button { hub.microphoneID = nil } label: {
+                    let name = "System default" + (CaptureDevices.defaultMicrophoneName.map { " (\($0))" } ?? "")
+                    if DeviceChoice.resolve(saved: hub.microphoneID, available: microphones) == nil { Label(name, systemImage: "checkmark") } else { Text(name) }
+                }
+                ForEach(microphones) { mic in
+                    Button { hub.microphoneID = mic.id } label: {
+                        if DeviceChoice.resolve(saved: hub.microphoneID, available: microphones) == mic.id { Label(mic.name, systemImage: "checkmark") } else { Text(mic.name) }
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                MicLevel(level: hub.listening ? hub.level : 0)
+                Image(systemName: "mic").font(.system(size: 11)).foregroundStyle(Theme.textSoft)
+                Image(systemName: "chevron.down").font(.system(size: 8, weight: .bold)).foregroundStyle(Theme.textSoft)
+            }
+            .contentShape(Rectangle())
+        }
+        .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden).fixedSize()
+        .onHover { if $0 { microphones = CaptureDevices.microphones() } }
+        .onAppear { microphones = CaptureDevices.microphones() }
+        .help("Microphone: \(hub.microphoneName ?? DeviceChoice.label(saved: hub.microphoneID, available: microphones, defaultName: CaptureDevices.defaultMicrophoneName)). Click to choose another")
     }
 }
 

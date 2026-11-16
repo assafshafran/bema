@@ -6,6 +6,14 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### Self view that closes every time, camera and microphone choice, a bigger current slide
+- The self view's X, the toolbar button, the menu bar and ⌥⌘V now close it every time. Bema kept a reference to the window from its first opening and dropped it on close; SwiftUI reuses the window when it reopens, so the reference stayed empty and closing did nothing. Bema now finds the window by its scene each time and decides open or close by whether it's on screen. Turning the camera on and off quickly no longer leaves it in the wrong state (start and stop run in order).
+- The self view's hover controls sit on a dark bar with an outline, so they stay readable over a bright picture (Edge Light), and pointing at one says what it does at the bottom of the view.
+- Choose the camera from the self view (camera menu) or Stage tools; the bubble on the slides uses the same camera.
+- Choose the microphone from the prompter's level meter; it applies to everything that listens.
+- Drag the handle under the current slide to make it bigger (double-click resets); the size is remembered.
+- Not verified: switching cameras and microphones with real devices (the choice logic is tested; the AVFoundation and Core Audio switching isn't), the hover hints and contrast over Edge Light, and the resize handle in the live window.
+
 ### Self view reopens; a control for macOS's video effects (Bema 0.1.2)
 - Closing the self view now always turns the camera off and lets it open again. Before, closing it could leave Bema thinking it was still open: the camera kept running and the Self view button did nothing. Bema now watches the window itself close, and the button checks the window, not only its own flag. The self view also opens when Bema's main window is closed (menu bar, ⌥⌘V, `bema://selfview`).
 - **Effects** in the top bar (while the camera is on), in the self view's hover controls and in Stage tools opens macOS's Video Effects menu, where Edge Light, Portrait and Studio Light are turned on or off.

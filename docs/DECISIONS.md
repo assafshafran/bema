@@ -42,3 +42,12 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 - **PowerPoint runs the show rather than Bema rendering slides.** Animations, transitions, video and fonts stay exactly as the deck's author made them.
 - **The website's Dock uses our own icons, styled like current macOS, not Apple's or Microsoft's app icons.** Their icon artwork is trademarked and copyrighted, and the repository and site are public.
 - **Bema opens macOS's Video Effects menu rather than switching effects itself.** Edge Light, Portrait and Studio Light belong to macOS and apps can't turn them on or off; `AVCaptureDevice.showSystemUserInterface(.videoEffects)` is the supported way in.
+
+## The self view is found by its scene id, not a kept reference (2026-11-16)
+SwiftUI reuses a `Window` scene's window when it reopens, so a reference saved when the window first appeared and cleared on close stayed empty after a reopen and closing did nothing. Looking the window up by its identifier each time can't go stale, and the toggle decides by whether that window is on screen.
+
+## Hints shown inside the self view, not only as tooltips (2026-11-16)
+The self view floats over other apps while you present from them, and macOS often doesn't show tooltips for an app that isn't active. Pointing at a control writes what it does in the view's bottom label instead.
+
+## One microphone choice for everything that listens (2026-11-16)
+The prompter, speech coach, captions and voice commands share one microphone stream (`SpeechHub`), so the choice is the hub's, made in the prompter where people look for it. The audio engine is created fresh each time listening starts and the device is set only then, so the microphone still opens only while a listening feature is on.

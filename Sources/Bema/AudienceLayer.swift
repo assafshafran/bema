@@ -67,9 +67,18 @@ final class CameraModel: ObservableObject {
         didSet { UserDefaults.standard.set(size, forKey: "cameraSize") }
     }
     @Published private(set) var error: String?
+    /// The camera the person picked (its unique id); nil uses the system default.
+    @Published var cameraID: String? = UserDefaults.standard.string(forKey: "cameraID") {
+        didSet {
+            UserDefaults.standard.set(cameraID, forKey: "cameraID")
+            if configured { configureInput() }
+        }
+    }
 
     let session = AVCaptureSession()
     private var configured = false
+    /// Starting and stopping run here in order, so a quick off-on can't leave the camera in the wrong state.
+    private let queue = DispatchQueue(label: "bema.camera")
 
     /// macOS's own video effects menu (Edge Light, Portrait, Studio Light, reactions). These effects
     /// belong to macOS and apply while Bema uses the camera; Bema can only open the menu.
@@ -82,6 +91,8 @@ final class CameraModel: ObservableObject {
         if enabled || selfViewOpen { start() } else { stop() }
     }
 
+    private var needed: Bool { enabled || selfViewOpen }
+
     private func start() {
         Task {
             guard await AVCaptureDevice.requestAccess(for: .video) else {
@@ -89,28 +100,43 @@ final class CameraModel: ObservableObject {
                 enabled = false
                 return
             }
+            // Turned off again while macOS was asking.
+            guard needed else { return }
             if !configured {
-                guard let device = AVCaptureDevice.default(for: .video),
-                      let input = try? AVCaptureDeviceInput(device: device), session.canAddInput(input) else {
-                    error = "No camera found."
-                    enabled = false
-                    return
-                }
-                session.beginConfiguration()
-                session.sessionPreset = .high
-                session.addInput(input)
-                session.commitConfiguration()
+                guard configureInput() else { enabled = false; return }
                 configured = true
             }
             error = nil
             let session = self.session
-            DispatchQueue.global(qos: .userInitiated).async { if !session.isRunning { session.startRunning() } }
+            queue.async { if !session.isRunning { session.startRunning() } }
         }
+    }
+
+    /// Puts the chosen camera (or the default one) into the session. Returns false when there's none.
+    @discardableResult
+    private func configureInput() -> Bool {
+        let available = CaptureDevices.cameras()
+        let chosen = DeviceChoice.resolve(saved: cameraID, available: available).flatMap { AVCaptureDevice(uniqueID: $0) }
+        guard let device = chosen ?? AVCaptureDevice.default(for: .video),
+              let input = try? AVCaptureDeviceInput(device: device) else {
+            error = "No camera found."
+            return false
+        }
+        let session = self.session
+        queue.sync {
+            session.beginConfiguration()
+            session.sessionPreset = .high
+            for old in session.inputs { session.removeInput(old) }
+            if session.canAddInput(input) { session.addInput(input) }
+            session.commitConfiguration()
+        }
+        error = nil
+        return true
     }
 
     private func stop() {
         let session = self.session
-        DispatchQueue.global(qos: .userInitiated).async { if session.isRunning { session.stopRunning() } }
+        queue.async { if session.isRunning { session.stopRunning() } }
     }
 }
 
@@ -224,6 +250,10 @@ struct PollOverlay: View {
 struct SelfViewWindow: View {
     @ObservedObject private var camera = CameraModel.shared
     @State private var hovering = false
+    /// What the button under the pointer does, shown in the view (tooltips don't appear reliably on a
+    /// floating window while another app is active).
+    @State private var hint: String?
+    @State private var cameras: [DeviceChoice.Device] = []
 
     var body: some View {
         ZStack {
@@ -235,54 +265,104 @@ struct SelfViewWindow: View {
             // Drag anywhere to move; controls appear on hover.
             WindowDragArea()
             if hovering {
-                VStack {
-                    HStack(spacing: 6) {
-                        Spacer()
-                        SelfViewButton(symbol: camera.selfViewRound ? "rectangle" : "circle", help: camera.selfViewRound ? "Rectangle" : "Circle") {
-                            camera.selfViewRound.toggle()
+                VStack(spacing: 0) {
+                    HStack(spacing: 4) {
+                        Spacer(minLength: 0)
+                        HStack(spacing: 4) {
+                            cameraMenu
+                            SelfViewButton(symbol: camera.selfViewRound ? "rectangle" : "circle",
+                                           help: camera.selfViewRound ? "Make it a rectangle" : "Make it a circle", hint: $hint) {
+                                camera.selfViewRound.toggle()
+                            }
+                            SelfViewButton(symbol: "web.camera", help: "Move it just under the camera", hint: $hint) { SelfViewWindowRef.placeUnderCamera() }
+                            SelfViewButton(symbol: "camera.filters", help: "Video effects: Edge Light, Portrait, Studio Light", hint: $hint) { CameraModel.showVideoEffects() }
+                            SelfViewButton(symbol: "xmark", help: "Close the self view", hint: $hint) { SelfViewWindowRef.close() }
                         }
-                        SelfViewButton(symbol: "web.camera", help: "Move under the camera") { SelfViewWindowRef.placeUnderCamera() }
-                        SelfViewButton(symbol: "camera.filters", help: "Video effects: Edge Light, Portrait, Studio Light…") { CameraModel.showVideoEffects() }
-                        SelfViewButton(symbol: "xmark", help: "Close the self view") { SelfViewWindowRef.window?.close() }
+                        .padding(3)
+                        .background(Capsule().fill(.black.opacity(0.78)))
+                        .overlay(Capsule().strokeBorder(.white.opacity(0.25), lineWidth: 1))
+                        .shadow(color: .black.opacity(0.5), radius: 4, y: 1)
                     }
-                    Spacer()
-                    Label("Only you see this", systemImage: "eye.slash")
+                    Spacer(minLength: 0)
+                    Label(hint ?? "Only you see this", systemImage: hint == nil ? "eye.slash" : "info.circle")
                         .font(.system(size: 10, weight: .semibold))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
                         .padding(.horizontal, 8).padding(.vertical, 3)
-                        .background(Capsule().fill(.black.opacity(0.55)))
+                        .background(Capsule().fill(.black.opacity(0.78)))
+                        .overlay(Capsule().strokeBorder(.white.opacity(0.25), lineWidth: 1))
                         .foregroundStyle(.white)
                 }
-                .padding(8)
+                .padding(camera.selfViewRound ? 18 : 8)
             }
         }
         .clipShape(camera.selfViewRound ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 14)))
         .contentShape(Rectangle())
-        .onHover { hovering = $0 }
+        .onHover { hovering = $0; if !$0 { hint = nil } }
         .background(SelfViewConfigurator())
-        .frame(minWidth: 140, minHeight: 105)
+        .frame(minWidth: 160, minHeight: 120)
         .ignoresSafeArea()
         .onAppear { camera.selfViewOpen = true }
         .onDisappear { camera.selfViewOpen = false }
+    }
+
+    private var cameraMenu: some View {
+        Menu {
+            Section("Camera") {
+                Button { camera.cameraID = nil } label: {
+                    let name = "System default" + (CaptureDevices.defaultCameraName.map { " (\($0))" } ?? "")
+                    if DeviceChoice.resolve(saved: camera.cameraID, available: cameras) == nil { Label(name, systemImage: "checkmark") } else { Text(name) }
+                }
+                ForEach(cameras) { device in
+                    Button { camera.cameraID = device.id } label: {
+                        if DeviceChoice.resolve(saved: camera.cameraID, available: cameras) == device.id { Label(device.name, systemImage: "checkmark") } else { Text(device.name) }
+                    }
+                }
+            }
+        } label: {
+            SelfViewIcon(symbol: "video")
+        }
+        .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden).fixedSize()
+        .onHover { inside in
+            if inside { cameras = CaptureDevices.cameras() }
+            hint = inside ? "Camera: \(DeviceChoice.label(saved: camera.cameraID, available: cameras, defaultName: CaptureDevices.defaultCameraName)). Click to switch" : nil
+        }
+        .help("Choose the camera")
+    }
+}
+
+private struct SelfViewIcon: View {
+    let symbol: String
+    var body: some View {
+        Image(systemName: symbol).font(.system(size: 11, weight: .bold)).foregroundStyle(.white)
+            .frame(width: 24, height: 24)
+            .background(Circle().fill(.white.opacity(0.14)))
+            .contentShape(Circle())
     }
 }
 
 private struct SelfViewButton: View {
     let symbol: String
     let help: String
+    @Binding var hint: String?
     let action: () -> Void
     var body: some View {
-        Button(action: action) {
-            Image(systemName: symbol).font(.system(size: 11, weight: .bold)).foregroundStyle(.white)
-                .frame(width: 24, height: 24).background(Circle().fill(.black.opacity(0.55)))
-        }
-        .buttonStyle(.plain)
-        .help(help)
+        Button(action: action) { SelfViewIcon(symbol: symbol) }
+            .buttonStyle(.plain)
+            .help(help)
+            .onHover { hint = $0 ? help : nil }
+            .accessibilityLabel(help)
     }
 }
 
+/// Opens and closes the self view. The window is looked up by its scene id every time: SwiftUI can
+/// reuse the same window when it reopens, so a reference kept from the first opening went stale and
+/// the X, the toolbar button and the menu stopped closing it.
 @MainActor
 enum SelfViewWindowRef {
-    static weak var window: NSWindow?
+    static var window: NSWindow? {
+        NSApp.windows.first { $0.identifier?.rawValue.hasPrefix("selfview") == true }
+    }
 
     static var isVisible: Bool { window?.isVisible ?? false }
 
@@ -291,12 +371,25 @@ enum SelfViewWindowRef {
     static var opener: OpenWindowAction?
 
     static func open() {
+        if let window, !window.isVisible { window.makeKeyAndOrderFront(nil) }
         if let opener { opener(id: "selfview") }
         else { NotificationCenter.default.post(name: .openSelfView, object: nil) }
+        CameraModel.shared.selfViewOpen = true
+    }
+
+    static func close() {
+        window?.close()
+        closed()
+    }
+
+    static func toggle() {
+        switch SelfViewToggle.action(windowVisible: isVisible) {
+        case .close: close()
+        case .open: open()
+        }
     }
 
     static func closed() {
-        window = nil
         CameraModel.shared.selfViewOpen = false
     }
 
@@ -319,7 +412,6 @@ private struct SelfViewConfigurator: NSViewRepresentable {
         override func viewDidMoveToWindow() {
             super.viewDidMoveToWindow()
             guard let w = window else { return }
-            SelfViewWindowRef.window = w
             CameraModel.shared.selfViewOpen = true
             // SwiftUI's onDisappear doesn't always run when a Window scene closes; without this the
             // camera kept running and Bema thought the self view was still open.

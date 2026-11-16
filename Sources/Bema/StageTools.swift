@@ -84,7 +84,7 @@ struct StageToolsPanel: View {
                 section("Camera") {
                     HStack {
                         Button {
-                            SelfViewToggle.run(open: camera.selfViewOpen)
+                            SelfViewWindowRef.toggle()
                         } label: {
                             Label(camera.selfViewOpen ? "Close the self view" : "Show a self view only you can see", systemImage: "person.crop.square")
                         }
@@ -93,6 +93,11 @@ struct StageToolsPanel: View {
                     }
                     Text("A small mirror of your camera that floats above everything and stays out of screen sharing.")
                         .font(.system(size: 11)).foregroundStyle(Theme.dim).fixedSize(horizontal: false, vertical: true)
+                    Picker("Camera", selection: $camera.cameraID) {
+                        Text("System default" + (CaptureDevices.defaultCameraName.map { " (\($0))" } ?? "")).tag(String?.none)
+                        ForEach(CaptureDevices.cameras()) { Text($0.name).tag(Optional($0.id)) }
+                    }
+                    .help("The camera for the self view and the bubble on the slides")
                     Toggle("Show my camera on the slides (the audience sees this)", isOn: $camera.enabled)
                     if camera.enabled {
                         Picker("Corner", selection: $camera.corner) {
