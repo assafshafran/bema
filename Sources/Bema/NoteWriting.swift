@@ -58,11 +58,20 @@ extension PresenterModel {
         noteWriting = nil
     }
 
-    /// Stores (or, with empty text, removes) the draft for a slide.
+    /// Stores the draft for a slide: notes written for it, or the presenter's edit. Text that matches the
+    /// deck's notes (or empty text) removes the draft, so the deck's notes show again.
     func setDraft(_ text: String, for id: Int) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty { drafts[id] = nil } else { drafts[id] = text }
+        if trimmed.isEmpty || DraftNotes.same(trimmed, deckNotes(for: id)) { drafts[id] = nil } else { drafts[id] = trimmed }
         notesChanged()
+    }
+
+    /// The slide's notes as the deck has them (not a draft).
+    func deckNotes(for id: Int) -> String { deckSlides.first { $0.id == id }?.notes ?? "" }
+
+    /// The slide has notes in the deck that a draft replaces.
+    func draftReplacesDeckNotes(_ id: Int) -> Bool {
+        drafts[id] != nil && !deckNotes(for: id).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     func discardDraft(for id: Int) { setDraft("", for: id) }

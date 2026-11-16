@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### Edit speaker notes in Bema (Bema 0.1.8)
+- A pencil next to the slide title edits any slide's notes in the notes panel; **Type notes** writes notes for a slide that has none. ⌘↩ keeps the change, Esc cancels. Edits are drafts like written notes: marked **Edited**, followed by the prompter, kept per deck, written into the deck with **Save to deck**, and ↶ returns to the deck's notes. An edit that ends up the same as the deck's notes isn't kept.
+- Not verified: editing Hebrew notes (the editor doesn't align right yet), Keynote.
+
 ### Write speaker notes for slides that have none (Bema 0.1.7)
 - **Write notes** on a slide with no notes, **All slides without notes** for the rest, from the notes panel, its ✨ menu or **View**. Notes are drafts: marked in the panel, followed by the prompter and phone remote, kept by Bema per deck, editable, and written into the deck (PowerPoint or Keynote speaker notes, then saved) only with **Save to deck**. A slide with notes in the deck is never overwritten.
 - Writers, chosen in **View → Notes Writer Settings…**: Apple Intelligence on the Mac, a local model through the OpenAI chat API (Ollama, LM Studio), a Claude API key (Claude Opus 5.5 by default, with server-side fallbacks), an OpenAI API key, or the Claude app with the person's subscription. API keys are stored in the Keychain. The writer gets the slide's text, its neighbours' titles and, except on the Mac and by default for local models, a picture of the slide.

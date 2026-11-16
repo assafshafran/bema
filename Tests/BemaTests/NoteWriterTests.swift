@@ -139,12 +139,34 @@ final class DraftNotesTests: XCTestCase {
         SlideInfo(id: 4, title: "Numbers", notes: " \n", hidden: false),
     ]
 
-    func testDraftsFillOnlySlidesWithoutNotes() {
-        let merged = DraftNotes.merge(slides, [1: "Not this", 2: "Three shifts."])
-        XCTAssertEqual(merged[0].notes, "Say hello.")
-        XCTAssertFalse(merged[0].draft)
+    func testDraftsFillEmptySlidesAndEditsReplaceDeckNotes() {
+        let merged = DraftNotes.merge(slides, [1: "Say hello, then the agenda.", 2: "Three shifts."])
+        XCTAssertEqual(merged[0].notes, "Say hello, then the agenda.")
+        XCTAssertTrue(merged[0].draft)
         XCTAssertEqual(merged[1].notes, "Three shifts.")
         XCTAssertTrue(merged[1].draft)
+        XCTAssertFalse(merged[2].draft)
+    }
+
+    func testAnEditThatMatchesTheDeckIsNotADraft() {
+        let merged = DraftNotes.merge(slides, [1: "Say hello.\n"])
+        XCTAssertFalse(merged[0].draft)
+        XCTAssertTrue(DraftNotes.same("A\r\nB ", "A\nB"))
+    }
+
+    @MainActor func testEditingNotesInBema() {
+        let model = PresenterModel()
+        model.deckSlides = slides
+        model.setDraft("Say hello.\nThen the agenda.", for: 1)
+        XCTAssertTrue(model.draftReplacesDeckNotes(1))
+        XCTAssertEqual(model.slides[0].notes, "Say hello.\nThen the agenda.")
+        model.setDraft("  Say hello. ", for: 1)          // back to what the deck says
+        XCTAssertNil(model.drafts[1])
+        XCTAssertFalse(model.slides[0].draft)
+        model.setDraft("Typed by hand.", for: 2)
+        XCTAssertFalse(model.draftReplacesDeckNotes(2))
+        model.discardDraft(for: 2)
+        XCTAssertEqual(model.slides[1].notes, "")
     }
 
     func testSlidesNeedingNotesSkipHiddenAndDrafted() {
@@ -153,7 +175,8 @@ final class DraftNotesTests: XCTestCase {
     }
 
     func testPruneDropsDraftsTheDeckNoLongerNeeds() {
-        XCTAssertEqual(DraftNotes.pruned([1: "a", 2: "b", 9: "c", 4: ""], for: slides), [2: "b"])
+        XCTAssertEqual(DraftNotes.pruned([1: "a", 2: "b", 9: "c", 4: "", 3: "Say hello."], for: slides), [1: "a", 2: "b", 3: "Say hello."])
+        XCTAssertEqual(DraftNotes.pruned([1: "Say hello."], for: slides), [:])
     }
 
     func testDraftsAreKeptPerDeck() {
@@ -294,6 +317,11 @@ final class NoteWriterRenderTests: XCTestCase {
             WritingRow(progress: NoteWritingProgress(slide: 3, done: 1, total: 2, writer: "Claude"))
         }
         try render(draft.environmentObject(model).padding(24).frame(width: 640).background(Theme.panel), "notes-draft")
+        model.setDraft("Welcome, everyone.\nTonight: what AI hasn't touched yet.", for: 1)
+        try render(DraftBar(slide: 1, editing: .constant(false), text: .constant("")).environmentObject(model)
+            .padding(24).frame(width: 640).background(Theme.panel), "notes-edited")
+        try render(DraftBar(slide: 1, editing: .constant(true), text: .constant("")).environmentObject(model)
+            .padding(24).frame(width: 640).background(Theme.panel), "notes-editing")
         try render(NoNotesView(slide: 3, fontSize: 22).environmentObject(model).padding(24).frame(width: 640, alignment: .leading)
             .background(Theme.panel), "notes-empty")
         try render(NoteWriterSettingsView(showing: .claudeApp).environmentObject(model), "note-writer-claude-app")

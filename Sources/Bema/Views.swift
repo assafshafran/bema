@@ -993,20 +993,29 @@ struct NotesPanel: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
                         if let slide = model.currentSlide {
-                            VStack(alignment: .leading, spacing: 4) {
-                                CapsLabel("Slide \(slide.id)")
-                                if !slide.title.isEmpty {
-                                    Text(slide.title.replacingOccurrences(of: "\n", with: " "))
-                                        .font(.system(size: 16, weight: .semibold)).foregroundStyle(Theme.textSoft)
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    CapsLabel("Slide \(slide.id)")
+                                    if !slide.title.isEmpty {
+                                        Text(slide.title.replacingOccurrences(of: "\n", with: " "))
+                                            .font(.system(size: 16, weight: .semibold)).foregroundStyle(Theme.textSoft)
+                                    }
+                                }
+                                Spacer(minLength: 8)
+                                if !slide.draft && !editingDraft && !slide.notes.isEmpty {
+                                    Button { draftText = slide.notes; editingDraft = true } label: { Image(systemName: "pencil") }
+                                        .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28))
+                                        .help("Edit these notes. Your changes stay in Bema until you save them to the deck.")
+                                        .accessibilityLabel("Edit notes")
                                 }
                             }
                             if let w = model.noteWriting, w.total > 1, w.slide != slide.id {
                                 WritingRow(progress: w)
                             }
-                            if slide.draft {
+                            if slide.draft || editingDraft {
                                 DraftBar(slide: slide.id, editing: $editingDraft, text: $draftText)
                             }
-                            if slide.draft && editingDraft {
+                            if editingDraft {
                                 TextEditor(text: $draftText)
                                     .font(.system(size: max(14, fontSize * 0.7)))
                                     .scrollContentBackground(.hidden)
@@ -1024,7 +1033,7 @@ struct NotesPanel: View {
                                     .frame(maxWidth: .infinity, alignment: slide.notes.isRightToLeft ? .topTrailing : .topLeading)
                                     .environment(\.layoutDirection, slide.notes.isRightToLeft ? .rightToLeft : .leftToRight)
                             } else {
-                                NoNotesView(slide: slide.id, fontSize: fontSize)
+                                NoNotesView(slide: slide.id, fontSize: fontSize) { draftText = ""; editingDraft = true }
                             }
                         }
                     }

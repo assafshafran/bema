@@ -1,15 +1,15 @@
 import CryptoKit
 import Foundation
 
-/// Speaker notes written for slides that had none, kept by Bema per deck until the presenter saves them
-/// into the deck or discards them. The deck itself is never changed without "Save to Deck".
+/// Speaker notes changed in Bema and not yet in the deck: notes written for slides that had none, and
+/// notes the presenter edited. Kept by Bema per deck until saved into the deck or discarded. The deck
+/// itself is never changed without "Save to Deck".
 enum DraftNotes {
-    /// The deck's slides with drafts filled in where a slide has no notes of its own. A slide that has
-    /// notes in the deck keeps them: a draft never replaces what the presenter wrote.
+    /// The deck's slides with their drafts in place of the deck's notes.
     static func merge(_ slides: [SlideInfo], _ drafts: [Int: String]) -> [SlideInfo] {
         slides.map { slide in
-            guard slide.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-                  let draft = drafts[slide.id], !draft.isEmpty else { return slide }
+            guard let draft = drafts[slide.id], !draft.isEmpty,
+                  same(draft, slide.notes) == false else { return slide }
             var s = slide
             s.notes = draft
             s.draft = true
@@ -22,10 +22,22 @@ enum DraftNotes {
         slides.filter { !$0.hidden && $0.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }.map(\.id)
     }
 
-    /// Drafts that still matter: dropped once the deck has its own notes for that slide, or the slide is gone.
+    /// Drafts that still matter: dropped when the slide is gone or the deck already says the same.
     static func pruned(_ drafts: [Int: String], for slides: [SlideInfo]) -> [Int: String] {
-        let empty = Set(slides.filter { $0.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }.map(\.id))
-        return drafts.filter { empty.contains($0.key) && !$0.value.isEmpty }
+        let deck = Dictionary(slides.map { ($0.id, $0.notes) }, uniquingKeysWith: { a, _ in a })
+        return drafts.filter { id, text in
+            guard let notes = deck[id] else { return false }
+            return !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !same(text, notes)
+        }
+    }
+
+    /// Notes that read the same apart from surrounding blank space and line-ending style.
+    static func same(_ a: String, _ b: String) -> Bool {
+        func norm(_ s: String) -> String {
+            s.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return norm(a) == norm(b)
     }
 
     // MARK: Storage

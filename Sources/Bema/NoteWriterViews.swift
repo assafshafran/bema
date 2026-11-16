@@ -39,6 +39,7 @@ struct NoNotesView: View {
     @EnvironmentObject private var model: PresenterModel
     let slide: Int
     let fontSize: Double
+    var type: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -60,6 +61,9 @@ struct NoNotesView: View {
                             .buttonStyle(PillButtonStyle(kind: .normal, height: 34))
                             .disabled(model.noteWriting != nil)
                     }
+                    Button { type() } label: { Label("Type notes", systemImage: "pencil").fixedSize() }
+                        .buttonStyle(PillButtonStyle(kind: .normal, height: 34))
+                        .help("Write this slide's notes yourself")
                 }
             }
         }
@@ -103,28 +107,41 @@ struct DraftBar: View {
     @Binding var editing: Bool
     @Binding var text: String
 
+    private var label: String {
+        if editing { return "EDITING" }
+        return model.draftReplacesDeckNotes(slide) ? "EDITED" : "DRAFT"
+    }
+
     var body: some View {
         HStack(spacing: 8) {
-            Text("DRAFT")
+            Text(label)
                 .font(.system(size: 10, weight: .bold)).tracking(0.8)
                 .foregroundStyle(Theme.accent)
                 .padding(.horizontal, 7).padding(.vertical, 3)
                 .background(Capsule().fill(Theme.accent.opacity(0.15)))
-            Text("Not in the deck yet")
+            Text(editing ? "Kept in Bema until you save it to the deck" : "Not in the deck yet")
                 .font(.system(size: 12)).foregroundStyle(Theme.muted)
             Spacer(minLength: 0)
             if editing {
+                Button("Cancel") { editing = false }
+                    .buttonStyle(PillButtonStyle(kind: .normal, height: 28))
+                    .keyboardShortcut(.escape, modifiers: [])
                 Button("Done") { model.setDraft(text, for: slide); editing = false }
                     .buttonStyle(PillButtonStyle(kind: .accent, height: 28))
                     .keyboardShortcut(.return, modifiers: .command)
+                    .help("Keep these notes (⌘↩)")
             } else {
+                let edited = model.draftReplacesDeckNotes(slide)
                 Button { text = model.drafts[slide] ?? ""; editing = true } label: { Image(systemName: "pencil") }
-                    .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28)).help("Edit the draft")
-                Button { model.writeNotes(for: [slide]) } label: { Image(systemName: "arrow.clockwise") }
-                    .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28)).help("Write it again")
-                    .disabled(model.noteWriting != nil)
-                Button { model.discardDraft(for: slide) } label: { Image(systemName: "trash") }
-                    .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28)).help("Discard the draft")
+                    .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28)).help(edited ? "Edit your changes" : "Edit the draft")
+                if !edited {
+                    Button { model.writeNotes(for: [slide]) } label: { Image(systemName: "arrow.clockwise") }
+                        .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28)).help("Write it again")
+                        .disabled(model.noteWriting != nil)
+                }
+                Button { model.discardDraft(for: slide) } label: { Image(systemName: edited ? "arrow.uturn.backward" : "trash") }
+                    .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 28))
+                    .help(edited ? "Undo your changes and go back to the deck's notes" : "Discard the draft")
                 Button { model.saveDraftsToDeck() } label: {
                     Label(model.drafts.count > 1 ? "Save \(model.drafts.count) to deck" : "Save to deck",
                           systemImage: "square.and.arrow.down").fixedSize()
