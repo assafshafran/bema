@@ -70,9 +70,9 @@ struct BemaApp: App {
                     .disabled(model.deckURL == nil)
             }
             CommandMenu("Slideshow") {
-                Button("Start Slideshow") { model.startShow() }
+                Button("Start Slideshow…") { model.requestStart() }
                     .keyboardShortcut(.return, modifiers: .command)
-                    .disabled(model.phase != .ready || !model.powerPointReady)
+                    .disabled(!model.canStart)
                 Button("End Slideshow") { model.endShowButton() }
                     .keyboardShortcut(".", modifiers: .command)
                     .disabled(model.phase != .presenting)

@@ -4,6 +4,9 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-16
 
+- **Bema asks for the audience display at Start, not only in the top bar** (asked for by the maintainer). PowerPoint hides the choice in Set Up Slide Show, and people find out it's wrong when the slides appear on their laptop. The usual display is preselected so Return keeps it one keystroke; asking can be turned off. It's asked only when there's a choice (two or more displays) and only from Bema itself: the phone remote and clickers start on the remembered display, since nobody is at the Mac to answer.
+- **When the deck disappears mid-show, Bema stops instead of waiting.** It checks that the app is still running before each status poll (AppleScript to a quit app relaunches it), and ends the show after ten failed polls in a row (about four seconds) rather than staying "presenting" forever. A show ended in PowerPoint leaves a slideshow view whose state can't be read; that counts as "no show", not a failure.
+
 - **Cloud decks are read through PowerPoint, not downloaded.** PowerPoint reports a web address for a deck opened from OneDrive, SharePoint or Teams. Bema could have PowerPoint save a copy to disk and read that, but saving a copy can move PowerPoint's open document to the copy, and downloading it ourselves would need the person's Microsoft sign-in. Reading titles and notes over AppleScript (as for Keynote) keeps the presenter on the cloud copy and sends nothing anywhere. It costs a few seconds per load (about 12 for 57 slides), and previews are re-exported every time because there's no modification date to cache by. Recents stay files only: a web address can't be reopened without PowerPoint already having it open.
 
 - **The repository moved to the `getbema` organization** (asked for by the maintainer), like Didja's `didja-dev`. GitHub redirects the old `assafshafran/bema` links, so 0.1.0's update feed and downloads keep working.

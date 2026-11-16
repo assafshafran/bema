@@ -108,6 +108,18 @@ final class FeatureRenderTests: XCTestCase {
         print("Rendered \(url.path)")
     }
 
+    @MainActor func testRenderDisplayChooser() throws {
+        let options = [
+            DisplayOption(name: "Built-in Retina Display", width: 1512, height: 982, builtIn: true, hasBema: true),
+            DisplayOption(name: "Hall Projector", width: 1920, height: 1080, builtIn: false, hasBema: false),
+        ]
+        func chooser(_ pick: String) -> some View {
+            DisplayChooser(options: options, selection: .constant(pick), askEachTime: .constant(true), start: {}, cancel: {})
+        }
+        try save(chooser("Hall Projector"), "display-chooser")
+        try save(chooser("Built-in Retina Display"), "display-chooser-same-screen")
+    }
+
     @MainActor func testRenderEffects() throws {
         let model = PresenterModel()
         func slide(_ tool: PointerTool, _ style: LaserStyle = .dot) -> some View {
@@ -205,5 +217,31 @@ final class SlideSplitTests: XCTestCase {
         XCTAssertEqual(SlideSplit.share(start: 0.66, dragY: 900, height: 1000), SlideSplit.range.upperBound)
         XCTAssertEqual(SlideSplit.share(start: 0.66, dragY: -900, height: 1000), SlideSplit.range.lowerBound)
         XCTAssertEqual(SlideSplit.share(start: 0.5, dragY: 40, height: 0), 0.5)
+    }
+}
+
+final class AudienceDisplayTests: XCTestCase {
+    let displays = ["Built-in Retina Display", "Hall Projector"]
+
+    func testUsesTheSavedDisplayWhenConnected() {
+        XCTAssertEqual(AudienceDisplay.choose(saved: "Built-in Retina Display", displays: displays, presenter: "Built-in Retina Display"),
+                       "Built-in Retina Display")
+    }
+
+    func testOtherwisePicksADisplayWithoutBema() {
+        XCTAssertEqual(AudienceDisplay.choose(saved: "Old TV", displays: displays, presenter: "Built-in Retina Display"), "Hall Projector")
+        XCTAssertEqual(AudienceDisplay.choose(saved: "", displays: displays, presenter: "Hall Projector"), "Built-in Retina Display")
+    }
+
+    func testOneDisplayIsTheOnlyChoice() {
+        XCTAssertEqual(AudienceDisplay.choose(saved: "", displays: ["Built-in Retina Display"], presenter: "Built-in Retina Display"),
+                       "Built-in Retina Display")
+        XCTAssertNil(AudienceDisplay.choose(saved: "", displays: [], presenter: nil))
+    }
+
+    func testAsksOnlyWithAChoiceAndWhenTurnedOn() {
+        XCTAssertTrue(AudienceDisplay.shouldAsk(enabled: true, displayCount: 2))
+        XCTAssertFalse(AudienceDisplay.shouldAsk(enabled: true, displayCount: 1))
+        XCTAssertFalse(AudienceDisplay.shouldAsk(enabled: false, displayCount: 3))
     }
 }

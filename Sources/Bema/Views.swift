@@ -40,6 +40,7 @@ struct RootView: View {
         .preferredColorScheme(Theme.colorScheme)
         .tint(Theme.accent)
         .navigationTitle(model.deckURL == nil ? "Bema" : model.deckName)
+        .sheet(isPresented: $model.displayChooserOpen) { DisplayChooserSheet().environmentObject(model) }
         .background(WindowStyler(hideFromSharing: hidePresenterFromSharing, theme: themeName))
         .onReceive(NotificationCenter.default.publisher(for: .openSelfView)) { _ in
             openWindow(id: "selfview")
@@ -491,11 +492,11 @@ struct ShowControl: View {
                 .buttonStyle(PillButtonStyle(kind: .danger))
                 .help("End the slideshow (Esc)")
             } else {
-                Button { model.startShow() } label: {
+                Button { model.requestStart() } label: {
                     Label("Start slideshow", systemImage: "play.fill").fixedSize()
                 }
                 .buttonStyle(PillButtonStyle(kind: .accent))
-                .disabled(!model.powerPointReady)
+                .disabled(!model.canStart)
                 .help("Start the slideshow on the audience display (⌘↩)")
             }
 
@@ -549,6 +550,10 @@ struct AudienceDisplayPicker: View {
                         Text(screen.localizedName)
                     }
                 }
+            }
+            if NSScreen.screens.count > 1 {
+                Divider()
+                Toggle("Ask Before Each Slideshow", isOn: $model.askForDisplay)
             }
         } label: {
             HStack(spacing: 5) {

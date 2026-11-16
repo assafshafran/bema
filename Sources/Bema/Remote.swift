@@ -179,7 +179,7 @@ final class RemoteServer: ObservableObject {
         return [
             "deck": m.deckName,
             "presenting": m.phase == .presenting,
-            "ready": m.powerPointReady,
+            "ready": m.canStart,
             "slide": m.current,
             "position": m.visiblePosition,
             "count": m.visibleCount,

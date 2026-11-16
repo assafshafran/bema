@@ -42,8 +42,8 @@ struct MenuBarPanel: View {
                         Button("End show") { model.endShowButton() }.buttonStyle(PillButtonStyle(kind: .danger, height: 30))
                         Button("Black") { model.toggleBlack() }.buttonStyle(PillButtonStyle(kind: model.audience == .black ? .warning : .normal, height: 30))
                     } else {
-                        Button("Start slideshow") { model.startShow() }.buttonStyle(PillButtonStyle(kind: .accent, height: 30))
-                            .disabled(!model.powerPointReady)
+                        Button("Start slideshow") { model.requestStart() }.buttonStyle(PillButtonStyle(kind: .accent, height: 30))
+                            .disabled(!model.canStart)
                     }
                     Button(prompter.running ? "Pause prompter" : "Prompter") { prompter.toggle() }
                         .buttonStyle(PillButtonStyle(kind: .normal, height: 30))

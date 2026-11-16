@@ -271,7 +271,13 @@ final class PowerPointController {
             on error
                 return "none"
             end try
-            set stateText to (slide state of v) as text
+            -- After the show ends in PowerPoint (Esc, its window closed) the view can still resolve but
+            -- reading it fails: that means no show, not an error.
+            try
+                set stateText to (slide state of v) as text
+            on error
+                return "none"
+            end try
             try
                 set slideNum to slide number of slide of v
             on error

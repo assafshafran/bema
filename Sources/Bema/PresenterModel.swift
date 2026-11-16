@@ -69,6 +69,12 @@ final class PresenterModel: ObservableObject {
     /// Where PowerPoint is drawing the slideshow, in screen coordinates.
     @Published private(set) var showFrame: CGRect?
     private let overlay = AudienceOverlay()
+    /// Ask which display the slides go on each time the show is started from Bema (with two or more displays).
+    @Published var askForDisplay: Bool = UserDefaults.standard.object(forKey: "askForDisplay") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(askForDisplay, forKey: "askForDisplay") }
+    }
+    /// The "Where should the slides go?" sheet.
+    @Published var displayChooserOpen = false
     @Published var audienceScreenName: String = UserDefaults.standard.string(forKey: "audienceScreen") ?? "" {
         didSet { UserDefaults.standard.set(audienceScreenName, forKey: "audienceScreen") }
     }
@@ -293,14 +299,43 @@ final class PresenterModel: ObservableObject {
     /// The display the audience sees: your saved choice, otherwise a display other than the one
     /// showing this window, otherwise the main display.
     func audienceScreen() -> NSScreen {
-        if let s = screens.first(where: { $0.localizedName == audienceScreenName }) { return s }
-        let presenterScreen = presenterWindow?.screen
-        return screens.first { $0 != presenterScreen } ?? screens.first ?? NSScreen.main!
+        let name = AudienceDisplay.choose(saved: audienceScreenName, displays: screens.map(\.localizedName),
+                                          presenter: presenterWindow?.screen?.localizedName)
+        return screens.first { $0.localizedName == name } ?? screens.first ?? NSScreen.main!
+    }
+
+    /// Whether the show can be started: a deck is loaded and not already presenting. If the app lost the
+    /// deck (it was closed there), starting opens it again.
+    var canStart: Bool { phase == .ready && deckURL != nil }
+
+    /// Start from Bema's own button, menu or ⌘↩: asks where the slides go first when there's a choice.
+    /// The phone remote and clickers start straight away on the usual display.
+    func requestStart() {
+        guard canStart else { return }
+        if AudienceDisplay.shouldAsk(enabled: askForDisplay, displayCount: screens.count) {
+            NSApp.activate()
+            presenterWindow?.makeKeyAndOrderFront(nil)
+            displayChooserOpen = true
+        } else {
+            startShow()
+        }
     }
 
     func startShow() {
-        guard powerPointReady, phase == .ready else { return }
+        guard canStart else { return }
+        displayChooserOpen = false
         Task {
+            if !powerPointReady, let url = deckURL {
+                // The deck was closed in the app (or never opened there): open it again first.
+                do {
+                    try await app.open(url)
+                    powerPointReady = true
+                    notice = nil
+                } catch {
+                    notice = error.localizedDescription
+                    return
+                }
+            }
             let screen = audienceScreen()
             let presenterScreen = presenterWindow?.screen
             let fullScreen = screens.count > 1 && screen != presenterScreen
@@ -336,7 +371,15 @@ final class PresenterModel: ObservableObject {
 
     func endShow() async {
         pollTask?.cancel()
-        try? await app.endShow()
+        // Talking to an app that has quit would launch it again (and can hang): only ask a running app.
+        if SlideshowApps.isRunning(app.bundleID) { try? await app.endShow() }
+        showStopped()
+    }
+
+    /// Back to the deck after the show ends, however it ended: the timer stops and Start is available again.
+    private func showStopped() {
+        pollTask?.cancel()
+        failedPolls = 0
         if phase == .presenting { phase = .ready }
         tool = .none
         updateOverlay()
@@ -344,6 +387,16 @@ final class PresenterModel: ObservableObject {
         showEnded = false
         if timerStartedAt != nil { toggleTimer() }
     }
+
+    /// The deck went away in the app (closed, or the app quit) during the show.
+    private func presentationClosed() {
+        showStopped()
+        powerPointReady = false
+        notice = "The slideshow ended because the presentation was closed in \(app.appName). The timer has stopped. Start slideshow opens it again."
+    }
+
+    /// Status checks that failed in a row; many in a row (with the app still running) means the deck has gone.
+    private var failedPolls = 0
 
     func endShowButton() { Task { await endShow() } }
 
@@ -360,7 +413,19 @@ final class PresenterModel: ObservableObject {
 
     private func refresh() async {
         guard phase == .presenting else { return }
-        guard let status = try? await app.status() else { return }
+        guard SlideshowApps.isRunning(app.bundleID) else { return presentationClosed() }
+        guard let status = try? await app.status() else {
+            failedPolls += 1
+            if failedPolls >= 10 {
+                // Not answering for about four seconds: stop rather than stay "presenting" forever.
+                // Starting again re-checks the deck (and opens it if it's gone).
+                showStopped()
+                powerPointReady = false
+                notice = "Bema lost touch with \(app.appName)'s slideshow, so it ended the show and stopped the timer. Start slideshow to present again."
+            }
+            return
+        }
+        failedPolls = 0
         switch status {
         case .running(let slide, let black, let white, let done, let frame):
             if slide > 0 && slide != current { current = slide }
@@ -377,17 +442,10 @@ final class PresenterModel: ObservableObject {
             }
             updateOverlay()
         case .notRunning:
-            pollTask?.cancel()
-            phase = .ready
-            updateOverlay()
-            showEnded = false
-            audience = .normal
+            // The show was ended in the app itself (Esc there, or its window closed).
+            showStopped()
         case .presentationClosed:
-            pollTask?.cancel()
-            phase = .ready
-            updateOverlay()
-            powerPointReady = false
-            notice = "The presentation was closed in \(app.appName). Open it again to present."
+            presentationClosed()
         }
     }
 
