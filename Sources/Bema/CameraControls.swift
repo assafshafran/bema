@@ -20,10 +20,10 @@ struct CameraControls: View {
             .help(camera.enabled ? "Remove your camera from the slides" : "Show your camera in a bubble on the slides the audience sees")
             if camera.selfViewOpen || camera.enabled {
                 Button { CameraModel.showVideoEffects() } label: {
-                    LabeledIcon(symbol: "camera.filters", label: "Effects", on: false)
+                    LabeledIcon(symbol: "sun.max", label: "Light", on: false)
                 }
                 .buttonStyle(.plain)
-                .help("macOS video effects for Bema's camera: turn Edge Light, Portrait or Studio Light on or off")
+                .help("Light and effects for your camera: turn macOS's Edge Light, Studio Light or Portrait on or off")
             }
         }
     }

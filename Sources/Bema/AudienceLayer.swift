@@ -257,11 +257,16 @@ struct SelfViewWindow: View {
 
     var body: some View {
         ZStack {
-            Color.black
-            CameraPreview(session: camera.session)
-            if let error = camera.error {
-                Text(error).font(.system(size: 12)).foregroundStyle(.white).multilineTextAlignment(.center).padding(12)
+            // Only the picture takes the round or rounded shape; the controls sit on top unclipped, so
+            // in circle mode none of them are cut off at the edges.
+            ZStack {
+                Color.black
+                CameraPreview(session: camera.session)
+                if let error = camera.error {
+                    Text(error).font(.system(size: 12)).foregroundStyle(.white).multilineTextAlignment(.center).padding(12)
+                }
             }
+            .clipShape(camera.selfViewRound ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 14)))
             // Drag anywhere to move; controls appear on hover.
             WindowDragArea()
             if hovering {
@@ -275,7 +280,7 @@ struct SelfViewWindow: View {
                                 camera.selfViewRound.toggle()
                             }
                             SelfViewButton(symbol: "web.camera", help: "Move it just under the camera", hint: $hint) { SelfViewWindowRef.placeUnderCamera() }
-                            SelfViewButton(symbol: "camera.filters", help: "Video effects: Edge Light, Portrait, Studio Light", hint: $hint) { CameraModel.showVideoEffects() }
+                            SelfViewButton(symbol: "sun.max", help: "Light and effects: Edge Light, Studio Light, Portrait", hint: $hint) { CameraModel.showVideoEffects() }
                             SelfViewButton(symbol: "xmark", help: "Close the self view", hint: $hint) { SelfViewWindowRef.close() }
                         }
                         .padding(3)
@@ -293,10 +298,9 @@ struct SelfViewWindow: View {
                         .overlay(Capsule().strokeBorder(.white.opacity(0.25), lineWidth: 1))
                         .foregroundStyle(.white)
                 }
-                .padding(camera.selfViewRound ? 18 : 8)
+                .padding(6)
             }
         }
-        .clipShape(camera.selfViewRound ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 14)))
         .contentShape(Rectangle())
         .onHover { hovering = $0; if !$0 { hint = nil } }
         .background(SelfViewConfigurator())

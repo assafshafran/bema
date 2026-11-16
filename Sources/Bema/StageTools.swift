@@ -88,7 +88,7 @@ struct StageToolsPanel: View {
                         } label: {
                             Label(camera.selfViewOpen ? "Close the self view" : "Show a self view only you can see", systemImage: "person.crop.square")
                         }
-                        Button { CameraModel.showVideoEffects() } label: { Label("Video effects…", systemImage: "camera.filters") }
+                        Button { CameraModel.showVideoEffects() } label: { Label("Light and effects…", systemImage: "sun.max") }
                             .help("Edge Light, Portrait and Studio Light are macOS effects. Turn them on or off here.")
                     }
                     Text("A small mirror of your camera that floats above everything and stays out of screen sharing.")
