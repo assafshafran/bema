@@ -8,7 +8,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ### Website: every feature, with a side panel
 - The home page has an **Everything in Bema** section: 48 feature cards in eight groups, with filters, search and a count. A card opens a panel that slides in from the side (a bottom sheet on phones) with how it works, shortcuts, a link to Help and the other features in its group; arrow keys move through them, Esc closes, and the page stays where it was. Each feature has its own link (`#feature-laser`), and the "Also in Bema" tags open their feature. It replaces the four-item "What it does" list.
-- The *Your screen / What the call sees* section now comes right after the opening picture, before the features.
+- The *Your screen / What the call sees* section now comes right after the opening picture. The features section sits after the pointer tools, before Privacy.
 - Checked in a browser at desktop and phone widths: filters, search, opening, next and previous, Esc, focus returning to the card, no sideways scrolling on a phone. Not verified: Safari and Firefox (checked in the app's Chromium-based browser), screen readers.
 
 ### Decks and links reach the Bema that's already open (Bema 0.1.9)
