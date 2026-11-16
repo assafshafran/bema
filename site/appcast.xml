@@ -6,6 +6,15 @@
     <description>Bema updates</description>
     <language>en</language>
     <item>
+      <title>Version 0.1.3</title>
+      <pubDate>Mon, 16 Nov 2026 13:46:42 GMT</pubDate>
+      <sparkle:version>4</sparkle:version>
+      <sparkle:shortVersionString>0.1.3</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <description><![CDATA[<p>See the release notes on GitHub: https://github.com/getbema/bema/releases/tag/v0.1.3</p>]]></description>
+      <enclosure url="https://github.com/getbema/bema/releases/download/v0.1.3/Bema.dmg" type="application/octet-stream" sparkle:edSignature="fWQ3UMtc+zalBXtcWa9X9PDZXD0GZypzNYb/Kf3pFFLgx0XXIR2j7AoPlDgy18rE+TSlFlgnUBDcDzh01bjiAA==" length="3955056"/>
+    </item>
+    <item>
       <title>Version 0.1.2</title>
       <pubDate>Mon, 16 Nov 2026 12:04:14 GMT</pubDate>
       <sparkle:version>3</sparkle:version>
