@@ -4,6 +4,8 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-16
 
+- **Cloud decks are read through PowerPoint, not downloaded.** PowerPoint reports a web address for a deck opened from OneDrive, SharePoint or Teams. Bema could have PowerPoint save a copy to disk and read that, but saving a copy can move PowerPoint's open document to the copy, and downloading it ourselves would need the person's Microsoft sign-in. Reading titles and notes over AppleScript (as for Keynote) keeps the presenter on the cloud copy and sends nothing anywhere. It costs a few seconds per load (about 12 for 57 slides), and previews are re-exported every time because there's no modification date to cache by. Recents stay files only: a web address can't be reopened without PowerPoint already having it open.
+
 - **The repository moved to the `getbema` organization** (asked for by the maintainer), like Didja's `didja-dev`. GitHub redirects the old `assafshafran/bema` links, so 0.1.0's update feed and downloads keep working.
 
 - **The presenter window is hidden from screen sharing by default** (asked for by the maintainer). People share their screen on calls; notes, the timer and the prompter should never show. Turning it off is one switch in Stage tools.

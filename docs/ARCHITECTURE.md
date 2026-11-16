@@ -18,7 +18,7 @@ PowerPoint or Keynote keeps running the slideshow, so everything the audience se
 
 | | PowerPoint (`PowerPointController.swift`) | Keynote (`KeynoteController` in `SlideshowApp.swift`) |
 |---|---|---|
-| Slides and notes | Read from the `.pptx` XML (`PPTXReader.swift`) | Read through Keynote's AppleScript |
+| Slides and notes | Read from the `.pptx` XML (`PPTXReader.swift`); for a deck opened from OneDrive, SharePoint or Teams (a web address, no file), through PowerPoint's AppleScript (`CloudDeck.swift`) | Read through Keynote's AppleScript |
 | Previews | PowerPoint's PDF export | Keynote's PDF export, skipped slides included |
 | Starting the show | Show type "window", then window bounds by AppleScript | **Play → Play Slideshow in Window** pressed through Accessibility |
 | Full screen on the chosen display | Accessibility `AXFullScreen` on the slideshow window | The same |

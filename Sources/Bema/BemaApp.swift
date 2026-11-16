@@ -202,6 +202,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// bema://present                       → present the deck open in PowerPoint
     /// bema://present?path=/Users/…/deck.pptx → present that file
     /// bema://present?url=file:///…           → same, as a file URL (what Office add-ins report)
+    /// bema://present?url=https://…           → a deck PowerPoint opened from OneDrive or SharePoint
     @MainActor
     static func handleLink(_ link: URL) {
         let model = PresenterModel.shared
@@ -223,7 +224,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else if let raw = items.first(where: { $0.name == "url" })?.value, let u = URL(string: raw), u.isFileURL {
             file = u
         }
-        if let file, FileManager.default.fileExists(atPath: file.path) {
+        if let raw = items.first(where: { $0.name == "url" })?.value, let cloud = URL(string: raw), CloudDeck.isCloud(cloud) {
+            if cloud != model.deckURL || model.phase == .empty { model.load(cloud) }
+        } else if let file, FileManager.default.fileExists(atPath: file.path) {
             if file.standardizedFileURL != model.deckURL?.standardizedFileURL || model.phase == .empty {
                 model.load(file)
             }

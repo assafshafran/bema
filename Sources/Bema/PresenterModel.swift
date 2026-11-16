@@ -158,7 +158,8 @@ final class PresenterModel: ObservableObject {
         addRecent(url)
 
         app = SlideshowApps.controller(for: url)
-        let readsThroughApp = app is KeynoteController
+        // Keynote decks, and PowerPoint decks opened from OneDrive, SharePoint or Teams (no file to read).
+        let readsThroughApp = app is KeynoteController || CloudDeck.isCloud(url)
 
         if !readsThroughApp {
             phase = .loading("Reading speaker notes…")
@@ -186,7 +187,7 @@ final class PresenterModel: ObservableObject {
         }
 
         if readsThroughApp {
-            phase = .loading("Reading presenter notes…")
+            phase = .loading(app is KeynoteController ? "Reading presenter notes…" : "Reading speaker notes from PowerPoint…")
             do {
                 slides = try await app.readSlides() ?? []
             } catch {
@@ -197,7 +198,8 @@ final class PresenterModel: ObservableObject {
         }
 
         let cached = Self.previewCacheURL(for: url)
-        if !FileManager.default.fileExists(atPath: cached.path) {
+        // A cloud deck has no modification date to notice edits by, so its previews are made fresh each time.
+        if CloudDeck.isCloud(url) || !FileManager.default.fileExists(atPath: cached.path) {
             phase = .loading("Preparing slide previews…")
             do { try await app.exportPDF(to: cached) } catch {
                 notice = "Slide previews aren't available: \(error.localizedDescription)"
@@ -226,13 +228,15 @@ final class PresenterModel: ObservableObject {
     /// Previews are cached per file path + modification date + size, so an edited deck is re-exported.
     private static func previewCacheURL(for url: URL) -> URL {
         let attrs = try? FileManager.default.attributesOfItem(atPath: url.path)
-        let stamp = "\(url.path)|\((attrs?[.modificationDate] as? Date)?.timeIntervalSince1970 ?? 0)|\(attrs?[.size] ?? 0)"
+        let stamp = "\(CloudDeck.key(url))|\((attrs?[.modificationDate] as? Date)?.timeIntervalSince1970 ?? 0)|\(attrs?[.size] ?? 0)"
         let hash = SHA256.hash(data: Data(stamp.utf8)).map { String(format: "%02x", $0) }.joined().prefix(24)
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         return caches.appendingPathComponent("Bema/\(hash).pdf")
     }
 
     private func addRecent(_ url: URL) {
+        // Recents reopen files; a cloud deck can only be presented while PowerPoint has it open.
+        guard url.isFileURL else { return }
         var list = recents.filter { $0.path != url.path }
         list.insert(url, at: 0)
         recents = Array(list.prefix(8))
@@ -263,7 +267,7 @@ final class PresenterModel: ObservableObject {
             presenterWindow?.makeKeyAndOrderFront(nil)
             guard let url = openInPowerPoint else {
                 notice = PowerPointController.isRunning || SlideshowApps.isRunning(KeynoteController.bundleID)
-                    ? "The deck in front isn't a saved file on this Mac. Save it first, or open it from Finder."
+                    ? "The deck in front hasn't been saved yet. Save it, on this Mac or to OneDrive, then try again."
                     : "Neither PowerPoint nor Keynote is running. Open a deck in one of them, or choose one here."
                 return
             }

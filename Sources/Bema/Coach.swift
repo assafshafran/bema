@@ -70,7 +70,7 @@ final class CoachModel: ObservableObject {
 
     // MARK: Budgets and pace
 
-    private var budgetKey: String? { presenter.deckURL?.path }
+    private var budgetKey: String? { presenter.deckURL.map(CloudDeck.key) }
 
     /// Seconds planned for each visible slide: your rehearsal timings if you saved them, otherwise the
     /// planned talk length shared out by how much is in each slide's notes.
@@ -227,7 +227,7 @@ final class CoachModel: ObservableObject {
     // MARK: Saving reports
 
     private static func reportURL(for deck: URL) -> URL {
-        let hash = SHA256.hash(data: Data(deck.path.utf8)).map { String(format: "%02x", $0) }.joined().prefix(20)
+        let hash = SHA256.hash(data: Data(CloudDeck.key(deck).utf8)).map { String(format: "%02x", $0) }.joined().prefix(20)
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Bema/Reports", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

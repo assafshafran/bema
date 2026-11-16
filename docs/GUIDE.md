@@ -31,7 +31,8 @@ Open a `.key` file (Finder → Open With → Bema, drag it in, ⌘O, or ⌃⌥P 
 - **Reconnects:** if Bema is restarted while the deck's slideshow is running, it picks the show back up.
 - **Rehearse without presenting:** before you start the show, the arrows step through slides and notes locally.
 - **Present the deck open in PowerPoint:** press **⌃⌥P** from anywhere (including inside PowerPoint), use **File → Present Deck Open in PowerPoint** (⌘⇧P) or the Dock icon's menu, or click **Present** on the welcome screen's "Open in PowerPoint" card.
-- **Links:** `bema://present` (the deck open in PowerPoint), `bema://present?path=/full/path/deck.pptx`, `bema://prompter[?place=camera]`. Handy for Shortcuts, Stream Deck or scripts.
+- **Decks from OneDrive, SharePoint or Teams:** open the deck in PowerPoint (from the web, Teams or PowerPoint's own Open dialog), then present it from Bema as above. There's no file on the Mac for these, so Bema reads the notes through PowerPoint (a few seconds longer for a big deck) and makes the slide previews fresh each time you load it. They don't appear under Open Recent: Bema can present them only while PowerPoint has them open. Decks synced to the Mac by the OneDrive app (in `~/Library/CloudStorage`) can also be opened from Finder like any file.
+- **Links:** `bema://present` (the deck open in PowerPoint), `bema://present?path=/full/path/deck.pptx`, `bema://present?url=https://…` (a OneDrive or SharePoint deck open in PowerPoint), `bema://prompter[?place=camera]`. Handy for Shortcuts, Stream Deck or scripts.
 - **Opening a deck:**
   - Finder → right-click a `.pptx` → **Open With → Bema**
   - Finder → right-click → **Quick Actions / Services → Present with Bema**

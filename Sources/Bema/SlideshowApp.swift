@@ -21,7 +21,8 @@ protocol SlideshowController: AnyObject {
     func setScreen(_ state: PowerPointController.ScreenState) async throws
     func endShow() async throws
     func status() async throws -> ShowStatus
-    /// The file in the app's front window, if it's saved on this Mac. Never launches the app.
+    /// The deck in the app's front window: a file on this Mac, or (PowerPoint) the web address of a deck
+    /// opened from OneDrive, SharePoint or Teams. Never launches the app.
     func activePresentationURL() async -> URL?
 }
 
@@ -29,7 +30,6 @@ extension PowerPointController: SlideshowController {
     var appName: String { "PowerPoint" }
     var bundleID: String { Self.bundleID }
     var supportsScreenStates: Bool { true }
-    func readSlides() async throws -> [SlideInfo]? { nil }
 }
 
 enum SlideshowApps {

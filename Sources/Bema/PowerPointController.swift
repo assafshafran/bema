@@ -36,7 +36,11 @@ final class PowerPointController {
         !NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty
     }
 
-    /// The deck in PowerPoint's front window, if it's a file on this Mac. Never launches PowerPoint.
+    /// The open deck that came from OneDrive, SharePoint or Teams (a web address), if that's what this is.
+    private var cloudURL: URL?
+
+    /// The deck in PowerPoint's front window: a file on this Mac, or the web address of a deck opened from
+    /// OneDrive, SharePoint or Teams. Nil for a deck that was never saved. Never launches PowerPoint.
     func activePresentationURL() async -> URL? {
         guard Self.isRunning else { return nil }
         let path = try? await run("""
@@ -45,7 +49,9 @@ final class PowerPointController {
             return full name of active presentation
         end tell
         """)
-        guard let path, path.hasPrefix("/"), FileManager.default.fileExists(atPath: path) else { return nil }
+        guard let path else { return nil }
+        if let cloud = CloudDeck.url(fromFullName: path) { return cloud }
+        guard path.hasPrefix("/"), FileManager.default.fileExists(atPath: path) else { return nil }
         return URL(fileURLWithPath: path)
     }
 
@@ -58,6 +64,8 @@ final class PowerPointController {
     /// Opens the deck in PowerPoint (or reuses it if already open) and waits until it's ready.
     func open(_ url: URL) async throws {
         guard Self.isInstalled else { throw PowerPointError.notInstalled }
+        if CloudDeck.isCloud(url) { return try await attachToCloudDeck(url) }
+        cloudURL = nil
         let name = url.lastPathComponent
         presentationName = name
         let p = Self.quote(url.path), n = Self.quote(name)
@@ -74,6 +82,79 @@ final class PowerPointController {
             try await Task.sleep(nanoseconds: 250_000_000)
         }
         throw PowerPointError.timeout("opening \(name)")
+    }
+
+    /// A cloud deck can't be opened from a path: find it among the decks PowerPoint has open.
+    private func attachToCloudDeck(_ url: URL) async throws {
+        let candidates = CloudDeck.fullNameCandidates(url).map(Self.quote).joined(separator: ", ")
+        let name = Self.isRunning ? try await run("""
+        tell application "Microsoft PowerPoint"
+            set wanted to {\(candidates)}
+            repeat with i from 1 to count of presentations
+                if wanted contains ((full name of presentation i) as text) then return name of presentation i
+            end repeat
+            return ""
+        end tell
+        """) : ""
+        guard !name.isEmpty else {
+            throw PowerPointError.script("This deck is in OneDrive or SharePoint and isn't open in PowerPoint any more. Open it in PowerPoint again, then present it from Bema.")
+        }
+        presentationName = name
+        cloudURL = url
+    }
+
+    /// Titles and notes for a cloud deck, read through PowerPoint (there's no file to read). Nil for a file,
+    /// which Bema reads itself: that's faster.
+    func readSlides() async throws -> [SlideInfo]? {
+        guard cloudURL != nil else { return nil }
+        // `set x to content of …` doesn't compile against PowerPoint's dictionary, hence `get` + `copy result`.
+        let out = try await run("""
+        tell application "Microsoft PowerPoint"
+            set thePres to presentation \(Self.quote(presentationName))
+            set rs to character id 30
+            set us to character id 31
+            set titleKinds to {"placeholder type title placeholder", "placeholder type center title placeholder"}
+            set rv to ""
+            repeat with i from 1 to count of slides of thePres
+                set theSlide to slide i of thePres
+                set titleText to ""
+                set notesText to ""
+                set hiddenText to "false"
+                try
+                    get (hidden of slide show transition of theSlide) as text
+                    copy result to hiddenText
+                end try
+                repeat with k from 1 to count of shapes of theSlide
+                    try
+                        get (placeholder type of placeholder format of shape k of theSlide) as text
+                        copy result to kindText
+                        if titleKinds contains kindText then
+                            get content of text range of text frame of shape k of theSlide
+                            copy result to titleText
+                            exit repeat
+                        end if
+                    end try
+                end repeat
+                set notesPage to notes page of theSlide
+                repeat with k from 1 to count of shapes of notesPage
+                    try
+                        get (placeholder type of placeholder format of shape k of notesPage) as text
+                        copy result to kindText
+                        if kindText is "placeholder type body placeholder" then
+                            get content of text range of text frame of shape k of notesPage
+                            copy result to notesText
+                            exit repeat
+                        end if
+                    end try
+                end repeat
+                set rv to rv & (i as text) & us & hiddenText & us & titleText & us & notesText & rs
+            end repeat
+            return rv
+        end tell
+        """)
+        let slides = CloudDeck.parseSlides(out)
+        if slides.isEmpty { throw PPTXError.unreadable("PowerPoint reported no slides.") }
+        return slides
     }
 
     /// Exports the deck as a PDF so we can draw slide previews.
