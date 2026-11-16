@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### Decks and links reach the Bema that's already open (Bema 0.1.9)
+- With two copies of Bema on the Mac (a release in Applications and another anywhere else), opening a deck or a `bema://` link could start the second copy, which loaded the deck in a window behind the first, so the first seemed to ignore it. A second Bema now hands what it was asked to open to the one already running, brings it forward, and quits without showing a window.
+- Checked live: with the release running, a forced second launch of the new build (`open -n`) with another deck loaded that deck in the running Bema and quit within a second and a half. Not verified: the Finder Quick Action and the PowerPoint button with two copies installed.
+
 ### Edit speaker notes in Bema (Bema 0.1.8)
 - A pencil next to the slide title edits any slide's notes in the notes panel; **Type notes** writes notes for a slide that has none. ⌘↩ keeps the change, Esc cancels. Edits are drafts like written notes: marked **Edited**, followed by the prompter, kept per deck, written into the deck with **Save to deck**, and ↶ returns to the deck's notes. An edit that ends up the same as the deck's notes isn't kept.
 - Not verified: editing Hebrew notes (the editor doesn't align right yet), Keynote.

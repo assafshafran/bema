@@ -181,8 +181,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var keyMonitor: Any?
     private var presentHotKey: HotKey?
     private let services = ServiceProvider()
+    /// Another Bema was already running when this one started: hand everything to it and quit.
+    private var defersTo: SingleInstance.Instance?
+
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        defersTo = MainActor.assumeIsolated { SingleInstance.current() }
+        // Never show a second window or menu bar icon.
+        if defersTo != nil { NSApp.setActivationPolicy(.prohibited) }
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if let other = defersTo {
+            // Decks and links arrive before this; give them a moment to be handed over.
+            SingleInstance.activate(other)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { NSApp.terminate(nil) }
+            return
+        }
         NSApp.servicesProvider = services
         NSUpdateDynamicServices()
         // Control-Option-P anywhere: hand the deck open in PowerPoint to Bema.
@@ -199,6 +213,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Finder "Open With", dragging onto the Dock icon, and `open -a Bema file.pptx`.
     func application(_ application: NSApplication, open urls: [URL]) {
+        if let other = defersTo { SingleInstance.forward(urls, to: other); return }
         guard let url = urls.first else { return }
         Task { @MainActor in
             if url.scheme?.lowercased() == "bema" {

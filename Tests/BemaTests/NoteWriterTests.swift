@@ -338,3 +338,14 @@ final class NoteWriterRenderTests: XCTestCase {
         try png.write(to: FileManager.default.temporaryDirectory.appendingPathComponent("bema-\(name).png"))
     }
 }
+
+final class SingleInstanceTests: XCTestCase {
+    func testDefersToTheEarliestOtherBema() {
+        let a = SingleInstance.Instance(pid: 10, bundleURL: URL(fileURLWithPath: "/Applications/Bema.app"), launched: Date(timeIntervalSince1970: 100))
+        let b = SingleInstance.Instance(pid: 20, bundleURL: URL(fileURLWithPath: "/Users/sam/Applications/Bema.app"), launched: Date(timeIntervalSince1970: 50))
+        let me = SingleInstance.Instance(pid: 30, bundleURL: nil, launched: Date(timeIntervalSince1970: 10))
+        XCTAssertEqual(SingleInstance.running(among: [a, b, me], me: 30), b)
+        XCTAssertNil(SingleInstance.running(among: [me], me: 30))
+        XCTAssertNil(SingleInstance.running(among: [], me: 30))
+    }
+}
