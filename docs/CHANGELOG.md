@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
-### Choose the display when you start; Bema recovers when the show ends in PowerPoint
+### Choose the display when you start; Bema recovers when the show ends in PowerPoint (Bema 0.1.6)
 - With two or more displays, **Start slideshow** and ⌘↩ ask *Where should the slides go?*: a card per display (its shape, size and which one Bema is on), the usual one already selected, Return to start. It warns when the chosen display is Bema's own (the show then opens in a window). **Ask every time** turns it off; **Slides on → Ask Before Each Slideshow** turns it back on. The phone remote starts without asking.
 - Ending the show in PowerPoint (Esc, closing the slideshow window), closing the deck or quitting PowerPoint during the show now returns Bema to the deck: the timer stops, the overlay goes, and **Start slideshow** works again. If the deck was closed, starting opens it again. Before, a closed deck left Start disabled and the timer running until Bema was restarted, and a quit PowerPoint left Bema presenting and sending AppleScript that could relaunch it. Ending the show in PowerPoint itself (Esc) also left Bema stuck presenting: PowerPoint keeps a slideshow view whose state can no longer be read, and Bema took that as a passing error.
 - Checked live with the sample deck on one display: closing the deck mid-show returns to the deck with the timer stopped, Start slideshow reopens it and starts, and ending the show from PowerPoint returns to the deck.
