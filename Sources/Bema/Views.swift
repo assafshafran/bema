@@ -809,7 +809,9 @@ struct SlidesColumn: View {
                                 .padding(10)
                         }
                     }
-                    .frame(maxHeight: geo.size.height * share)
+                    // An exact height, not a ceiling: with only a ceiling the column split its height evenly
+                    // with the up-next row and the handle seemed to do nothing.
+                    .frame(height: SlideSplit.slideHeight(columnHeight: geo.size.height, share: share))
 
                 SlideResizeHandle()
                     .padding(.vertical, -8)
@@ -865,9 +867,18 @@ enum SlideSplit {
     static let standard = 0.66
     static let range = 0.35...0.9
 
+    /// Height of the column's header, padding and gaps, which the slides don't get.
+    static let chrome = 90.0
+
+    /// The current slide's height in a column this tall.
+    static func slideHeight(columnHeight: Double, share: Double) -> Double {
+        let clamped = min(max(share, range.lowerBound), range.upperBound)
+        return max(60, (columnHeight - chrome) * clamped)
+    }
+
     static func share(start: Double, dragY: Double, height: Double) -> Double {
         guard height > 0 else { return start }
-        return min(max(start + dragY / height, range.lowerBound), range.upperBound)
+        return min(max(start + dragY / max(height - chrome, 1), range.lowerBound), range.upperBound)
     }
 }
 

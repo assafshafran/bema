@@ -185,8 +185,20 @@ final class DeviceChoiceTests: XCTestCase {
 }
 
 final class SlideSplitTests: XCTestCase {
-    func testDraggingDownMakesTheCurrentSlideBigger() {
-        XCTAssertEqual(SlideSplit.share(start: 0.66, dragY: 100, height: 1000), 0.76, accuracy: 0.0001)
+    func testDraggingDownMakesTheCurrentSlideBiggerByTheDrag() {
+        let before = SlideSplit.slideHeight(columnHeight: 1000, share: 0.66)
+        let share = SlideSplit.share(start: 0.66, dragY: 100, height: 1000)
+        XCTAssertEqual(SlideSplit.slideHeight(columnHeight: 1000, share: share) - before, 100, accuracy: 0.0001)
+    }
+
+    func testTheCurrentSlideGetsItsShareOfTheColumn() {
+        // An exact height, so changing the share always changes the slide (it used to be only a ceiling).
+        let small = SlideSplit.slideHeight(columnHeight: 800, share: 0.4)
+        let large = SlideSplit.slideHeight(columnHeight: 800, share: 0.8)
+        XCTAssertEqual(small, (800 - SlideSplit.chrome) * 0.4, accuracy: 0.0001)
+        XCTAssertEqual(large, small * 2, accuracy: 0.0001)
+        XCTAssertEqual(SlideSplit.slideHeight(columnHeight: 800, share: 5), (800 - SlideSplit.chrome) * SlideSplit.range.upperBound, accuracy: 0.0001)
+        XCTAssertEqual(SlideSplit.slideHeight(columnHeight: 50, share: 0.66), 60)
     }
 
     func testStaysWithinLimits() {

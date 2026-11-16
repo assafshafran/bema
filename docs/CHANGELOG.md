@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### The current slide resizes when you drag its handle
+- Dragging the handle under the current slide now makes it bigger or smaller. In 0.1.3 the handle set only the largest height the slide could take, and the column split its height evenly between the current slide and the up-next row, so the slide never reached it and dragging seemed to do nothing. The slide now gets exactly its share of the column (two thirds by default, so it starts bigger than before) and the up-next row takes the rest.
+- Checked live with the sample deck: dragging up and down resizes it, double-click resets. Not verified: very small windows.
+
 ### Present decks from OneDrive, SharePoint and Teams (Bema 0.1.4)
 - A deck PowerPoint opened from OneDrive, SharePoint or Teams can now be presented: ⌃⌥P, the welcome screen's **Present**, the Dock menu and `bema://present` all find it. Before, Bema said the deck in front "isn't a saved file on this Mac", because PowerPoint reports a web address for these decks and Bema read notes from the file.
 - For such a deck Bema reads titles, notes and hidden slides through PowerPoint, and exports the slide previews each time it loads it (there's no modification date to tell when it changed). Saved slide timings and talk reports are kept under the deck's web address. Cloud decks aren't added to Open Recent.
