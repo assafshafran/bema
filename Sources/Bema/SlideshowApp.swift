@@ -13,6 +13,8 @@ protocol SlideshowController: AnyObject {
     /// Titles and notes read through the app, or nil when Bema reads them from the file itself.
     func readSlides() async throws -> [SlideInfo]?
     func exportPDF(to pdfURL: URL) async throws
+    /// Writes speaker notes into the open deck and saves it. Returns the slides that were written.
+    func writeNotes(_ notes: [Int: String]) async throws -> Set<Int>
     @discardableResult
     func startShow(on screen: NSScreen, from slide: Int, fullScreen: Bool) async throws -> Bool
     func next() async throws
@@ -237,6 +239,20 @@ final class KeynoteController: SlideshowController {
         return slides
     }
 
+    func writeNotes(_ notes: [Int: String]) async throws -> Set<Int> {
+        let sets = notes.sorted { $0.key < $1.key }.map { id, text in
+            "set presenter notes of slide \(id) of d to \(AppleScriptText.literal(text))"
+        }.joined(separator: "\n")
+        try await runner.run("""
+        \(tellKeynote)
+            set d to \(doc)
+            \(sets)
+            save d
+        end tell
+        """)
+        return Set(notes.keys)
+    }
+
     func exportPDF(to pdfURL: URL) async throws {
         try FileManager.default.createDirectory(at: pdfURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? FileManager.default.removeItem(at: pdfURL)
@@ -369,5 +385,15 @@ final class KeynoteController: SlideshowController {
         guard let path, path.hasPrefix("/"), FileManager.default.fileExists(atPath: path),
               SlideshowApps.keynoteExtensions.contains(URL(fileURLWithPath: path).pathExtension.lowercased()) else { return nil }
         return URL(fileURLWithPath: path)
+    }
+}
+
+/// AppleScript text with line breaks: each line quoted, joined with `return` (a new paragraph in the
+/// notes of both PowerPoint and Keynote).
+enum AppleScriptText {
+    static func literal(_ text: String) -> String {
+        let lines = text.replacingOccurrences(of: "\r\n", with: "\n").replacingOccurrences(of: "\r", with: "\n")
+            .components(separatedBy: "\n")
+        return lines.map(PowerPointController.quote).joined(separator: " & return & ")
     }
 }

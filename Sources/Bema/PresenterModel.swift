@@ -29,7 +29,17 @@ final class PresenterModel: ObservableObject {
         }
     }
     @Published private(set) var deckURL: URL?
+    /// The slides with any draft notes filled in: what the notes panel, prompter and remote show.
     @Published private(set) var slides: [SlideInfo] = []
+    /// The slides as the deck has them.
+    var deckSlides: [SlideInfo] = [] { didSet { slides = DraftNotes.merge(deckSlides, drafts) } }
+    /// Notes Bema wrote for slides that had none, by slide number. Kept per deck until saved or discarded.
+    @Published var drafts: [Int: String] = [:] { didSet { slides = DraftNotes.merge(deckSlides, drafts) } }
+    /// Writing notes now: which slide, how far through a batch.
+    @Published var noteWriting: NoteWritingProgress?
+    /// The notes writer settings sheet.
+    @Published var noteWriterSettingsOpen = false
+    var noteWritingTask: Task<Void, Never>?
     @Published private(set) var current: Int = 1 {
         didSet {
             if oldValue != current {
@@ -42,7 +52,7 @@ final class PresenterModel: ObservableObject {
     @Published private(set) var pdf: PDFDocument?
     @Published private(set) var audience: AudienceScreen = .normal
     @Published private(set) var showEnded = false
-    @Published private(set) var powerPointReady = false
+    @Published var powerPointReady = false
     @Published var notice: String?
     @Published var showAccessibilityHelp = false
     /// The Stage tools panel (phone remote, poll, camera bubble, listening, rehearsal).
@@ -153,7 +163,9 @@ final class PresenterModel: ObservableObject {
         if phase == .presenting { await endShow() }
         pollTask?.cancel()
         deckURL = url
-        slides = []
+        noteWritingTask?.cancel()
+        drafts = [:]
+        deckSlides = []
         pdf = nil
         imageCache = [:]
         powerPointReady = false
@@ -170,7 +182,7 @@ final class PresenterModel: ObservableObject {
         if !readsThroughApp {
             phase = .loading("Reading speaker notes…")
             do {
-                slides = try await Task.detached { try PPTXReader.read(url: url) }.value
+                deckSlides = try await Task.detached { try PPTXReader.read(url: url) }.value
             } catch {
                 phase = .failed(error.localizedDescription)
                 return
@@ -195,7 +207,7 @@ final class PresenterModel: ObservableObject {
         if readsThroughApp {
             phase = .loading(app is KeynoteController ? "Reading presenter notes…" : "Reading speaker notes from PowerPoint…")
             do {
-                slides = try await app.readSlides() ?? []
+                deckSlides = try await app.readSlides() ?? []
             } catch {
                 phase = .failed(error.localizedDescription)
                 return
@@ -225,6 +237,7 @@ final class PresenterModel: ObservableObject {
     }
 
     private func slidesLoaded(_ url: URL) {
+        drafts = DraftNotes.pruned(DraftNotes.load(for: url), for: deckSlides)
         current = slides.first { !$0.hidden }?.id ?? 1
         PrompterModel.shared.load(slides: slides)
         CoachModel.shared.deckLoaded(url)
@@ -287,7 +300,9 @@ final class PresenterModel: ObservableObject {
             if phase == .presenting { await endShow() }
             phase = .empty
             deckURL = nil
-            slides = []
+            noteWritingTask?.cancel()
+            drafts = [:]
+            deckSlides = []
             pdf = nil
         }
     }
@@ -495,6 +510,9 @@ final class PresenterModel: ObservableObject {
     /// Returns true if the key was handled. Clickers usually send Page Up / Page Down, arrows or B.
     func handleKey(_ event: NSEvent) -> Bool {
         guard phase == .ready || phase == .presenting else { return false }
+        // Typing (editing a draft, the notes writer settings) and sheets keep their keys.
+        if let text = NSApp.keyWindow?.firstResponder as? NSTextView, text.isEditable { return false }
+        if NSApp.keyWindow?.sheetParent != nil { return false }
         if !event.modifierFlags.intersection([.command, .control, .option]).isEmpty { return false }
         switch event.keyCode {
         case 124, 125, 49, 121, 36, 76: next(); return true          // → ↓ space PgDn return enter
@@ -643,6 +661,22 @@ final class PresenterModel: ObservableObject {
         if imageCache.count > 80 { imageCache.removeAll() }
         imageCache[key] = img
         return img
+    }
+
+    /// The slide's text, from the slide previews (the same for PowerPoint files, cloud decks and Keynote).
+    func slideText(for id: Int) -> String {
+        guard let pdf, let idx = pageIndex(for: id), let page = pdf.page(at: idx) else { return "" }
+        return page.string ?? ""
+    }
+
+    /// The slide as a PNG about 1280 pixels wide, for writers that read pictures.
+    func slidePNG(for id: Int) -> Data? {
+        guard let pdf, let idx = pageIndex(for: id), let page = pdf.page(at: idx) else { return nil }
+        let bounds = page.bounds(for: .cropBox)
+        let size = NSSize(width: 1280, height: 1280 * bounds.height / max(bounds.width, 1))
+        let image = page.thumbnail(of: size, for: .cropBox)
+        guard let tiff = image.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff) else { return nil }
+        return rep.representation(using: .png, properties: [:])
     }
 
     var slideAspect: CGFloat {

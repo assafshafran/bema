@@ -41,6 +41,7 @@ struct RootView: View {
         .tint(Theme.accent)
         .navigationTitle(model.deckURL == nil ? "Bema" : model.deckName)
         .sheet(isPresented: $model.displayChooserOpen) { DisplayChooserSheet().environmentObject(model) }
+        .sheet(isPresented: $model.noteWriterSettingsOpen) { NoteWriterSettingsView().environmentObject(model) }
         .background(WindowStyler(hideFromSharing: hidePresenterFromSharing, theme: themeName))
         .onReceive(NotificationCenter.default.publisher(for: .openSelfView)) { _ in
             openWindow(id: "selfview")
@@ -955,6 +956,8 @@ struct NotesPanel: View {
     @EnvironmentObject private var model: PresenterModel
     @AppStorage(NotesFont.key) private var fontSize: Double = 26
     @AppStorage("notesTab") private var tab = "notes"
+    @State private var editingDraft = false
+    @State private var draftText = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -967,6 +970,8 @@ struct NotesPanel: View {
                 Spacer()
                 if tab == "notes" {
                 HStack(spacing: 6) {
+                    NoteWriterMenu()
+                        .padding(.trailing, 4)
                     Button("A−") { fontSize = max(fontSize - 2, NotesFont.range.lowerBound) }
                         .buttonStyle(IconButtonStyle(tint: Theme.textSoft, size: 32))
                         .help("Smaller notes (⌘−)")
@@ -995,7 +1000,21 @@ struct NotesPanel: View {
                                         .font(.system(size: 16, weight: .semibold)).foregroundStyle(Theme.textSoft)
                                 }
                             }
-                            if !slide.notes.isEmpty {
+                            if let w = model.noteWriting, w.total > 1, w.slide != slide.id {
+                                WritingRow(progress: w)
+                            }
+                            if slide.draft {
+                                DraftBar(slide: slide.id, editing: $editingDraft, text: $draftText)
+                            }
+                            if slide.draft && editingDraft {
+                                TextEditor(text: $draftText)
+                                    .font(.system(size: max(14, fontSize * 0.7)))
+                                    .scrollContentBackground(.hidden)
+                                    .padding(8)
+                                    .frame(minHeight: 200)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
+                                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Theme.borderStrong))
+                            } else if !slide.notes.isEmpty {
                                 Text(NoteCues.attributed(slide.notes, fontSize: fontSize))
                                     .font(.system(size: fontSize))
                                     .lineSpacing(fontSize * 0.3)
@@ -1005,8 +1024,7 @@ struct NotesPanel: View {
                                     .frame(maxWidth: .infinity, alignment: slide.notes.isRightToLeft ? .topTrailing : .topLeading)
                                     .environment(\.layoutDirection, slide.notes.isRightToLeft ? .rightToLeft : .leftToRight)
                             } else {
-                                Text("No notes for this slide.")
-                                    .font(.system(size: fontSize)).foregroundStyle(Theme.dim)
+                                NoNotesView(slide: slide.id, fontSize: fontSize)
                             }
                         }
                     }
@@ -1014,7 +1032,7 @@ struct NotesPanel: View {
                     .padding(.horizontal, 24).padding(.vertical, 20)
                     .id("top")
                 }
-                .onChange(of: model.current) { proxy.scrollTo("top", anchor: .top) }
+                .onChange(of: model.current) { proxy.scrollTo("top", anchor: .top); editingDraft = false }
             }
 
             if let next = model.nextSlide, let line = NoteCues.plain(next.notes).split(separator: "\n").first {

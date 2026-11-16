@@ -4,8 +4,10 @@ struct SlideInfo: Identifiable, Hashable {
     /// 1-based slide number, as PowerPoint numbers slides.
     let id: Int
     let title: String
-    let notes: String
+    var notes: String
     let hidden: Bool
+    /// The notes are a draft Bema wrote (kept by Bema), not notes from the deck.
+    var draft = false
 }
 
 enum PPTXError: LocalizedError {

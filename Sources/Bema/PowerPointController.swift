@@ -158,6 +158,37 @@ final class PowerPointController {
     }
 
     /// Exports the deck as a PDF so we can draw slide previews.
+    /// Writes speaker notes into the notes area (the body placeholder of each notes page) and saves the
+    /// deck. Returns the slides that have a notes area and were written.
+    func writeNotes(_ notes: [Int: String]) async throws -> Set<Int> {
+        let blocks = notes.sorted { $0.key < $1.key }.map { id, text in
+            """
+                set notesPage to notes page of slide \(id) of thePres
+                repeat with k from 1 to count of shapes of notesPage
+                    try
+                        get (placeholder type of placeholder format of shape k of notesPage) as text
+                        copy result to kindText
+                        if kindText is "placeholder type body placeholder" then
+                            set content of text range of text frame of shape k of notesPage to \(AppleScriptText.literal(text))
+                            set writtenList to writtenList & ",\(id)"
+                            exit repeat
+                        end if
+                    end try
+                end repeat
+            """
+        }.joined(separator: "\n")
+        let out = try await run("""
+        tell application "Microsoft PowerPoint"
+            set thePres to presentation \(Self.quote(presentationName))
+            set writtenList to ""
+        \(blocks)
+            save thePres
+            return writtenList
+        end tell
+        """)
+        return Set(out.split(separator: ",").compactMap { Int($0) })
+    }
+
     func exportPDF(to pdfURL: URL) async throws {
         try FileManager.default.createDirectory(at: pdfURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? FileManager.default.removeItem(at: pdfURL)

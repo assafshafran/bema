@@ -18,6 +18,8 @@ struct BemaApp: App {
     init() {
         // Debug helper: `Bema --dump-notes deck.pptx` prints titles and notes, then exits.
         let args = CommandLine.arguments
+        // Started by Claude Desktop (or another MCP app): relay to the running Bema, never open windows.
+        if args.contains("--mcp") { MCPBridge.run() }
         if let i = args.firstIndex(of: "--dump-notes"), i + 1 < args.count {
             do {
                 for s in try PPTXReader.read(url: URL(fileURLWithPath: args[i + 1])) {
@@ -136,6 +138,14 @@ struct BemaApp: App {
                 Toggle("Show Bema in the Menu Bar", isOn: $showMenuBar)
                 Toggle("Open Bema at Login", isOn: Binding(get: { loginItem.enabled }, set: { loginItem.set($0) }))
                 Divider()
+                Button("Write Notes for This Slide") { model.writeNotesForCurrentSlide() }
+                    .disabled(model.slides.isEmpty || model.noteWriting != nil)
+                Button("Write Notes for Slides Without Notes") { model.writeNotesForAllSlides() }
+                    .disabled(model.slidesNeedingNotes.isEmpty || model.noteWriting != nil)
+                Button("Save Draft Notes to Deck") { model.saveDraftsToDeck() }
+                    .disabled(model.drafts.isEmpty)
+                Button("Notes Writer Settings…") { NSApp.activate(); model.noteWriterSettingsOpen = true }
+                Divider()
                 Button("Bigger Notes") { NotesFont.change(by: 2) }
                     .keyboardShortcut("+")
                 Button("Smaller Notes") { NotesFont.change(by: -2) }
@@ -180,6 +190,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor in PresenterModel.shared.presentOpenDeck() }
         }
         Task { @MainActor in await PresenterModel.shared.refreshOpenInPowerPoint() }
+        Task { @MainActor in BemaMCP.shared.startIfEnabled() }
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let handled = MainActor.assumeIsolated { PresenterModel.shared.handleKey(event) }
             return handled ? nil : event

@@ -19,6 +19,7 @@ PowerPoint or Keynote keeps running the slideshow, so everything the audience se
 | | PowerPoint (`PowerPointController.swift`) | Keynote (`KeynoteController` in `SlideshowApp.swift`) |
 |---|---|---|
 | Slides and notes | Read from the `.pptx` XML (`PPTXReader.swift`); for a deck opened from OneDrive, SharePoint or Teams (a web address, no file), through PowerPoint's AppleScript (`CloudDeck.swift`) | Read through Keynote's AppleScript |
+| Writing notes into the deck | The notes page's body placeholder, then `save` | `presenter notes`, then `save` |
 | Previews | PowerPoint's PDF export | Keynote's PDF export, skipped slides included |
 | Starting the show | Show type "window", then window bounds by AppleScript | **Play → Play Slideshow in Window** pressed through Accessibility |
 | Full screen on the chosen display | Accessibility `AXFullScreen` on the slideshow window | The same |
@@ -53,3 +54,11 @@ Pure logic (`ScriptAligner`, `VoiceTarget`, `VoiceCommands.parse`, `NoteCues`, `
 ## Overlay over the audience slide
 
 A borderless, non-activating `NSPanel` at screen-saver level, click-through, on all Spaces including full-screen ones, framed to the slide's rectangle inside the slideshow window (read on every poll). A plain `NSWindow` from a regular app doesn't appear on the Space another display is showing, which is why it's a panel.
+
+## Writing speaker notes
+
+- `NoteWriter.swift`: the writers. Apple's on-device model (`FoundationModels`), the OpenAI chat API (OpenAI, Ollama, LM Studio) and the Anthropic Messages API, called with plain `URLSession` requests (no SDK dependency). The prompt (`NotePrompt`), request bodies and response parsing are pure and tested. API keys are in the Keychain (`Keychain`).
+- What a writer gets about a slide (`SlideBrief`): its number, title and text, the previous and next titles and, for writers that read pictures, a 1280-pixel PNG. Text and picture both come from the slide previews PDF, so PowerPoint files, cloud decks and Keynote work the same.
+- `DraftNotes.swift`: drafts per deck in `~/Library/Application Support/Bema/Draft Notes/` (a hash of the deck's path or web address). The model keeps the deck's slides (`deckSlides`) apart from the drafts and shows them merged (`slides`); a draft is used only where the deck has no notes. `NoteWriting.swift` runs the writing, one slide at a time, and **Save to deck** (`writeNotes` on each controller).
+- `BemaMCP.swift`: the MCP server for Claude Desktop. While it's allowed, Bema listens on `~/Library/Application Support/Bema/mcp.sock` (owner-only). Claude Desktop starts `Bema --mcp`, a relay between its stdin/stdout and that socket that starts Bema in the background if needed (`MCPBridge`). `MCPHandler` answers JSON-RPC (`initialize`, `tools/list`, `tools/call` with `get_deck`, `get_slide_image`, `set_speaker_notes`) and is tested against a stand-in deck. `ClaudeDesktop` adds Bema to `claude_desktop_config.json`, keeping the other servers.
+

@@ -22,6 +22,7 @@ PowerPoint for Mac locks its presenter view to full screen: you can't resize it,
 - **Hidden from screen sharing.** Detach the prompter, put it right under your camera, and it stays out of Zoom, Teams and Meet screen shares.
 - **Point, spotlight, draw.** A laser pointer, spotlight, magnifier, pen, highlighter and stamps, drawn over the slide the audience sees.
 - **Coach and rehearse.** Pace against a time budget for each slide, words per minute, filler words, and a report after a rehearsal.
+- **Speaker notes for slides that have none.** Written on your Mac by Apple Intelligence or a local model (Ollama, LM Studio), with your Claude or OpenAI API key, or by Claude Desktop with your subscription. They stay drafts in Bema until you save them into the deck.
 - **Phone remote and live polls.** Scan a QR code to drive the show from your phone, or let the audience vote from theirs, over your Wi-Fi.
 
 A **Present with Bema** button on PowerPoint's Home tab (File → Add Bema Button to PowerPoint…), or one keystroke from PowerPoint or Keynote (⌃⌥P), hands the deck to Bema. Or right-click a `.pptx` or `.key` in Finder and choose **Present with Bema**.
@@ -43,6 +44,7 @@ Bema runs on your Mac. No account, no cloud service, no analytics.
 - **Speech stays on your Mac** when your language supports on-device recognition. When it doesn't, Bema says so before listening, and Apple's speech service is used.
 - **Nothing is recorded.** Audio is never saved, and neither is any transcript beyond the last few words shown as captions.
 - **The phone remote and polls** run a small web server on your Mac only while they're on, reachable from your local network through a link with a random secret.
+- **Writing speaker notes** sends nothing anywhere until you choose a writer. Apple Intelligence runs on your Mac and a local model only at the address you give; with a Claude or OpenAI key, a slide's text and picture go to that company only when you ask for its notes. Claude Desktop can read your slides only while you allow it, through a socket on your Mac.
 - **Talk reports** (time per slide, word counts) are saved on your Mac only.
 - **Updates:** once a day Bema checks https://getbema.dev/appcast.xml for a new version, sending only its version number. An update installs only with Bema's signature. Turn it off in the Bema menu: **Check for Updates Automatically**.
 
