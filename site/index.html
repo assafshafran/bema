@@ -221,6 +221,65 @@ code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.88em}
 .foot h4{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9BA3AF;font-weight:500;margin:0 0 14px}
 .foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .he{font-family:'Schibsted Grotesk',sans-serif}
+/* Everything in Bema: cards, filters and the side panel */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fhead{display:flex;justify-content:space-between;align-items:end;gap:32px;flex-wrap:wrap}
+.fsearch-wrap{display:flex;align-items:center;gap:8px;min-width:280px;height:46px;padding:0 14px;border:1.5px solid #DAD6CC;border-radius:10px;background:#FBFAF6;color:#5B5F66}
+.fsearch-wrap:focus-within{border-color:#0E1014}
+.fsearch-wrap svg{width:18px;height:18px;flex:none}
+.fsearch{flex:1;border:0;background:transparent;font:500 16px Inter,system-ui,sans-serif;color:#0E1014;outline:none;min-width:0}
+.fchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:36px}
+.fchip{font:500 14px Inter,system-ui,sans-serif;padding:8px 14px;border:1.5px solid #DAD6CC;border-radius:999px;background:#FBFAF6;color:#2A2E35;cursor:pointer}
+.fchip span{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#8A8E95;margin-left:2px}
+.fchip:hover{border-color:#0E1014}
+.fchip.on{background:#0E1014;border-color:#0E1014;color:#F4F2EC}.fchip.on span{color:#F5A524}
+.fcount{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;color:#5B5F66;margin:22px 0 14px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.fcard{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:20px 20px 16px;border:1px solid #DAD6CC;border-radius:14px;background:#FBFAF6;color:#0E1014;font:inherit;cursor:pointer;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.fcard[hidden]{display:none}
+.fcard:hover,.fcard:focus-visible{border-color:#0E1014;transform:translateY(-2px);box-shadow:0 10px 24px -14px rgba(14,16,20,.45)}
+.fcard:focus-visible{outline:2px solid #F5A524;outline-offset:2px}
+.fcard-top{display:flex;align-items:center;gap:8px}
+.fic{width:28px;height:28px;padding:5px;border-radius:8px;background:#0E1014;color:#F5A524;flex:none}
+.fgroup{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:#5B5F66}
+.fcard-t{font-family:'Schibsted Grotesk',Inter,sans-serif;font-weight:700;font-size:18px;line-height:1.25;letter-spacing:-0.01em}
+.fcard-s{font-size:15px;line-height:1.45;color:#4A4F57;flex:1}
+.fmore{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#5A4A1E;margin-top:4px}
+.fmore svg{width:13px;height:13px;transition:transform .15s ease}
+.fcard:hover .fmore svg{transform:translateX(3px)}
+.fempty{margin-top:12px}
+.fscrim{position:fixed;inset:0;background:rgba(14,16,20,.22);opacity:0;transition:opacity .25s ease;z-index:60}
+.fscrim.in{opacity:1}
+.fpanel{position:fixed;top:0;right:0;bottom:0;width:min(500px,100vw);background:#FBFAF6;border-left:1px solid #DAD6CC;box-shadow:-24px 0 48px -24px rgba(14,16,20,.4);display:flex;flex-direction:column;z-index:61;transform:translateX(102%);transition:transform .26s cubic-bezier(.2,.8,.2,1);font-family:Inter,system-ui,sans-serif;color:#0E1014}
+.fpanel.in{transform:none}
+.fp-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 14px 28px;border-bottom:1px solid #E6E2D8}
+.fp-pos{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:#5B5F66}
+.fp-close{width:40px;height:40px;border-radius:10px;border:1.5px solid #DAD6CC;background:transparent;color:#0E1014;cursor:pointer;display:grid;place-items:center}
+.fp-close:hover{border-color:#0E1014}
+.fp-close svg{width:18px;height:18px}
+.fp-body{flex:1;overflow-y:auto;padding:28px 28px 32px;overscroll-behavior:contain}
+.fp-group{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5B5F66;margin:0 0 14px}
+.fp-ic{width:26px;height:26px;padding:5px;border-radius:7px;background:#0E1014;color:#F5A524}
+.fp-title{font-family:'Schibsted Grotesk',Inter,sans-serif;font-weight:800;font-size:30px;line-height:1.1;letter-spacing:-0.02em;margin:0 0 10px}
+.fp-lede{font-size:18px;line-height:1.5;color:#2A2E35;margin:0 0 18px}
+.fp-keys{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.fp-text{font-size:16px;line-height:1.6;color:#2A2E35}
+.fp-text p{margin:0 0 12px}.fp-text ul{margin:0 0 12px;padding-left:20px}.fp-text li{margin:0 0 6px}
+.fp-text code{font-size:.88em}
+.fp-help{margin:18px 0 0;font-weight:600}
+.fp-rel-h{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5B5F66;margin:28px 0 10px}
+.fp-rel{display:flex;flex-wrap:wrap;gap:6px}
+.fp-rel button{font:500 13.5px Inter,system-ui,sans-serif;padding:6px 11px;border:1px solid #DAD6CC;border-radius:999px;background:#F4F2EC;color:#2A2E35;cursor:pointer}
+.fp-rel button:hover{border-color:#0E1014}
+.fp-nav{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #E6E2D8}
+.fp-nav button{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:14px 20px;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer;color:#0E1014;min-width:0}
+.fp-nav .fp-next{align-items:flex-end;text-align:right;border-left:1px solid #E6E2D8}
+.fp-nav em{font-style:normal;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:#5B5F66}
+.fp-nav span{font-weight:600;font-size:14.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-nav button:hover span{color:#5A4A1E}
+a.tag{text-decoration:none}a.tag:hover{border-color:#0E1014}
+.tag-all{background:#0E1014!important;color:#F4F2EC!important;border-color:#0E1014!important}
+@media (prefers-reduced-motion: reduce){.fpanel,.fscrim,.fcard{transition:none}}
 @media (max-width:820px){
 .wrap{padding:0 16px}
 .navlinks .hide-s{display:none}
@@ -240,6 +299,18 @@ code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.88em}
 .two{grid-template-columns:minmax(0,1fr);gap:36px}
 .footgrid{grid-template-columns:minmax(0,1fr)}
 .ctas .btn{flex:1 1 100%}
+.fsearch-wrap{min-width:0;width:100%}
+.fchips{margin-top:24px;flex-wrap:nowrap;overflow-x:auto;margin-left:-16px;margin-right:-16px;padding:0 16px 4px;scrollbar-width:none}
+.fchip{flex:none}
+.fgrid{grid-template-columns:minmax(0,1fr);gap:8px}
+.fcard{padding:14px 16px;gap:4px 10px;flex-direction:row;flex-wrap:wrap;align-items:center}
+.fcard-top .fgroup,.fmore{display:none}
+.fcard-t{flex:1;font-size:17px}
+.fcard-s{flex-basis:100%;font-size:14.5px;padding-left:38px}
+.fpanel{top:auto;width:100vw;height:88vh;border-left:0;border-top:1px solid #DAD6CC;border-radius:18px 18px 0 0;transform:translateY(102%)}
+.fp-body{padding:22px 20px 28px}
+.fp-bar{padding:12px 12px 12px 20px}
+.fp-title{font-size:26px}
 }
 </style>
 </head>
@@ -252,6 +323,7 @@ code{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.88em}
 <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><path d="M16 8v44" stroke="currentColor" stroke-width="8" stroke-linecap="round"></path><rect x="16" y="25" width="33" height="27" rx="10" fill="none" stroke="currentColor" stroke-width="8"></rect><path d="M26.5 38.5h12" stroke="#F5A524" stroke-width="5.5" stroke-linecap="round"></path></svg>
 Bema</a>
 <div class="navlinks">
+<a class="hide-s" href="#features">Features</a>
 <a class="hide-s" href="#powerpoint">How it works</a>
 <a class="hide-s" href="#prompter">Prompter</a>
 <a class="hide-s" href="#privacy">Privacy</a>
@@ -369,28 +441,74 @@ Bema</a>
 </figure>
 </section>
 
-<section class="wrap sec" id="what" style="border-top: none; padding-top: 72px">
-<p class="eyebrow">What it does</p>
-<h2 class="h2" style="max-width: 760px">Everything you look at while you talk, in one window you control.</h2>
-<p class="lede muted">Resize it, move it to any display, keep it on top. Put it on the laptop while the slides play on the projector, or next to your camera on a call.</p>
-<div class="grid4">
+<section class="sec dark" id="detached">
+<div class="wrap">
+<div class="two">
+<figure style="margin: 0" id="share-demo">
+<div class="pview" role="group" aria-label="Choose a view">
+<button type="button" class="pv on" data-view="you" aria-pressed="true">Your screen</button>
+<button type="button" class="pv" data-view="call" aria-pressed="false">What the call sees</button>
+</div>
+<div class="mini pscene" data-view="you" aria-label="Your screen during a call: Bema's presenter window with your notes, the prompter under the camera, your self view and the people on the call. Switch to see what the call sees: only the slide, your camera bubble and the laser pointer.">
+<div class="pyou" aria-hidden="true">
+<div class="pmenubar"><span>Bema</span><span>File</span><span>Slideshow</span><i></i><span class="ptime">10:42</span></div>
+<img class="pwin" src="img/presenter.jpg" alt="">
+<div class="pstrip">
+<p class="pstrip-top"><b>Weekly review</b><em>Sharing</em></p>
+<figure><img src="img/call/noa.jpg" alt=""><span>Noa</span></figure>
+<figure><img src="img/call/daniel.jpg" alt=""><span>Daniel</span></figure>
+<figure><img src="img/call/amir.jpg" alt=""><span>Amir</span></figure>
+<figure><img src="img/call/omer.jpg" alt=""><span>Omer</span></figure>
+</div>
+<div class="mini-prompt pprompt">
+<div class="prompt-bar"><span></span></div>
+<p class="prompt-line" id="pline"><b>Welcome</b> everyone. Tonight I want to</p>
+<p class="prompt-next" id="pnext">talk about the part of presenting</p>
+</div>
+<div class="pself"><img src="img/call/you.jpg" alt=""></div>
+<p class="mini-tag ptag">Only you see your notes, the prompter and your self view</p>
+</div>
+<div class="pshare" aria-hidden="true">
+<div class="pshare-slide">
+<img src="img/slide-projected.jpg" alt="">
+<span class="plaser"></span>
+<div class="pbubble"><img src="img/call/you.jpg" alt=""></div>
+</div>
+<p class="mini-tag pcalltag">The call sees the slide, your camera bubble and the laser</p>
+</div>
+<div class="mini-cam" aria-hidden="true"></div>
+</div>
+<figcaption class="cap">An illustration: macOS keeps Bema's windows out of every capture, so we can't screenshot them. Switch views to see what a screen share shows.</figcaption>
+</figure>
 <div>
-<h3 class="h3">This slide, and the next</h3>
-<p class="muted" style="margin: 0">The current slide large, the next one beneath it with its first line of notes, so the segue is never a surprise.</p>
+<p class="eyebrow">What you see, what they see</p>
+<h2 class="h2">Under your camera. Out of the screen share.</h2>
+<p class="lede muted">Press the ↗ button and the prompter becomes its own small window. Snap it to the top centre of the screen, right under the camera, with the reading line near the top so your eyes stay close to the lens.</p>
+<ul class="list">
+<li>Hidden from screen sharing, recordings and screenshots, using macOS's own window-sharing setting. On by default.</li>
+<li>Floats above other windows, and folds its controls into a thin bar you drag it by.</li>
+<li>Open it from anywhere with <code>bema://prompter?place=camera</code>.</li>
+</ul>
+<p class="muted" style="margin: 28px 0 0; font-size: 15px">We tried to screenshot it for this page. macOS handed back nothing.</p>
 </div>
+</div>
+</div>
+</section>
+
+<section class="wrap sec" id="features">
+<div class="fhead">
 <div>
-<h3 class="h3">Notes you can read</h3>
-<p class="muted" style="margin: 0">Large type you size with <kbd>⌘+</kbd> <kbd>⌘−</kbd>. Hebrew and Arabic notes are right-aligned.</p>
+<p class="eyebrow">Everything in Bema</p>
+<h2 class="h2" style="max-width: 760px">Every feature, one click from the detail.</h2>
+<p class="lede muted">Filter by what you're doing, or search. Open any card for how it works and its shortcuts; it slides in at the side, so you stay where you are on the page.</p>
 </div>
-<div>
-<h3 class="h3">A timer against your plan</h3>
-<p class="muted" style="margin: 0">Elapsed time against a planned talk length (click “of 20:00” to change it), and a clock.</p>
+<label class="fsearch-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="sr">Search features</span><input class="fsearch" type="search" placeholder="Search: laser, Keynote, phone…" autocomplete="off"></label>
 </div>
-<div>
-<h3 class="h3">A filmstrip to jump</h3>
-<p class="muted" style="margin: 0">Every slide along the bottom. Click one to go there, during the show or while you rehearse.</p>
-</div>
-</div>
+<div class="fchips" role="group" aria-label="Filter features"></div>
+<p class="fcount" aria-live="polite"></p>
+<div class="fgrid"></div>
+<p class="fempty muted" hidden>Nothing matches. Try another word, or <a href="/help">look in Help</a>.</p>
+<noscript><p class="muted">The full feature list is in the <a href="https://github.com/getbema/bema/blob/main/docs/GUIDE.md">guide</a>.</p></noscript>
 </section>
 
 <section class="wrap sec" id="powerpoint">
@@ -436,60 +554,6 @@ Bema</a>
 </div>
 </section>
 
-<section class="sec dark" id="detached">
-<div class="wrap">
-<div class="two">
-<figure style="margin: 0" id="share-demo">
-<div class="pview" role="group" aria-label="Choose a view">
-<button type="button" class="pv on" data-view="you" aria-pressed="true">Your screen</button>
-<button type="button" class="pv" data-view="call" aria-pressed="false">What the call sees</button>
-</div>
-<div class="mini pscene" data-view="you" aria-label="Your screen during a call: Bema's presenter window with your notes, the prompter under the camera, your self view and the people on the call. Switch to see what the call sees: only the slide, your camera bubble and the laser pointer.">
-<div class="pyou" aria-hidden="true">
-<div class="pmenubar"><span>Bema</span><span>File</span><span>Slideshow</span><i></i><span class="ptime">10:42</span></div>
-<img class="pwin" src="img/presenter.jpg" alt="">
-<div class="pstrip">
-<p class="pstrip-top"><b>Weekly review</b><em>Sharing</em></p>
-<figure><img src="img/call/noa.jpg" alt=""><span>Noa</span></figure>
-<figure><img src="img/call/daniel.jpg" alt=""><span>Daniel</span></figure>
-<figure><img src="img/call/amir.jpg" alt=""><span>Amir</span></figure>
-<figure><img src="img/call/omer.jpg" alt=""><span>Omer</span></figure>
-</div>
-<div class="mini-prompt pprompt">
-<div class="prompt-bar"><span></span></div>
-<p class="prompt-line" id="pline"><b>Welcome</b> everyone. Tonight I want to</p>
-<p class="prompt-next" id="pnext">talk about the part of presenting</p>
-</div>
-<div class="pself"><img src="img/call/you.jpg" alt=""></div>
-<p class="mini-tag ptag">Only you see your notes, the prompter and your self view</p>
-</div>
-<div class="pshare" aria-hidden="true">
-<div class="pshare-slide">
-<img src="img/slide-projected.jpg" alt="">
-<span class="plaser"></span>
-<div class="pbubble"><img src="img/call/you.jpg" alt=""></div>
-</div>
-<p class="mini-tag pcalltag">The call sees the slide, your camera bubble and the laser</p>
-</div>
-<div class="mini-cam" aria-hidden="true"></div>
-</div>
-<figcaption class="cap">An illustration: macOS keeps Bema's windows out of every capture, so we can't screenshot them. Switch views to see what a screen share shows.</figcaption>
-</figure>
-<div>
-<p class="eyebrow">Detached prompter</p>
-<h2 class="h2">Under your camera. Out of the screen share.</h2>
-<p class="lede muted">Press the ↗ button and the prompter becomes its own small window. Snap it to the top centre of the screen, right under the camera, with the reading line near the top so your eyes stay close to the lens.</p>
-<ul class="list">
-<li>Hidden from screen sharing, recordings and screenshots, using macOS's own window-sharing setting. On by default.</li>
-<li>Floats above other windows, and folds its controls into a thin bar you drag it by.</li>
-<li>Open it from anywhere with <code>bema://prompter?place=camera</code>.</li>
-</ul>
-<p class="muted" style="margin: 28px 0 0; font-size: 15px">We tried to screenshot it for this page. macOS handed back nothing.</p>
-</div>
-</div>
-</div>
-</section>
-
 <section class="wrap sec" id="pointer">
 <div class="two">
 <div>
@@ -525,16 +589,17 @@ Bema</a>
 </figure>
 </div>
 <div class="tags" aria-label="Also in Bema">
-<span class="tag">Pace: on pace, behind, ahead</span>
-<span class="tag">Cue a minute before time</span>
-<span class="tag">Rehearsal report</span>
-<span class="tag">Words per minute and filler words</span>
-<span class="tag">Voice commands</span>
-<span class="tag">Live captions</span>
-<span class="tag">Phone remote over Wi-Fi</span>
-<span class="tag">Live poll</span>
-<span class="tag">Camera bubble</span>
-<span class="tag">Daylight and high-contrast themes</span>
+<a class="tag tag-all" href="#features">All features →</a>
+<a class="tag" href="#feature-pace" data-feature="pace">Pace: on pace, behind, ahead</a>
+<a class="tag" href="#feature-minute-cue" data-feature="minute-cue">Cue a minute before time</a>
+<a class="tag" href="#feature-report" data-feature="report">Rehearsal report</a>
+<a class="tag" href="#feature-speech-coach" data-feature="speech-coach">Words per minute and filler words</a>
+<a class="tag" href="#feature-voice-commands" data-feature="voice-commands">Voice commands</a>
+<a class="tag" href="#feature-captions" data-feature="captions">Live captions</a>
+<a class="tag" href="#feature-remote" data-feature="remote">Phone remote over Wi-Fi</a>
+<a class="tag" href="#feature-poll" data-feature="poll">Live poll</a>
+<a class="tag" href="#feature-bubble" data-feature="bubble">Camera bubble</a>
+<a class="tag" href="#feature-themes" data-feature="themes">Daylight and high-contrast themes</a>
 </div>
 </section>
 
@@ -637,6 +702,21 @@ Bema</a>
 </div>
 </section>
 
+<div class="fscrim" id="fscrim" hidden></div>
+<aside class="fpanel" id="fpanel" role="dialog" aria-modal="false" aria-labelledby="fp-title" hidden>
+<div class="fp-bar">
+<span class="fp-pos"></span>
+<button type="button" class="fp-close" aria-label="Close">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+</button>
+</div>
+<div class="fp-body"></div>
+<div class="fp-nav">
+<button type="button" class="fp-prev"><em>← Previous</em><span></span></button>
+<button type="button" class="fp-next"><em>Next →</em><span></span></button>
+</div>
+</aside>
+
 </main>
 
 <footer class="foot">
@@ -673,5 +753,6 @@ Bema</a>
 </div>
 <script src="pointer-demo.js" defer></script>
 <script src="share-demo.js" defer></script>
+<script src="features.js" defer></script>
 </body>
 </html>
