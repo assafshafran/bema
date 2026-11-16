@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
-### The current slide resizes when you drag its handle
+### The current slide resizes when you drag its handle (Bema 0.1.5)
 - Dragging the handle under the current slide now makes it bigger or smaller. In 0.1.3 the handle set only the largest height the slide could take, and the column split its height evenly between the current slide and the up-next row, so the slide never reached it and dragging seemed to do nothing. The slide now gets exactly its share of the column (two thirds by default, so it starts bigger than before) and the up-next row takes the rest.
 - Checked live with the sample deck: dragging up and down resizes it, double-click resets. Not verified: very small windows.
 
