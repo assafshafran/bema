@@ -52,13 +52,13 @@ struct MenuBarPanel: View {
 
             Divider()
             VStack(alignment: .leading, spacing: 8) {
+                Button { showMainWindow() } label: { Label("Show Bema window", systemImage: "macwindow") }
                 Button { model.presentOpenDeck() } label: {
                     Label(model.openInPowerPoint.map { "Present “\($0.deletingPathExtension().lastPathComponent)”" } ?? "Present the deck open in PowerPoint or Keynote",
                           systemImage: "play.rectangle")
                 }
                 .disabled(model.openInPowerPoint == nil)
                 Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }
-                Button { showMainWindow() } label: { Label("Show Bema window", systemImage: "macwindow") }
                 Button { SelfViewWindowRef.opener = openWindow; SelfViewWindowRef.toggle() } label: { Label(CameraModel.shared.selfViewOpen ? "Close self view" : "Self view (only you see it)", systemImage: "person.crop.square") }
                 Button { showMainWindow(); model.stageToolsOpen = true } label: {
                     Label("Stage tools: remote, poll, camera…", systemImage: "slider.horizontal.3")
@@ -98,8 +98,8 @@ struct MenuBarPanel: View {
     }
 
     private func showMainWindow() {
-        NSApp.activate()
-        if let w = model.presenterWindow { w.makeKeyAndOrderFront(nil) } else { openWindow(id: "main") }
+        MainWindowRef.opener = openWindow
+        model.showPresenterWindow()
     }
 
     private var status: String {

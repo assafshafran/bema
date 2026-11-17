@@ -4,6 +4,8 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-16
 
+- **Bema is in the Dock only while its presenter window is open** (asked for by the maintainer). It keeps running for ⌃⌥P, the PowerPoint button, links and the Claude connection, but most of that time there's nothing to switch to, so a Dock icon is noise. The policy is checked after every event (cheap) rather than on window notifications, which miss SwiftUI reopening a closed window. Without the menu bar icon Bema stays a regular app, since it would otherwise have no visible way back.
+
 - **One Bema at a time; a second copy hands over and quits.** All copies share the bundle ID, and macOS may give a deck or a `bema://` link to a copy that isn't running, starting a second Bema the presenter doesn't see. Rather than relying on which copy macOS registers, the later Bema forwards its files and links to the earliest one running and quits. It can't simply be refused: the second copy is what received the request.
 
 - **Written notes are drafts kept by Bema until "Save to deck"** (chosen by the maintainer). Bema reads notes from the deck and never changed it before; writing straight into someone's deck, possibly a shared one, is a surprise. Drafts are keyed by slide number, so reordering slides in the deck before saving can put a draft on the wrong slide. Notes the presenter edits in Bema are drafts too (marked "Edited", with an undo back to the deck's notes), so editing follows the same rule: the deck changes only with "Save to deck". Writers and Claude only fill slides that have no notes; replacing notes is the presenter's own edit.

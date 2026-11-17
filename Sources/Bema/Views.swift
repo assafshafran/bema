@@ -46,7 +46,7 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .openSelfView)) { _ in
             openWindow(id: "selfview")
         }
-        .onAppear { SelfViewWindowRef.opener = openWindow }
+        .onAppear { SelfViewWindowRef.opener = openWindow; MainWindowRef.opener = openWindow }
         .onReceive(NotificationCenter.default.publisher(for: .openPrompterWindow)) { note in
             openWindow(id: "prompter")
             if (note.userInfo?["place"] as? String) == "camera" {

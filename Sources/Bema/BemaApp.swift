@@ -183,6 +183,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let services = ServiceProvider()
     /// Another Bema was already running when this one started: hand everything to it and quit.
     private var defersTo: SingleInstance.Instance?
+    private var dockObserver: Any?
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         defersTo = MainActor.assumeIsolated { SingleInstance.current() }
@@ -205,6 +206,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         Task { @MainActor in await PresenterModel.shared.refreshOpenInPowerPoint() }
         Task { @MainActor in BemaMCP.shared.startIfEnabled() }
+        // In the Dock only while the presenter window is open; otherwise just the menu bar icon.
+        dockObserver = NotificationCenter.default.addObserver(forName: NSApplication.didUpdateNotification, object: nil, queue: .main) { _ in
+            MainActor.assumeIsolated { DockIcon.update() }
+        }
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let handled = MainActor.assumeIsolated { PresenterModel.shared.handleKey(event) }
             return handled ? nil : event
@@ -259,6 +264,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             model.presentOpenDeck()
         }
+    }
+
+    /// Clicking Bema in Finder or Launchpad while it runs only in the menu bar opens its window.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        MainActor.assumeIsolated {
+            if !DockIcon.presenterWindowOpen { PresenterModel.shared.showPresenterWindow() }
+        }
+        return true
     }
 
     /// With the menu bar icon showing, Bema keeps running after its window closes.

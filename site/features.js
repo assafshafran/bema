@@ -33,7 +33,7 @@
     { id: "themes", g: "window", t: "Themes for any room", s: "Backstage (dark), Daylight and High contrast.",
       b: "<p><b>View → Theme</b>: <b>Backstage</b>, dark and easy on the eyes in a dim room; <b>Daylight</b> for bright rooms; <b>High contrast</b> for the hardest light. One amber accent marks what's live.</p>" },
     { id: "menubar", g: "window", t: "Bema in the menu bar", s: "The deck, timer, pace and the main controls, one click away.",
-      b: "<p>A small Bema mark in the menu bar shows the deck, the timer and your pace, with next, back and Start or End. It also opens the detached prompter, adds the PowerPoint button, checks for updates and turns <b>Open at login</b> on or off.</p><p>Turn the icon off from <b>View → Show Bema in the Menu Bar</b>; Bema then quits when its window closes.</p>" },
+      b: "<p>A small Bema mark in the menu bar shows the deck, the timer and your pace, with next, back and Start or End. Bema is in the Dock only while its window is open; close the window and it's just this icon, with <b>Show Bema window</b> at the top of its menu. It also opens the detached prompter, adds the PowerPoint button, checks for updates and turns <b>Open at login</b> on or off.</p><p>Turn the icon off from <b>View → Show Bema in the Menu Bar</b>; Bema then quits when its window closes.</p>" },
 
     // Starting a show
     { id: "open-deck", g: "start", t: "Open a deck your way", s: "Finder, drag and drop, ⌘O, Open Recent or a Quick Action.",

@@ -6,6 +6,11 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-16
 
+### Bema leaves the Dock when its window is closed
+- Bema is in the Dock and the app switcher only while its presenter window is open (or minimised). With the window closed it's just the menu bar icon. Opening the window again (from the menu bar, ⌃⌥P, a deck, a link, or opening Bema from Finder) puts it back. With the menu bar icon turned off it always stays in the Dock.
+- **Show Bema window** is now the first item in the menu bar menu. Opening a deck with the window closed now reopens it; before, the deck could load with no window showing.
+- Checked live: closing the window took Bema out of the Dock; opening Bema from Finder and a `bema://present?path=` link each brought the window and the Dock icon back. Not verified: the order of items in the menu bar menu (not opened here), ⌃⌥P and the PowerPoint button with the window closed.
+
 ### Website: every feature, with a side panel
 - The home page has an **Everything in Bema** section: 48 feature cards in eight groups, with filters, search and a count. A card opens a panel that slides in from the side (a bottom sheet on phones) with how it works, shortcuts, a link to Help and the other features in its group; arrow keys move through them, Esc closes, and the page stays where it was. Each feature has its own link (`#feature-laser`), and the "Also in Bema" tags open their feature. It replaces the four-item "What it does" list.
 - The *Your screen / What the call sees* section now comes right after the opening picture. The features section sits after the pointer tools, before Privacy.

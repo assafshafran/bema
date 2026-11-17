@@ -349,3 +349,14 @@ final class SingleInstanceTests: XCTestCase {
         XCTAssertNil(SingleInstance.running(among: [], me: 30))
     }
 }
+
+final class DockIconTests: XCTestCase {
+    func testInTheDockOnlyWhileThePresenterWindowIsOpen() {
+        XCTAssertEqual(DockIcon.policy(presenterWindowOpen: true, menuBarIconOn: true), .regular)
+        XCTAssertEqual(DockIcon.policy(presenterWindowOpen: false, menuBarIconOn: true), .accessory)
+    }
+
+    func testWithoutTheMenuBarIconBemaStaysInTheDock() {
+        XCTAssertEqual(DockIcon.policy(presenterWindowOpen: false, menuBarIconOn: false), .regular)
+    }
+}

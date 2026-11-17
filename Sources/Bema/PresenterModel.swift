@@ -232,8 +232,7 @@ final class PresenterModel: ObservableObject {
             startPolling()
         }
         // Opening the deck brings PowerPoint to the front; come back on top.
-        NSApp.activate()
-        presenterWindow?.makeKeyAndOrderFront(nil)
+        showPresenterWindow()
     }
 
     private func slidesLoaded(_ url: URL) {
@@ -282,8 +281,7 @@ final class PresenterModel: ObservableObject {
     func presentOpenDeck() {
         Task {
             await refreshOpenInPowerPoint()
-            NSApp.activate()
-            presenterWindow?.makeKeyAndOrderFront(nil)
+            showPresenterWindow()
             guard let url = openInPowerPoint else {
                 notice = PowerPointController.isRunning || SlideshowApps.isRunning(KeynoteController.bundleID)
                     ? "The deck in front hasn't been saved yet. Save it, on this Mac or to OneDrive, then try again."
@@ -328,8 +326,7 @@ final class PresenterModel: ObservableObject {
     func requestStart() {
         guard canStart else { return }
         if AudienceDisplay.shouldAsk(enabled: askForDisplay, displayCount: screens.count) {
-            NSApp.activate()
-            presenterWindow?.makeKeyAndOrderFront(nil)
+            showPresenterWindow()
             displayChooserOpen = true
         } else {
             startShow()
@@ -376,8 +373,7 @@ final class PresenterModel: ObservableObject {
                 startPolling()
                 // PowerPoint takes focus when the show starts; take it back so the keyboard and clicker reach us.
                 try? await Task.sleep(nanoseconds: 700_000_000)
-                NSApp.activate()
-                presenterWindow?.makeKeyAndOrderFront(nil)
+                showPresenterWindow()
             } catch {
                 notice = error.localizedDescription
             }
@@ -690,6 +686,19 @@ final class PresenterModel: ObservableObject {
     var presenterWindow: NSWindow? {
         NSApp.windows.first { $0.identifier?.rawValue.hasPrefix("main") == true && $0.isVisible }
             ?? NSApp.windows.first { $0.isVisible && $0.canBecomeMain }
+    }
+
+    /// Brings the presenter window forward, opening it again if it was closed, and puts Bema back in
+    /// the Dock while it's open.
+    func showPresenterWindow() {
+        if NSApp.activationPolicy() == .accessory { NSApp.setActivationPolicy(.regular) }
+        NSApp.activate()
+        if let opener = MainWindowRef.opener {
+            opener(id: "main")
+        } else if let w = NSApp.windows.first(where: { $0.identifier?.rawValue.hasPrefix("main") == true }) {
+            if w.isMiniaturized { w.deminiaturize(nil) }
+            w.makeKeyAndOrderFront(nil)
+        }
     }
 
     private func applyWindowLevel() {
