@@ -53,6 +53,24 @@ final class NoteCueTests: XCTestCase {
         XCTAssertTrue(cues.allSatisfy { $0.norm.isEmpty })
         XCTAssertEqual(p.words.filter(\.bold).map(\.text), ["the", "big"])
     }
+
+    @MainActor func testASlideWithoutNotesSaysSoInThePrompter() {
+        let p = PrompterModel()
+        p.load(slides: [SlideInfo(id: 1, title: "Hello", notes: "Welcome everyone", hidden: false),
+                        SlideInfo(id: 2, title: "Three shifts", notes: "  \n", hidden: false),
+                        SlideInfo(id: 3, title: "Bye", notes: "Thank you", hidden: false)])
+        XCTAssertEqual(p.paragraphs.map(\.slide), [1, 2, 3])
+        let placeholder = p.paragraphs[1]
+        XCTAssertTrue(placeholder.isSlideStart)
+        XCTAssertEqual(placeholder.words.map(\.text), [PrompterModel.noNotesCue])
+        // Shown faintly and never matched against speech.
+        XCTAssertTrue(placeholder.words.allSatisfy { $0.isPlaceholder && $0.isCue && $0.norm.isEmpty })
+
+        // A deck with no notes at all still shows the "no speaker notes" message instead.
+        let empty = PrompterModel()
+        empty.load(slides: [SlideInfo(id: 1, title: "Hello", notes: "", hidden: false)])
+        XCTAssertTrue(empty.words.isEmpty)
+    }
 }
 
 final class PollAndRemoteTests: XCTestCase {

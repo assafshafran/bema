@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-17
 
+### The prompter marks slides without notes (Bema 0.1.14)
+- A slide with no speaker notes used to vanish from the prompter's script, so slide 2's notes ran straight into slide 4's. It now keeps its heading with a faint *No notes for this slide* underneath, small and dim so it isn't read out, and never matched against your speech.
+- Checked: a test of the script and a rendered prompter (`bema-prompter-no-notes.png`). Seen in the prompter by the maintainer. Not verified live with Voice following across that slide.
+
 ### The audience sees your mouse pointer, with the arrow tool too (Bema 0.1.13)
 - In 0.1.12 the arrow tool's pointer never reached the audience: the presenter's slide only followed the mouse when another tool was chosen. It now follows it with the arrow tool as well, without ripples on click or a change of pointer shape.
 - Checked: tests that the arrow tool listens to the mouse, and live by the maintainer during a slideshow. Not verified: with Keynote.

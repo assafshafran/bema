@@ -27,4 +27,27 @@ final class PrompterRenderTests: XCTestCase {
         XCTAssertTrue(prompter.paragraphs[0].rtl)
         XCTAssertFalse(prompter.paragraphs[1].rtl)
     }
+
+    /// Writes $TMPDIR/bema-prompter-no-notes.png: a slide without notes between two with notes.
+    @MainActor
+    func testRendersASlideWithoutNotes() throws {
+        let prompter = PrompterModel()
+        prompter.load(slides: [
+            SlideInfo(id: 2, title: "Acme today", notes: "Here is the thing. Nobody can give the talk for you.", hidden: false),
+            SlideInfo(id: 3, title: "Three shifts", notes: "", hidden: false),
+            SlideInfo(id: 4, title: "How we got here", notes: "We went from a clicker to a prompter that listens.", hidden: false)
+        ])
+        let view = ScriptBody(paragraphs: prompter.paragraphs, current: 4, fontSize: 28) { _ in }
+            .frame(width: 520, height: 520, alignment: .top)
+            .padding(20)
+            .background(Theme.panel)
+            .environment(\.colorScheme, .dark)
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 2
+        let image = try XCTUnwrap(renderer.nsImage)
+        let rep = try XCTUnwrap(NSBitmapImageRep(data: try XCTUnwrap(image.tiffRepresentation)))
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("bema-prompter-no-notes.png")
+        try XCTUnwrap(rep.representation(using: .png, properties: [:])).write(to: url)
+        XCTAssertTrue(prompter.paragraphs[1].words[0].isPlaceholder)
+    }
 }

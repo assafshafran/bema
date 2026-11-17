@@ -13,6 +13,7 @@ struct ScriptWord: Identifiable, Hashable {
     let slide: Int
     var isCue = false   // [pause], [smile] … shown as a chip, never matched against speech
     var bold = false
+    var isPlaceholder = false // "No notes for this slide": shown faintly, not to be read out
 }
 
 struct ScriptParagraph: Identifiable {
@@ -256,6 +257,9 @@ final class PrompterModel: ObservableObject {
     /// Set while the prompter itself moves the slideshow, so the slide change doesn't jump the script back.
     private var slideMovedByPrompter: Int?
 
+    /// Shown, as a cue, in place of a slide's script when the slide has no speaker notes.
+    static let noNotesCue = "No notes for this slide"
+
     var currentWordIndex: Int { min(Int(position), max(words.count - 1, 0)) }
 
     // MARK: Loading
@@ -265,10 +269,21 @@ final class PrompterModel: ObservableObject {
         var paras: [ScriptParagraph] = []
         var all: [ScriptWord] = []
         var pid = 0
-        for slide in slides where !slide.hidden {
+        let shown = slides.filter { !$0.hidden }
+        let deckHasNotes = shown.contains { !$0.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        for slide in shown {
             let lines = slide.notes.components(separatedBy: .newlines)
                 .map { $0.trimmingCharacters(in: .whitespaces) }
                 .filter { !$0.isEmpty }
+            // A slide without notes still gets its place in the script, so it isn't skipped unnoticed.
+            if lines.isEmpty, deckHasNotes {
+                let w = ScriptWord(id: all.count, text: Self.noNotesCue, norm: "", slide: slide.id, isCue: true, isPlaceholder: true)
+                all.append(w)
+                paras.append(ScriptParagraph(id: pid, slide: slide.id, slideTitle: slide.title.replacingOccurrences(of: "\n", with: " "),
+                                             isSlideStart: true, rtl: false, words: [w]))
+                pid += 1
+                continue
+            }
             for (i, line) in lines.enumerated() {
                 // Keep multi-word cues like [look up] as one token.
                 let joined = line.replacing(NoteCues.cuePattern) { m in "[" + m.1.replacingOccurrences(of: " ", with: "_") + "]" }

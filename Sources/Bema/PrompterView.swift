@@ -449,7 +449,11 @@ struct ScriptBody: View, Equatable {
                     FlowLayout(spacing: fontSize * 0.27, lineSpacing: fontSize * 0.3, rtl: p.rtl) {
                         ForEach(p.words) { w in
                             Group {
-                                if w.isCue {
+                                if w.isPlaceholder {
+                                    Text(w.text)
+                                        .font(.system(size: fontSize * 0.5, weight: .regular).italic())
+                                        .foregroundStyle(Theme.dim)
+                                } else if w.isCue {
                                     Text(w.text)
                                         .font(.system(size: fontSize * 0.42, weight: .heavy))
                                         .tracking(1)

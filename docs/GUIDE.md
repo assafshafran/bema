@@ -85,7 +85,7 @@ A dark "backstage" theme that's easy on the eyes in a dim room, with one amber a
 **Themes and menu bar:** View → Theme: *Backstage* (dark), *Daylight* (bright rooms) or *High contrast*. A small Bema in the menu bar shows the deck, timer, pace and the main controls.
 
 ## Phase 2: prompter (working)
-Open the **Prompter** tab next to Notes. Your speaker notes become one continuous script across all visible slides.
+Open the **Prompter** tab next to Notes. Your speaker notes become one continuous script across all visible slides. A slide without notes keeps its place, with a faint *No notes for this slide* under its heading so you know to speak freely there.
 - **Voice:** listens through the microphone and scrolls as you speak, matching what it hears to your script (it tolerates misheard and skipped words, and recovers if you jump ahead). Recognition runs on the Mac when the language supports it; otherwise Bema says it's using Apple's servers. Language is detected from the notes (English and Hebrew tested) or chosen from the menu. Click the level meter to choose the **microphone** (the system default, or any connected one); the choice applies to everything that listens, and switching while listening carries on with the new microphone.
 - **Auto:** scrolls at a set speed in words per minute.
 - **Manual:** scroll with the mouse wheel or trackpad, drag the script, or click any word to jump there. All three work in every mode; Voice and Auto carry on from where you leave it.

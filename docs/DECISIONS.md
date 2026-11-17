@@ -4,6 +4,7 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-17
 
+- **A slide without notes shows a faint line in the prompter, not nothing.** Asked for by the maintainer. Skipped silently, the script ran from slide 2's notes straight into slide 4's, so a slide could be missed. The line is small, dim and italic so it isn't read out, and it isn't matched against speech. A deck with no notes at all keeps its "no speaker notes yet" message instead of a column of these lines.
 - **The arrow tool gets its own hover-only input on the slide.** It shares `followsHover` with the laser, but the drawing tools' input also shows click ripples and changes the pointer's shape, which the plain arrow shouldn't. So `PointerTool.slideInput` picks a view that only reports where the mouse is, and a test checks the arrow tool gets it (0.1.12 shipped without it).
 - **The arrow tool shows the presenter's pointer to the audience instead of "pointer off".** Asked for by the maintainer: a regular pointer, like the red dot but plainer. Bema starts on this tool, so moving the mouse over the slide now shows on the audience screen by default; it's drawn only while the mouse is over the slide, so it never drifts around their screen. It's a drawn shape, not `NSCursor`'s image, so it scales with the audience slide and gets a white edge on dark slides.
 
