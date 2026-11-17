@@ -206,6 +206,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         Task { @MainActor in await PresenterModel.shared.refreshOpenInPowerPoint() }
         Task { @MainActor in BemaMCP.shared.startIfEnabled() }
+        // The PowerPoint button opens a dialog Bema watches for (no "open Bema.app?" prompt).
+        Task { @MainActor in PowerPointButtonWatcher.shared.update() }
         // In the Dock only while the presenter window is open; otherwise just the menu bar icon.
         dockObserver = NotificationCenter.default.addObserver(forName: NSApplication.didUpdateNotification, object: nil, queue: .main) { _ in
             MainActor.assumeIsolated { DockIcon.update() }
@@ -248,6 +250,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.post(name: .openPrompterWindow, object: nil,
                                             userInfo: ["place": items.first(where: { $0.name == "place" })?.value ?? ""])
             return
+        }
+        if let why = items.first(where: { $0.name == "why" })?.value {
+            PowerPointButtonWatcher.log.notice("PowerPoint button fell back to a link: \(String(why.prefix(200)), privacy: .public)")
         }
         var file: URL?
         if let path = items.first(where: { $0.name == "path" })?.value, path.hasPrefix("/") {

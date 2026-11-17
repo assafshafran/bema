@@ -58,6 +58,7 @@ extension PresenterModel {
     func installPowerPointButton() {
         do {
             try PowerPointAddin.install()
+            PowerPointButtonWatcher.shared.update()
             notice = SlideshowApps.isRunning(PowerPointController.bundleID)
                 ? "The Bema button is added. Quit and reopen PowerPoint, then find Present with Bema on the Home tab."
                 : "The Bema button is added. Open PowerPoint and find Present with Bema on the Home tab."
@@ -69,6 +70,7 @@ extension PresenterModel {
     func removePowerPointButton() {
         do {
             try PowerPointAddin.remove()
+            PowerPointButtonWatcher.shared.update()
             notice = "The Bema button is removed from PowerPoint. It disappears after PowerPoint restarts."
         } catch {
             notice = error.localizedDescription

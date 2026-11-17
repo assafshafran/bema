@@ -40,6 +40,7 @@ Windowed shows are used so the app's own presenter view never appears and never 
 | `Coach.swift` | Pace, per-slide budgets, the time cue, speech stats and talk reports |
 | `Voice.swift` | Voice commands, live captions, note cues |
 | `Remote.swift`, `StageTools.swift` | The local web server for the phone remote and polls, QR codes, the Stage tools panel |
+| `PowerPointButtonWatcher.swift` | Spots the PowerPoint button's "Opening Bema" dialog through Accessibility, closes it and presents the deck in front |
 | `HotKey.swift`, `BemaApp.swift`, `MenuBarPanel.swift` | The ⌃⌥P shortcut, menus, Finder Services and `bema://` links, the menu bar mini |
 
 ## Following the voice

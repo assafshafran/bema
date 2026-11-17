@@ -120,7 +120,7 @@ final class PresenterModel: ObservableObject {
             MainActor.assumeIsolated {
                 guard let self else { return }
                 let granted = PowerPointController.hasAccessibility
-                if granted != self.accessibilityGranted { self.accessibilityGranted = granted }
+                if granted != self.accessibilityGranted { self.accessibilityGranted = granted; PowerPointButtonWatcher.shared.update() }
                 if granted && self.showAccessibilityHelp {
                     self.showAccessibilityHelp = false
                     self.notice = "Accessibility is allowed. End and restart the show to go full screen."
@@ -130,7 +130,13 @@ final class PresenterModel: ObservableObject {
         }
     }
     private var pollTask: Task<Void, Never>?
-    private var imageCache: [String: NSImage] = [:]
+    /// Slide pictures by slide and size. Evicts the least-used ones past about 400 MB, rather than
+    /// dropping everything and redrawing every visible slide at once.
+    private let imageCache: NSCache<NSString, NSImage> = {
+        let c = NSCache<NSString, NSImage>()
+        c.totalCostLimit = 400 * 1024 * 1024
+        return c
+    }()
 
     var deckName: String { deckURL?.deletingPathExtension().lastPathComponent ?? "Bema" }
     var currentSlide: SlideInfo? { slides.first { $0.id == current } }
@@ -167,7 +173,7 @@ final class PresenterModel: ObservableObject {
         drafts = [:]
         deckSlides = []
         pdf = nil
-        imageCache = [:]
+        imageCache.removeAllObjects()
         powerPointReady = false
         showEnded = false
         audience = .normal
@@ -224,6 +230,16 @@ final class PresenterModel: ObservableObject {
             }
         }
         pdf = PDFDocument(url: cached)
+        // Saved previews of another version of this deck: make them again from what PowerPoint has now.
+        if !readsThroughApp, let saved = pdf,
+           !PreviewCheck.matches(pageTexts: (0..<saved.pageCount).map { saved.page(at: $0)?.string ?? "" }, slides: deckSlides) {
+            phase = .loading("Preparing slide previews…")
+            try? FileManager.default.removeItem(at: cached)
+            do { try await app.exportPDF(to: cached) } catch {
+                notice = "Slide previews aren't available: \(error.localizedDescription)"
+            }
+            pdf = PDFDocument(url: cached)
+        }
         phase = .ready
         // If this deck's slideshow is already running (e.g. Bema was restarted), pick it back up.
         if case .running(let slide, _, _, _, _) = (try? await app.status()) ?? .notRunning {
@@ -650,12 +666,11 @@ final class PresenterModel: ObservableObject {
         let scale = presenterWindow?.backingScaleFactor ?? 2
         let bucket = max(200, (Int(points * scale) / 200 + 1) * 200)
         let key = "\(id)-\(bucket)"
-        if let img = imageCache[key] { return img }
+        if let img = imageCache.object(forKey: key as NSString) { return img }
         let bounds = page.bounds(for: .cropBox)
         let size = NSSize(width: CGFloat(bucket), height: CGFloat(bucket) * bounds.height / max(bounds.width, 1))
         let img = page.thumbnail(of: size, for: .cropBox)
-        if imageCache.count > 80 { imageCache.removeAll() }
-        imageCache[key] = img
+        imageCache.setObject(img, forKey: key as NSString, cost: Int(size.width * size.height * 4))
         return img
     }
 
@@ -714,4 +729,27 @@ final class PresenterModel: ObservableObject {
     }
 
     var targetSeconds: TimeInterval { TimeInterval(targetMinutes * 60) }
+}
+
+/// Whether saved slide previews still show this deck. Previews are saved per file path, date and size,
+/// but PowerPoint can export an older version it still has open (a file replaced on disk), and those
+/// wrong pictures would then be reused for good. So the previews' text is checked against slide titles.
+enum PreviewCheck {
+    static func matches(pageTexts: [String], slides: [SlideInfo]) -> Bool {
+        let visible = slides.filter { !$0.hidden }
+        guard pageTexts.count == slides.count || pageTexts.count == visible.count else { return false }
+        let pairs = pageTexts.count == slides.count ? Array(zip(pageTexts, slides)) : Array(zip(pageTexts, visible))
+        let titled = pairs.compactMap { text, slide -> (String, String)? in
+            let title = squeeze(slide.title)
+            return title.count >= 4 ? (squeeze(text), String(title.prefix(16))) : nil
+        }
+        guard !titled.isEmpty else { return true }
+        let found = titled.filter { text, title in text.contains(title) }.count
+        return found * 2 >= titled.count
+    }
+
+    /// Lower case with all spacing removed: PDF text breaks lines and spaces differently from the deck.
+    static func squeeze(_ s: String) -> String {
+        String(s.lowercased().unicodeScalars.filter { !CharacterSet.whitespacesAndNewlines.contains($0) }.map(Character.init))
+    }
 }

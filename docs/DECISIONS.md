@@ -2,6 +2,15 @@
 
 Choices made while building Bema, with the reason, so they are not re-argued or quietly undone. Newest first. Add one whenever a choice is made that the code alone would not explain.
 
+## 2026-11-17
+
+- **Saved slide previews are checked by their text against the deck's slide titles.** The cache key (path, date, size) can't notice that PowerPoint exported an older version it still had open. Comparing titles costs reading a few PDF pages' text on opening, needs nothing from PowerPoint, and treats a deck as matching when at least half its titled slides are found, so font and spacing differences don't cause needless re-exports.
+- **The top bar drops captions rather than squeezing them.** `ViewThatFits` tries the bar with captions, then with icons only, instead of a width threshold, so it adapts to the deck name, the LIVE and REHEARSAL badges and the Light button without numbers to keep in step.
+- **Slide pictures in an `NSCache` with a cost limit (about 400 MB of pixels)** instead of a dictionary cleared at 80 entries: clearing everything at once made the window redraw every slide in one go.
+- **The PowerPoint button opens a dialog that Bema watches for, instead of a link.** PowerPoint asks "add-in wants to open Bema.app" every time an add-in opens a `bema://` link, with no way to remember the answer. A local listener was tried first and dropped: PowerPoint's add-in web view refuses to connect to `localhost` and `127.0.0.1` alike ("Load failed"). An add-in may open a dialog, though, and PowerPoint titles it with the add-in's name. Bema already has Accessibility, so it watches PowerPoint for a new dialog titled "Bema" (deck windows are never dialogs), closes it and presents the deck in front, the same as ⌃⌥P. The add-in waits 2.5 seconds for that and otherwise opens the link as before, so an older or closed Bema still works. Nothing new listens on the Mac or the network.
+
+- ~~**The PowerPoint button asks Bema directly, on a fixed loopback port.**~~ (Tried and dropped the same day; see above.)
+
 ## 2026-11-16
 
 - **Bema is in the Dock only while its presenter window is open** (asked for by the maintainer). It keeps running for ⌃⌥P, the PowerPoint button, links and the Claude connection, but most of that time there's nothing to switch to, so a Dock icon is noise. The policy is checked after every event (cheap) rather than on window notifications, which miss SwiftUI reopening a closed window. Without the menu bar icon Bema stays a regular app, since it would otherwise have no visible way back.

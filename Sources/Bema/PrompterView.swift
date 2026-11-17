@@ -357,19 +357,32 @@ struct PrompterView: View {
 }
 
 /// A small icon with a one-word label under it, so less obvious controls explain themselves.
+/// Set by a bar too narrow for captions: its labeled icons show the icon only (the tooltip stays).
+private struct IconsOnlyKey: EnvironmentKey { static let defaultValue = false }
+extension EnvironmentValues {
+    var iconsOnly: Bool {
+        get { self[IconsOnlyKey.self] }
+        set { self[IconsOnlyKey.self] = newValue }
+    }
+}
+
 struct LabeledIcon: View {
     let symbol: String
     let label: String
     let on: Bool
+    @Environment(\.iconsOnly) private var iconsOnly
     @State private var hovering = false
 
     var body: some View {
         VStack(spacing: 2) {
-            Image(systemName: symbol).font(.system(size: 13, weight: .medium)).frame(height: 16)
-            Text(label).font(.system(size: 9, weight: .semibold))
+            Image(systemName: symbol).font(.system(size: iconsOnly ? 15 : 13, weight: .medium)).frame(height: 16)
+            if !iconsOnly {
+                Text(label).font(.system(size: 9, weight: .semibold)).lineLimit(1).fixedSize()
+            }
         }
+        .accessibilityLabel(label)
         .foregroundStyle(on ? Theme.accent : (hovering ? Theme.text : Theme.muted))
-        .frame(minWidth: 34, minHeight: 32)
+        .frame(minWidth: iconsOnly ? 28 : 34, minHeight: 32)
         .background(RoundedRectangle(cornerRadius: 7).fill(hovering ? Theme.raised : .clear))
         .contentShape(Rectangle())
         .onHover { hovering = $0 }

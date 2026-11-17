@@ -4,6 +4,22 @@ What was built, newest first. The reasons behind choices are in [DECISIONS.md](D
 
 Each entry says what changed and, where it applies, what was **not verified**.
 
+## 2026-11-17
+
+### Slide pictures from an older version of a deck are replaced
+- Bema keeps each deck's slide pictures by file, date and size. When a deck file was replaced while PowerPoint still had the old version open, Bema saved pictures of the old version under the new file and showed them from then on: the notes were right, the slides weren't. Bema now checks the saved pictures' text against the deck's slide titles when it opens a deck and makes them again when they don't match.
+- Checked: the sample deck, which had been showing an older version's slides, showed its current slides after reopening. Not verified: decks without slide titles (nothing to compare, so they're left as they are).
+
+### Top bar buttons no longer cut off, and a smoother presenter window
+- In a narrow window the LIVE badge wrapped onto two lines and the camera and Stage tools captions were squeezed or cut off at the window's edge. Badges and captions now keep their size, and when the bar doesn't fit, the Self view, On slides, Light and Stage tools buttons show their icons only (tooltips stay).
+- Slide pictures are kept in a cache that drops the least-used ones past about 400 MB. Before, after 80 pictures it threw all of them away, so every visible slide and thumbnail was redrawn on the main thread at once, which showed as stutter in longer decks. The filmstrip also worked out the talk's per-slide timing once per thumbnail on every redraw, reading every slide's notes each time; it now does it once.
+- Checked: the top bar rendered at 1320 and 1700 points wide, and Bema's window at its minimum width. Not verified: the bar while presenting with the camera on at the minimum width (PowerPoint wasn't started here), and whether the lag you saw is gone; it was not reproduced, only the causes above found by reading the code.
+
+### The PowerPoint button no longer asks to open Bema.app
+- **Present with Bema** in PowerPoint used to bring up PowerPoint's "Bema add-in wants to open Bema.app" prompt every time. Now it shows "Opening Bema…" for a moment: Bema spots that dialog through Accessibility, closes it and presents the deck in front. If Bema doesn't (not running, older than this version, no Accessibility), the button opens the `bema://` link and the prompt as before; that link now also carries a cloud deck's address, and a short reason Bema writes to its log.
+- A listener on 127.0.0.1 was tried first and taken out: PowerPoint blocks its add-ins from connecting to it.
+- Checked in PowerPoint: clicking the button opened the dialog, Bema closed it and presented with no prompt. Not verified: with Bema's window closed, on a cloud deck, or on PowerPoint versions other than this one.
+
 ## 2026-11-16
 
 ### Bema leaves the Dock when its window is closed (Bema 0.1.10)

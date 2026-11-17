@@ -463,6 +463,19 @@ struct TopBar: View {
     @EnvironmentObject private var model: PresenterModel
 
     var body: some View {
+        // With captions when they fit; otherwise the camera and Stage tools buttons show icons only
+        // (tooltips stay), so nothing is squeezed or cut off at the window's edge.
+        ViewThatFits(in: .horizontal) {
+            bar.environment(\.iconsOnly, false)
+            bar.environment(\.iconsOnly, true)
+        }
+        .padding(.leading, 80).padding(.trailing, 16).padding(.top, 10).padding(.bottom, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.bar)
+        .overlay(alignment: .bottom) { Rectangle().fill(Theme.border).frame(height: 1) }
+    }
+
+    private var bar: some View {
         HStack(spacing: 9) {
             ShowControl()
             Rectangle().fill(Theme.border).frame(width: 1, height: 30)
@@ -474,9 +487,6 @@ struct TopBar: View {
             CameraControls()
             StageToolsButton()
         }
-        .padding(.leading, 80).padding(.trailing, 16).padding(.top, 10).padding(.bottom, 12)
-        .background(Theme.bar)
-        .overlay(alignment: .bottom) { Rectangle().fill(Theme.border).frame(height: 1) }
     }
 }
 
@@ -511,12 +521,14 @@ struct ShowControl: View {
                         .foregroundStyle(Theme.liveSoft)
                         .padding(.horizontal, 8).padding(.vertical, 3)
                         .background(Capsule().fill(Theme.liveBg))
+                        .fixedSize()
                     }
                     if CoachModel.shared.rehearsalMode {
                         Text("REHEARSAL").font(.system(size: 10, weight: .heavy)).tracking(1)
                             .foregroundStyle(Theme.warnStrong)
                             .padding(.horizontal, 8).padding(.vertical, 3)
                             .background(Capsule().fill(Color(hex: 0x4A3714)))
+                            .fixedSize()
                             .help("Rehearsal mode: a timing report opens when the show ends")
                     }
                     Text(model.deckName).font(.system(size: 14, weight: .semibold)).lineLimit(1)
@@ -1068,11 +1080,13 @@ struct Filmstrip: View {
     @EnvironmentObject private var model: PresenterModel
 
     var body: some View {
+        // Worked out once per redraw, not once per thumbnail: it reads every slide's notes.
+        let budgets = CoachModel.shared.budgets()
         ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(alignment: .top, spacing: 14) {
                     ForEach(model.slides) { slide in
-                        Thumbnail(slide: slide, isCurrent: slide.id == model.current)
+                        Thumbnail(slide: slide, isCurrent: slide.id == model.current, budget: budgets[slide.id])
                             .id(slide.id)
                     }
                 }
@@ -1092,6 +1106,7 @@ struct Thumbnail: View {
     @EnvironmentObject private var model: PresenterModel
     let slide: SlideInfo
     let isCurrent: Bool
+    var budget: Double?
     @State private var hovering = false
 
     var body: some View {
@@ -1112,7 +1127,7 @@ struct Thumbnail: View {
                 .overlay(RoundedRectangle(cornerRadius: 7)
                     .strokeBorder(isCurrent ? Theme.accent : (hovering ? Theme.dim : Theme.borderStrong),
                                   lineWidth: isCurrent ? 3 : 1))
-                Text(slide.hidden ? "\(slide.id) · hidden" : (CoachModel.shared.budgets()[slide.id].map { "\(slide.id) · \(formatDuration($0))" } ?? "\(slide.id)"))
+                Text(slide.hidden ? "\(slide.id) · hidden" : (budget.map { "\(slide.id) · \(formatDuration($0))" } ?? "\(slide.id)"))
                     .font(.system(size: 12, weight: isCurrent ? .bold : .medium))
                     .foregroundStyle(isCurrent ? Theme.accent : Theme.muted)
             }
