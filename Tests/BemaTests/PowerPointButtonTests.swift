@@ -93,6 +93,10 @@ final class PointerArrowTests: XCTestCase {
     func testThePlainPointerFollowsTheMouse() {
         XCTAssertTrue(PointerTool.none.followsHover)
         XCTAssertFalse(PointerTool.pen.followsHover)
+        // The presenter's slide must listen to the mouse with the arrow tool too (0.1.12 didn't).
+        XCTAssertEqual(PointerTool.none.slideInput, .hoverOnly)
+        XCTAssertEqual(PointerTool.laser.slideInput, .full)
+        XCTAssertEqual(PointerTool.pen.slideInput, .full)
     }
 
     @MainActor func testTheAudienceSeesAnArrowAndThePresenterDoesNot() throws {

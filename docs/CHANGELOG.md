@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-17
 
+### The audience sees your mouse pointer, with the arrow tool too (Bema 0.1.13)
+- In 0.1.12 the arrow tool's pointer never reached the audience: the presenter's slide only followed the mouse when another tool was chosen. It now follows it with the arrow tool as well, without ripples on click or a change of pointer shape.
+- Checked: tests that the arrow tool listens to the mouse, and live by the maintainer during a slideshow. Not verified: with Keynote.
+
 ### The audience sees your mouse pointer (Bema 0.1.12)
 - The arrow tool (first in the toolbar, formerly "Pointer off") now shows an ordinary Mac pointer on the audience display wherever your mouse is over the slide in the presenter window, moving with it like the laser. It's drawn only for the audience (you already have your own) and disappears when the mouse leaves the slide.
 - Checked: rendered tests of the audience layer (arrow drawn, white edge on a dark slide) and the presenter's (no arrow). Not verified live on an audience display during a slideshow.

@@ -30,6 +30,12 @@ enum PointerTool: String, CaseIterable, Identifiable {
         }
     }
 
+    enum SlideInput { case hoverOnly, full }
+
+    /// How the presenter's slide listens to the mouse. The plain pointer only follows it (for the
+    /// audience's arrow): clicks and the pointer's shape stay as they are, with no ripples.
+    var slideInput: SlideInput { self == .none ? .hoverOnly : .full }
+
     /// Tools that follow the mouse while hovering. The plain pointer does too: the audience sees an
     /// arrow where the presenter's mouse is over the slide.
     var followsHover: Bool { self == .none || self == .laser || self == .spotlight || self == .magnifier || self == .stamp }
@@ -399,6 +405,27 @@ struct AnnotationCanvas: View {
                 layer.addFilter(.shadow(color: .black.opacity(0.3), radius: 3, y: 1))
                 layer.draw(img, in: CGRect(x: x - s / 2, y: y - s / 2, width: s, height: s))
             }
+        }
+    }
+}
+
+/// The plain pointer over the presenter's slide: reports where the mouse is so the audience sees an
+/// arrow there, and nothing else.
+struct PointerHoverInput: View {
+    @EnvironmentObject private var model: PresenterModel
+
+    var body: some View {
+        GeometryReader { geo in
+            Color.clear
+                .contentShape(Rectangle())
+                .onContinuousHover(coordinateSpace: .local) { phase in
+                    switch phase {
+                    case .active(let loc):
+                        model.movePointer(to: CGPoint(x: min(max(loc.x / max(geo.size.width, 1), 0), 1),
+                                                      y: min(max(loc.y / max(geo.size.height, 1), 0), 1)))
+                    case .ended: model.laserPoint = nil
+                    }
+                }
         }
     }
 }

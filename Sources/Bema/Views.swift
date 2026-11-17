@@ -942,7 +942,10 @@ struct SlideImage: View {
             .overlay {
                 if interactive {
                     AnnotationCanvas()
-                    if model.tool != .none { AnnotationInput() }
+                    switch model.tool.slideInput {
+                    case .hoverOnly: PointerHoverInput()
+                    case .full: AnnotationInput()
+                    }
                 }
             }
             .frame(width: size.width, height: size.height)
