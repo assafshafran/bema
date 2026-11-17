@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-17
 
-### The audience sees your mouse pointer
+### The audience sees your mouse pointer (Bema 0.1.12)
 - The arrow tool (first in the toolbar, formerly "Pointer off") now shows an ordinary Mac pointer on the audience display wherever your mouse is over the slide in the presenter window, moving with it like the laser. It's drawn only for the audience (you already have your own) and disappears when the mouse leaves the slide.
 - Checked: rendered tests of the audience layer (arrow drawn, white edge on a dark slide) and the presenter's (no arrow). Not verified live on an audience display during a slideshow.
 
