@@ -5,7 +5,7 @@ import SwiftUI
 struct AudienceLayer: View {
     var body: some View {
         ZStack {
-            AnnotationCanvas()
+            AnnotationCanvas(audience: true)
             CameraBubble()
             PollOverlay()
             CaptionsBar()

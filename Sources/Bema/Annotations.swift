@@ -8,7 +8,7 @@ enum PointerTool: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .none: return "Pointer off"
+        case .none: return "Mouse pointer: the audience sees your pointer on the slide"
         case .laser: return "Laser pointer (L)"
         case .spotlight: return "Spotlight (S)"
         case .magnifier: return "Magnifier (M)"
@@ -30,8 +30,9 @@ enum PointerTool: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Tools that follow the mouse while hovering.
-    var followsHover: Bool { self == .laser || self == .spotlight || self == .magnifier || self == .stamp }
+    /// Tools that follow the mouse while hovering. The plain pointer does too: the audience sees an
+    /// arrow where the presenter's mouse is over the slide.
+    var followsHover: Bool { self == .none || self == .laser || self == .spotlight || self == .magnifier || self == .stamp }
 }
 
 enum LaserStyle: String, CaseIterable, Identifiable {
@@ -160,6 +161,8 @@ struct SeededRandom {
 /// and over the slide on the audience display.
 struct AnnotationCanvas: View {
     @EnvironmentObject private var model: PresenterModel
+    /// Over the audience's slide. The plain pointer is drawn only there: the presenter has the real one.
+    var audience = false
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 60, paused: !model.effectsAnimating)) { timeline in
@@ -176,6 +179,7 @@ struct AnnotationCanvas: View {
                     case .magnifier: drawMagnifier(at: center, normalized: p, in: &ctx, size: size)
                     case .laser: drawLaser(at: center, in: &ctx, size: size, now: now)
                     case .stamp: drawStampPreview(at: center, in: &ctx, size: size)
+                    case .none where audience: drawArrow(at: center, in: &ctx, size: size)
                     default: break
                     }
                 }
@@ -184,6 +188,16 @@ struct AnnotationCanvas: View {
             }
         }
         .allowsHitTesting(false)
+    }
+
+    /// A Mac arrow pointer with its tip at `tip`, sized to the slide like a pointer on a screen that size.
+    private func drawArrow(at tip: CGPoint, in ctx: inout GraphicsContext, size: CGSize) {
+        let path = PointerArrow.path(tip: tip, height: PointerArrow.height(forSlideHeight: size.height))
+        var layer = ctx
+        layer.addFilter(.shadow(color: .black.opacity(0.35), radius: 2, y: 1))
+        layer.fill(path, with: .color(.black))
+        ctx.stroke(path, with: .color(.white), style: StrokeStyle(lineWidth: max(2, PointerArrow.height(forSlideHeight: size.height) / 8), lineJoin: .round))
+        ctx.fill(path, with: .color(.black))
     }
 
     private func pt(_ p: CGPoint, _ size: CGSize) -> CGPoint { CGPoint(x: p.x * size.width, y: p.y * size.height) }
@@ -471,5 +485,24 @@ final class AudienceOverlay {
         host.layer?.backgroundColor = .clear
         w.contentView = host
         return w
+    }
+}
+
+/// The arrow the audience sees for the plain pointer: the classic Mac pointer shape.
+enum PointerArrow {
+    /// About 3.5% of the slide's height: a normal pointer on a 1080-line screen.
+    static func height(forSlideHeight h: CGFloat) -> CGFloat { max(16, h * 0.035) }
+
+    /// Outline in units of the pointer's height, tip at (0, 0).
+    static let outline: [CGPoint] = [
+        CGPoint(x: 0, y: 0), CGPoint(x: 0, y: 0.80), CGPoint(x: 0.19, y: 0.62), CGPoint(x: 0.31, y: 0.90),
+        CGPoint(x: 0.42, y: 0.85), CGPoint(x: 0.30, y: 0.58), CGPoint(x: 0.55, y: 0.58),
+    ]
+
+    static func path(tip: CGPoint, height: CGFloat) -> Path {
+        var path = Path()
+        path.addLines(outline.map { CGPoint(x: tip.x + $0.x * height, y: tip.y + $0.y * height) })
+        path.closeSubpath()
+        return path
     }
 }

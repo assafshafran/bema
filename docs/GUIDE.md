@@ -54,6 +54,7 @@ A dark "backstage" theme that's easy on the eyes in a dim room, with one amber a
 
 ## Stage tools
 **Pointer effects** (toolbar, or keys while presenting). They show on a transparent, click-through layer over the audience slide:
+- **Mouse pointer** (the arrow, the first tool and the one Bema starts with): while your mouse is over the slide in the presenter window, the audience sees an ordinary Mac pointer in the same spot, moving with it. Move off the slide and it goes away.
 - **Laser (L)** in five styles from the ✦ menu: red dot, pointing hand, magic wand with sparkles, comet trail, paper plane.
 - **Spotlight (S):** dims the slide except a soft circle around your pointer. **Magnifier (M):** zooms into whatever you point at.
 - **Pen (P), highlighter (H), stamps (T):** ✓ ✗ ★ ! circle WOW. Click ripples show remote viewers where you clicked. **E** clears drawings and stamps; they also clear when the slide changes.

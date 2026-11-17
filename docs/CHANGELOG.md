@@ -6,6 +6,10 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-17
 
+### The audience sees your mouse pointer
+- The arrow tool (first in the toolbar, formerly "Pointer off") now shows an ordinary Mac pointer on the audience display wherever your mouse is over the slide in the presenter window, moving with it like the laser. It's drawn only for the audience (you already have your own) and disappears when the mouse leaves the slide.
+- Checked: rendered tests of the audience layer (arrow drawn, white edge on a dark slide) and the presenter's (no arrow). Not verified live on an audience display during a slideshow.
+
 ### Slide pictures from an older version of a deck are replaced (Bema 0.1.11)
 - Bema keeps each deck's slide pictures by file, date and size. When a deck file was replaced while PowerPoint still had the old version open, Bema saved pictures of the old version under the new file and showed them from then on: the notes were right, the slides weren't. Bema now checks the saved pictures' text against the deck's slide titles when it opens a deck and makes them again when they don't match.
 - Checked: the sample deck, which had been showing an older version's slides, showed its current slides after reopening. Not verified: decks without slide titles (nothing to compare, so they're left as they are).

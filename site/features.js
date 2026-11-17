@@ -76,6 +76,8 @@
       b: "<p>Click the prompter's level meter to pick the system default or any connected microphone. The prompter, captions, voice commands and speech coach all use it, and switching while listening carries straight on.</p>" },
 
     // On the slide
+    { id: "mouse-pointer", g: "slide", t: "Your mouse, on their screen", s: "A regular pointer that follows your mouse over the slide.",
+      b: "<p>With the arrow tool (the first in the toolbar, and the one Bema starts with), the audience sees an ordinary pointer wherever your mouse is over the slide in your presenter window. Move off the slide and it disappears, so it never wanders around their screen.</p>" },
     { id: "laser", g: "slide", t: "Laser pointer, five ways", s: "Red dot, pointing hand, magic wand, comet trail or paper plane.",
       b: "<p>Press L and point on the slide in your presenter window: the laser appears in the same spot on the audience display, on a transparent layer the clicks pass through. Pick a style from the ✦ menu. Try it in the demo further down this page.</p>", keys: ["L"] },
     { id: "spotlight", g: "slide", t: "Spotlight and magnifier", s: "Dim everything but your point, or zoom into it.",

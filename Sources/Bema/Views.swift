@@ -869,7 +869,7 @@ struct SlidesColumn: View {
     private var hint: String {
         guard model.phase == .presenting else { return "Arrow keys browse your notes · ⌘↩ starts the show" }
         switch model.tool {
-        case .none: return "L laser · S spotlight · M magnifier · P pen · T stamp"
+        case .none: return "Pointer · the audience sees your mouse over the slide · L laser · S spotlight · P pen"
         case .laser: return "Laser on · move over the slide to point"
         case .spotlight: return "Spotlight · the audience sees only around your pointer"
         case .magnifier: return "Magnifier · zooms in where you point"

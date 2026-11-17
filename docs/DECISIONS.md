@@ -4,6 +4,8 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-17
 
+- **The arrow tool shows the presenter's pointer to the audience instead of "pointer off".** Asked for by the maintainer: a regular pointer, like the red dot but plainer. Bema starts on this tool, so moving the mouse over the slide now shows on the audience screen by default; it's drawn only while the mouse is over the slide, so it never drifts around their screen. It's a drawn shape, not `NSCursor`'s image, so it scales with the audience slide and gets a white edge on dark slides.
+
 - **Saved slide previews are checked by their text against the deck's slide titles.** The cache key (path, date, size) can't notice that PowerPoint exported an older version it still had open. Comparing titles costs reading a few PDF pages' text on opening, needs nothing from PowerPoint, and treats a deck as matching when at least half its titled slides are found, so font and spacing differences don't cause needless re-exports.
 - **The top bar drops captions rather than squeezing them.** `ViewThatFits` tries the bar with captions, then with icons only, instead of a width threshold, so it adapts to the deck name, the LIVE and REHEARSAL badges and the Light button without numbers to keep in step.
 - **Slide pictures in an `NSCache` with a cost limit (about 400 MB of pixels)** instead of a dictionary cleared at 80 entries: clearing everything at once made the window redraw every slide in one go.

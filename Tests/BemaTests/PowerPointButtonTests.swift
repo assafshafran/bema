@@ -76,3 +76,45 @@ final class PreviewCheckTests: XCTestCase {
         XCTAssertTrue(PreviewCheck.matches(pageTexts: ["", ""], slides: [slide(1, ""), slide(2, "")]))
     }
 }
+
+final class PointerArrowTests: XCTestCase {
+    func testTheArrowsTipIsWhereTheMouseIs() {
+        let box = PointerArrow.path(tip: CGPoint(x: 100, y: 50), height: 40).boundingRect
+        XCTAssertEqual(box.minX, 100, accuracy: 0.01)
+        XCTAssertEqual(box.minY, 50, accuracy: 0.01)
+        XCTAssertEqual(box.height, 36, accuracy: 0.01)   // 0.9 of the height, pointing down and right
+    }
+
+    func testTheArrowScalesWithTheSlide() {
+        XCTAssertEqual(PointerArrow.height(forSlideHeight: 1080), 37.8, accuracy: 0.01)
+        XCTAssertEqual(PointerArrow.height(forSlideHeight: 200), 16)   // never smaller than a usable pointer
+    }
+
+    func testThePlainPointerFollowsTheMouse() {
+        XCTAssertTrue(PointerTool.none.followsHover)
+        XCTAssertFalse(PointerTool.pen.followsHover)
+    }
+
+    @MainActor func testTheAudienceSeesAnArrowAndThePresenterDoesNot() throws {
+        _ = NSApplication.shared
+        let model = PresenterModel()
+        model.tool = .none
+        model.laserPoint = CGPoint(x: 0.4, y: 0.45)
+        for (audience, name) in [(true, "pointer-audience"), (false, "pointer-presenter")] {
+            let view = AnnotationCanvas(audience: audience).environmentObject(model)
+                .frame(width: 640, height: 360).background(Color(red: 0.06, green: 0.07, blue: 0.1))
+            let renderer = ImageRenderer(content: view)
+            renderer.scale = 2
+            let image = try XCTUnwrap(renderer.nsImage)
+            let rep = try XCTUnwrap(NSBitmapImageRep(data: try XCTUnwrap(image.tiffRepresentation)))
+            // Just below and right of the tip, inside the arrow.
+            let inside = try XCTUnwrap(rep.colorAt(x: Int(0.4 * 1280) + 4, y: Int(0.45 * 720) + 16))
+            // On a dark slide: the arrow's white edge just left of the tip column shows only for the audience.
+            let edge = try XCTUnwrap(rep.colorAt(x: Int(0.4 * 1280) - 1, y: Int(0.45 * 720) + 16))
+            if audience { XCTAssertGreaterThan(edge.brightnessComponent, 0.6) } else { XCTAssertLessThan(edge.brightnessComponent, 0.2) }
+            _ = inside
+            try rep.representation(using: .png, properties: [:])?
+                .write(to: FileManager.default.temporaryDirectory.appendingPathComponent("bema-\(name).png"))
+        }
+    }
+}
