@@ -277,7 +277,7 @@ struct PreflightPanel: View {
 
                     CheckCard(ok: true, title: "Audience display") {
                         AudienceDisplayPicker(style: .field)
-                        Text(NSScreen.screens.count > 1
+                        Text(model.displayCount > 1
                              ? "Slides open full screen on this display"
                              : "One display connected: slides open in a window for rehearsal")
                             .font(.system(size: 12)).foregroundStyle(Theme.muted)

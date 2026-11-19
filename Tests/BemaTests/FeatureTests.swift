@@ -312,4 +312,29 @@ final class AudienceDisplayTests: XCTestCase {
         XCTAssertFalse(AudienceDisplay.shouldAsk(enabled: true, displayCount: 1))
         XCTAssertFalse(AudienceDisplay.shouldAsk(enabled: false, displayCount: 3))
     }
+
+    func testTheOneDisplayNoticeGoesOnceASecondDisplayIsUsed() {
+        // Started on one display: the rehearsal notice.
+        XCTAssertEqual(AudienceDisplay.noticeAfterStart(fullScreen: false, displayCount: 1), AudienceDisplay.oneDisplayNotice)
+        // Restarted full screen on a second display: no display notice.
+        XCTAssertNil(AudienceDisplay.noticeAfterStart(fullScreen: true, displayCount: 2))
+        // Two displays but the slides went on Bema's own: say why it's a window, not "only one display".
+        XCTAssertEqual(AudienceDisplay.noticeAfterStart(fullScreen: false, displayCount: 2), AudienceDisplay.sameDisplayNotice)
+    }
+
+    func testPluggingInADisplayReplacesTheOneDisplayNotice() {
+        let one = AudienceDisplay.oneDisplayNotice
+        // During a rehearsal in a window: point at restarting.
+        XCTAssertEqual(AudienceDisplay.noticeAfterDisplaysChanged(current: one, displayCount: 2, rehearsingInWindow: true),
+                       AudienceDisplay.displayAddedNotice)
+        // After the show: just drop it.
+        XCTAssertNil(AudienceDisplay.noticeAfterDisplaysChanged(current: one, displayCount: 2, rehearsingInWindow: false))
+        // Unplugged again mid-rehearsal: back to the one-display notice.
+        XCTAssertEqual(AudienceDisplay.noticeAfterDisplaysChanged(current: AudienceDisplay.displayAddedNotice, displayCount: 1,
+                                                                  rehearsingInWindow: true), one)
+        // Other notices are left alone.
+        XCTAssertEqual(AudienceDisplay.noticeAfterDisplaysChanged(current: "Slide previews aren't available", displayCount: 2,
+                                                                  rehearsingInWindow: true), "Slide previews aren't available")
+        XCTAssertNil(AudienceDisplay.noticeAfterDisplaysChanged(current: nil, displayCount: 2, rehearsingInWindow: true))
+    }
 }

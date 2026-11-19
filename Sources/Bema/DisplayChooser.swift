@@ -14,6 +14,27 @@ enum AudienceDisplay {
     static func shouldAsk(enabled: Bool, displayCount: Int) -> Bool {
         enabled && displayCount > 1
     }
+
+    /// Notices about where the slides went. They describe the displays at one moment, so each is
+    /// replaced (or cleared) when the show starts again or a display comes or goes.
+    static let oneDisplayNotice = "Only one display is connected, so the slideshow is in a window for rehearsal."
+    static let sameDisplayNotice = "The slides are on the same display as Bema, so the slideshow is in a window. Choose another display in “Slides on” and restart the show for full screen."
+    static let displayAddedNotice = "Another display is connected. End and restart the show to put the slides on it full screen."
+    static let notices: Set<String> = [oneDisplayNotice, sameDisplayNotice, displayAddedNotice]
+
+    /// The display notice after a show starts: nil when the slides went full screen on their own display.
+    static func noticeAfterStart(fullScreen: Bool, displayCount: Int) -> String? {
+        if fullScreen { return nil }
+        return displayCount > 1 ? sameDisplayNotice : oneDisplayNotice
+    }
+
+    /// The notice to show after the connected displays change, given the one showing now.
+    /// Only display notices are touched; any other notice stays.
+    static func noticeAfterDisplaysChanged(current: String?, displayCount: Int, rehearsingInWindow: Bool) -> String? {
+        guard let current, notices.contains(current) else { return current }
+        if displayCount <= 1 { return rehearsingInWindow ? oneDisplayNotice : nil }
+        return rehearsingInWindow ? displayAddedNotice : nil
+    }
 }
 
 /// A display as the chooser shows it.

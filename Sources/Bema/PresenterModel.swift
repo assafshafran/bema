@@ -128,6 +128,20 @@ final class PresenterModel: ObservableObject {
                 if self.phase != .presenting { Task { await self.refreshOpenInPowerPoint() } }
             }
         }
+        // A display plugged in or out: refresh what depends on the count and drop notices it made stale.
+        screenObserver = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
+                                                                object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.displaysChanged() }
+        }
+    }
+    private var screenObserver: NSObjectProtocol?
+    /// How many displays are connected, kept current so views that depend on it redraw.
+    @Published private(set) var displayCount = NSScreen.screens.count
+
+    private func displaysChanged() {
+        displayCount = NSScreen.screens.count
+        let rehearsing = phase == .presenting && !audienceFullScreen
+        notice = AudienceDisplay.noticeAfterDisplaysChanged(current: notice, displayCount: displayCount, rehearsingInWindow: rehearsing)
     }
     private var pollTask: Task<Void, Never>?
     /// Slide pictures by slide and size. Evicts the least-used ones past about 400 MB, rather than
@@ -378,12 +392,18 @@ final class PresenterModel: ObservableObject {
                 audienceFullScreen = fullScreen && ok
                 phase = .presenting
                 if timerStartedAt == nil { toggleTimer() }
-                if !fullScreen && screens.count == 1 {
-                    notice = "Only one display is connected, so the slideshow is in a window for rehearsal."
-                } else if !ok {
-                    notice = "Full screen without a title bar needs Accessibility permission. If Bema is already listed there, select it, remove it with the – button and add it again (the old entry belongs to an earlier build). Then end and restart the show."
+                // Replace any display notice left from an earlier start (a stale "only one display" stayed
+                // after a second display was connected and the show restarted).
+                if let displayNotice = AudienceDisplay.noticeAfterStart(fullScreen: fullScreen, displayCount: screens.count) {
+                    notice = displayNotice
+                } else if let current = notice, AudienceDisplay.notices.contains(current) {
+                    notice = nil
+                }
+                if fullScreen && !ok {
+                    notice = Self.accessibilityNotice
                     showAccessibilityHelp = true
                 } else {
+                    if notice == Self.accessibilityNotice { notice = nil }
                     showAccessibilityHelp = false
                 }
                 startPolling()
@@ -395,6 +415,8 @@ final class PresenterModel: ObservableObject {
             }
         }
     }
+
+    static let accessibilityNotice = "Full screen without a title bar needs Accessibility permission. If Bema is already listed there, select it, remove it with the – button and add it again (the old entry belongs to an earlier build). Then end and restart the show."
 
     func endShow() async {
         pollTask?.cancel()

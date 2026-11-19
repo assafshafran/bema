@@ -6,6 +6,12 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-19
 
+### The "only one display" notice goes away when a second display is used
+- Starting a show with one display left *Only one display is connected…* on screen for good: plugging in a display and restarting the show didn't clear it, even when the slides went full screen on the new display. Restarting now replaces it, and plugging a display in or out updates it straight away (mid-rehearsal it says to restart the show to go full screen). A stale Accessibility notice also goes once full screen works.
+- With two displays but the slides on Bema's own display, the notice now says that and points to **Slides on**, instead of claiming there's only one display.
+- The pre-flight check's display line follows displays plugged in while it's open.
+- Checked: tests of which notice shows after starting and after displays change. Not verified: live with a display plugged in during a show (reported by a tester, not reproduced here).
+
 ### Quick prompt on Bema's start screen, and right-click on the menu bar icon (Bema 0.1.16)
 - The start screen has a **Quick prompt** card under the drop zone: paste any text and click **Prompt this text** (⌘↩) to open the detached prompter with it, or **Open empty prompter**. It says what the prompter does, and under the box how long the text is at a speaking pace. Designed in Claude Design first (two layouts; the card under the drop zone was chosen so presenting a deck stays the main path).
 - Right-clicking Bema's menu bar icon now opens its panel, like a left click.
