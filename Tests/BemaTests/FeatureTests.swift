@@ -54,6 +54,46 @@ final class NoteCueTests: XCTestCase {
         XCTAssertEqual(p.words.filter(\.bold).map(\.text), ["the", "big"])
     }
 
+    @MainActor func testThePrompterCanPromptYourOwnText() {
+        UserDefaults.standard.removeObject(forKey: PrompterModel.ownScriptKey)
+        defer { UserDefaults.standard.removeObject(forKey: PrompterModel.ownScriptKey) }
+        let p = PrompterModel()
+        p.load(slides: [SlideInfo(id: 1, title: "Hello", notes: "Welcome everyone", hidden: false)])
+        p.editingOwnScript = true
+
+        p.useOwnScript("  Good evening Acme.\nLet's begin [pause] now.  ")
+        XCTAssertEqual(p.ownScript, "Good evening Acme.\nLet's begin [pause] now.")
+        XCTAssertFalse(p.editingOwnScript)
+        XCTAssertEqual(p.paragraphs.count, 2)
+        XCTAssertTrue(p.paragraphs.allSatisfy { $0.slide == 0 })   // no slide headings
+        XCTAssertEqual(p.words.first?.text, "Good")
+        XCTAssertEqual(p.words.filter(\.isCue).map(\.text), ["PAUSE"])
+
+        // A deck opening or its notes changing doesn't replace your text…
+        p.load(slides: [SlideInfo(id: 1, title: "Hello", notes: "Something else", hidden: false)])
+        XCTAssertEqual(p.words.first?.text, "Good")
+        XCTAssertTrue(p.hasDeckNotes)
+
+        // …until you go back to the deck, which then has its latest notes.
+        p.useDeckNotes()
+        XCTAssertNil(p.ownScript)
+        XCTAssertEqual(p.words.first?.text, "Something")
+        XCTAssertEqual(p.lastOwnScript, "Good evening Acme.\nLet's begin [pause] now.")
+
+        // Prompting empty text goes back to the deck.
+        p.useOwnScript("Hi")
+        p.useOwnScript("   ")
+        XCTAssertNil(p.ownScript)
+    }
+
+    @MainActor func testOwnTextWorksWithoutADeck() {
+        let p = PrompterModel()
+        XCTAssertFalse(p.hasDeckNotes)
+        p.useOwnScript("Just a few words")
+        XCTAssertEqual(p.words.map(\.text), ["Just", "a", "few", "words"])
+        UserDefaults.standard.removeObject(forKey: PrompterModel.ownScriptKey)
+    }
+
     @MainActor func testASlideWithoutNotesSaysSoInThePrompter() {
         let p = PrompterModel()
         p.load(slides: [SlideInfo(id: 1, title: "Hello", notes: "Welcome everyone", hidden: false),

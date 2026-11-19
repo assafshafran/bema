@@ -116,6 +116,11 @@ struct BemaApp: App {
                 Divider()
                 Button("Start / Pause Prompter") { PrompterModel.shared.toggle() }
                     .keyboardShortcut("p", modifiers: [.command, .option])
+                Button("Prompter for Your Own Text…") {
+                    PrompterModel.shared.editingOwnScript = true
+                    NSApp.activate()
+                    MainWindowRef.opener?(id: "prompter")
+                }
                 Divider()
                 Toggle("Keep Presenter Window on Top", isOn: $model.alwaysOnTop)
                 Toggle("Hide Presenter Window from Screen Sharing", isOn: $hidePresenterFromSharing)
@@ -232,6 +237,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// bema://prompter?place=camera         → open the detached prompter under the camera
+    /// bema://prompter?text=Hello%20there    → prompt that text (bare ?text opens the box to paste it)
     /// bema://present                       → present the deck open in PowerPoint
     /// bema://present?path=/Users/…/deck.pptx → present that file
     /// bema://present?url=file:///…           → same, as a file URL (what Office add-ins report)
@@ -247,6 +253,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         if link.host?.lowercased() == "prompter" {
             // bema://prompter[?place=camera] opens the detached prompter.
+            // …&text=Hello prompts that text; a bare ?text opens the box to paste it.
+            if let text = items.first(where: { $0.name == "text" }) {
+                if let value = text.value, !value.isEmpty { PrompterModel.shared.useOwnScript(value) }
+                else { PrompterModel.shared.editingOwnScript = true }
+            }
             NotificationCenter.default.post(name: .openPrompterWindow, object: nil,
                                             userInfo: ["place": items.first(where: { $0.name == "place" })?.value ?? ""])
             return

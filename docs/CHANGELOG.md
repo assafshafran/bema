@@ -4,6 +4,14 @@ What was built, newest first. The reasons behind choices are in [DECISIONS.md](D
 
 Each entry says what changed and, where it applies, what was **not verified**.
 
+## 2026-11-19
+
+### The prompter works without a deck: paste your own text (Bema 0.1.15)
+- The detached prompter can prompt any text, not just a deck's notes. Open it from the menu bar (**Prompter for your own text**), **Slideshow → Prompter for Your Own Text…**, or `bema://prompter?text` (with `text=…` to hand it the text directly, for Shortcuts). With no deck open, the detached prompter starts on the box. Paste or type, click **Prompt this text** (⌘↩), and Voice, Auto and Manual, Mirror, the reading line, the camera placement and hiding from screen sharing all work as before. **Text** in the prompter's controls edits it again or goes back to the deck's notes.
+- While you prompt your own text, opening a deck or changing its notes doesn't replace it, there are no slide headings, and Follow slides is hidden.
+- Bema remembers the last text you prompted, on this Mac only, to start the box with next time.
+- Checked: tests of the script source switching and a rendered script, and live by the maintainer. Not verified: the `text=` link from Shortcuts.
+
 ## 2026-11-17
 
 ### The prompter marks slides without notes (Bema 0.1.14)

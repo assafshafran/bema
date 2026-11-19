@@ -18,3 +18,5 @@ video
 record
 terminal
 design
+save
+github

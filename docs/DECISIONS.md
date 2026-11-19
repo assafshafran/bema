@@ -2,6 +2,12 @@
 
 Choices made while building Bema, with the reason, so they are not re-argued or quietly undone. Newest first. Add one whenever a choice is made that the code alone would not explain.
 
+## 2026-11-19
+
+- **Your own prompter text lives beside the deck's notes, not in place of them.** Asked for by the maintainer: the prompter without a presentation. `PrompterModel` keeps the deck's slides and builds the script from your text while there is some, so a deck opening (or Bema rereading its notes) never wipes what you pasted, and **Use the deck's notes** goes straight back. Your text is one slide numbered 0, which hides the slide headings and turns off following the slideshow, rather than a second script type.
+- **The last text you prompted is kept in Bema's preferences.** It's your own words, kept on this Mac only, so the box isn't empty after a restart; it's replaced by the next text you prompt. It's never sent anywhere.
+- **The paste box is inside the detached prompter window, not a sheet.** A sheet is a separate window that wouldn't be hidden from screen sharing like the prompter is.
+
 ## 2026-11-17
 
 - **A slide without notes shows a faint line in the prompter, not nothing.** Asked for by the maintainer. Skipped silently, the script ran from slide 2's notes straight into slide 4's, so a slide could be missed. The line is small, dim and italic so it isn't read out, and it isn't matched against speech. A deck with no notes at all keeps its "no speaker notes yet" message instead of a column of these lines.

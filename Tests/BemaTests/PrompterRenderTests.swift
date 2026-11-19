@@ -50,4 +50,29 @@ final class PrompterRenderTests: XCTestCase {
         try XCTUnwrap(rep.representation(using: .png, properties: [:])).write(to: url)
         XCTAssertTrue(prompter.paragraphs[1].words[0].isPlaceholder)
     }
+
+    /// Writes $TMPDIR/bema-prompter-own-text.png (the paste box) and bema-prompter-own-script.png (prompting it).
+    @MainActor
+    func testRendersOwnTextBoxAndScript() throws {
+        UserDefaults.standard.set("Good evening, Acme. Tonight Noa and I will walk you through the plan.", forKey: PrompterModel.ownScriptKey)
+        defer { UserDefaults.standard.removeObject(forKey: PrompterModel.ownScriptKey) }
+        _ = NSApplication.shared
+        let prompter = PrompterModel()
+        try render(OwnScriptEditor(prompter: prompter).frame(width: 640, height: 300), "bema-prompter-own-text.png")
+
+        prompter.useOwnScript("Good evening, Acme.\nTonight Noa and I will walk you through the plan.")
+        try render(ScriptBody(paragraphs: prompter.paragraphs, current: 2, fontSize: 28) { _ in }
+            .frame(width: 520, height: 260, alignment: .top), "bema-prompter-own-script.png")
+        XCTAssertTrue(prompter.paragraphs.allSatisfy { $0.slide == 0 })
+    }
+
+    @MainActor
+    private func render(_ content: some View, _ name: String) throws {
+        let view = content.padding(20).background(Theme.panel).environment(\.colorScheme, .dark)
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 2
+        let image = try XCTUnwrap(renderer.nsImage)
+        let rep = try XCTUnwrap(NSBitmapImageRep(data: try XCTUnwrap(image.tiffRepresentation)))
+        try XCTUnwrap(rep.representation(using: .png, properties: [:])).write(to: FileManager.default.temporaryDirectory.appendingPathComponent(name))
+    }
 }

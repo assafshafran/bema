@@ -59,6 +59,9 @@ struct MenuBarPanel: View {
                 }
                 .disabled(model.openInPowerPoint == nil)
                 Button { openWindow(id: "prompter") } label: { Label("Detached prompter", systemImage: "text.alignleft") }
+                Button { prompter.editingOwnScript = true; NSApp.activate(); openWindow(id: "prompter") } label: {
+                    Label("Prompter for your own text", systemImage: "doc.plaintext")
+                }
                 Button { SelfViewWindowRef.opener = openWindow; SelfViewWindowRef.toggle() } label: { Label(CameraModel.shared.selfViewOpen ? "Close self view" : "Self view (only you see it)", systemImage: "person.crop.square") }
                 Button { showMainWindow(); model.stageToolsOpen = true } label: {
                     Label("Stage tools: remote, poll, camera…", systemImage: "slider.horizontal.3")

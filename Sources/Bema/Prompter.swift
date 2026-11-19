@@ -245,6 +245,11 @@ final class PrompterModel: ObservableObject {
     @Published var mirrored = false
     @Published var language: Language = .automatic { didSet { if running && mode == .voice { restart() } } }
     @Published private(set) var status: String?
+    /// Text pasted into the prompter, prompted instead of the deck's notes. nil: the deck's notes.
+    @Published private(set) var ownScript: String?
+    /// The detached prompter shows the box to paste your own text.
+    @Published var editingOwnScript = false
+    private var deckSlides: [SlideInfo] = []
 
     private var aligner = ScriptAligner(words: [])
     /// Where speech says you are. The displayed `position` glides toward it.
@@ -264,7 +269,42 @@ final class PrompterModel: ObservableObject {
 
     // MARK: Loading
 
+    /// The deck's notes became available or changed. While you're prompting your own text, it stays.
     func load(slides: [SlideInfo]) {
+        deckSlides = slides
+        guard ownScript == nil else { return }
+        build(slides)
+    }
+
+    /// Prompt pasted text instead of the deck's notes (no deck needed). Empty text goes back to the deck.
+    func useOwnScript(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { useDeckNotes(); return }
+        ownScript = trimmed
+        UserDefaults.standard.set(trimmed, forKey: Self.ownScriptKey)
+        editingOwnScript = false
+        build(Self.slides(forOwnScript: trimmed))
+    }
+
+    /// Back to the open deck's speaker notes.
+    func useDeckNotes() {
+        ownScript = nil
+        editingOwnScript = false
+        build(deckSlides)
+    }
+
+    /// The last text you prompted, to start the editor with.
+    var lastOwnScript: String { ownScript ?? UserDefaults.standard.string(forKey: Self.ownScriptKey) ?? "" }
+    var hasDeckNotes: Bool { deckSlides.contains { !$0.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty } }
+
+    static let ownScriptKey = "prompterOwnScript"
+
+    /// Your own text is one "slide" numbered 0: no slide headings, nothing to follow in a slideshow.
+    static func slides(forOwnScript text: String) -> [SlideInfo] {
+        [SlideInfo(id: 0, title: "", notes: text, hidden: false)]
+    }
+
+    private func build(_ slides: [SlideInfo]) {
         stop()
         var paras: [ScriptParagraph] = []
         var all: [ScriptWord] = []
@@ -325,7 +365,7 @@ final class PrompterModel: ObservableObject {
 
     func start() {
         guard !words.isEmpty else {
-            status = "This deck has no speaker notes to prompt from."
+            status = ownScript == nil ? "This deck has no speaker notes to prompt from." : "There's no text to prompt."
             return
         }
         running = true
@@ -443,7 +483,7 @@ final class PrompterModel: ObservableObject {
     // MARK: Slides
 
     private func positionChanged() {
-        guard running, followSlides, !words.isEmpty else { return }
+        guard running, followSlides, ownScript == nil, !words.isEmpty else { return }
         let presenter = PresenterModel.shared
         guard presenter.phase == .presenting else { return }
         let slide = words[currentWordIndex].slide
@@ -456,7 +496,7 @@ final class PrompterModel: ObservableObject {
     /// The slideshow moved (clicker, keyboard, PowerPoint): jump the script to that slide's text.
     func slideChanged(to slide: Int) {
         if slideMovedByPrompter == slide { slideMovedByPrompter = nil; return }
-        guard !words.isEmpty, words[currentWordIndex].slide != slide,
+        guard ownScript == nil, !words.isEmpty, words[currentWordIndex].slide != slide,
               let first = words.first(where: { $0.slide == slide }) ?? words.first(where: { $0.slide > slide })
         else { return }
         setPosition(Double(first.id))

@@ -249,13 +249,24 @@ struct PrompterView: View {
 
                 Spacer(minLength: 4)
 
-                Button { prompter.followSlides.toggle() } label: {
-                    LabeledIcon(symbol: "rectangle.stack", label: "Follow", on: prompter.followSlides)
+                if detached {
+                    Button { prompter.editingOwnScript = true } label: {
+                        LabeledIcon(symbol: "doc.plaintext", label: "Text", on: prompter.ownScript != nil)
+                    }
+                    .buttonStyle(.plain)
+                    .help(prompter.ownScript == nil
+                          ? "Prompt your own text instead of the deck's notes: paste or type it"
+                          : "Prompting your own text. Click to edit it or go back to the deck's notes")
                 }
-                .buttonStyle(.plain)
-                .help(prompter.followSlides
-                      ? "Follow slides is on: the slideshow moves on when the script reaches the next slide, and the script jumps when you change slides"
-                      : "Follow slides is off: the script and the slideshow move separately")
+                if prompter.ownScript == nil {
+                    Button { prompter.followSlides.toggle() } label: {
+                        LabeledIcon(symbol: "rectangle.stack", label: "Follow", on: prompter.followSlides)
+                    }
+                    .buttonStyle(.plain)
+                    .help(prompter.followSlides
+                          ? "Follow slides is on: the slideshow moves on when the script reaches the next slide, and the script jumps when you change slides"
+                          : "Follow slides is off: the script and the slideshow move separately")
+                }
                 Menu {
                     Picker("Reading line", selection: $readingLine) {
                         Text("Top (see the most ahead)").tag(0.16)
@@ -299,7 +310,9 @@ struct PrompterView: View {
             let hpad = max(24, geo.size.width * 0.06)
 
             ZStack(alignment: .topLeading) {
-                if prompter.words.isEmpty {
+                if detached && (prompter.editingOwnScript || (prompter.words.isEmpty && prompter.ownScript == nil)) {
+                    OwnScriptEditor(prompter: prompter)
+                } else if prompter.words.isEmpty {
                     Text("This deck has no speaker notes yet. Add notes in PowerPoint and they become your script.")
                         .font(.system(size: 15)).foregroundStyle(Theme.muted)
                         .padding(24)
@@ -442,7 +455,7 @@ struct ScriptBody: View, Equatable {
         VStack(alignment: .leading, spacing: fontSize * 0.6) {
             ForEach(paragraphs) { p in
                 VStack(alignment: p.rtl ? .trailing : .leading, spacing: fontSize * 0.3) {
-                    if p.isSlideStart {
+                    if p.isSlideStart, p.slide > 0 {
                         CapsLabel("Slide \(p.slide)" + (p.slideTitle.isEmpty ? "" : " · \(p.slideTitle)"), color: Theme.dim)
                             .padding(.top, fontSize * 0.4)
                     }
@@ -527,6 +540,61 @@ struct MicLevel: View {
         }
         .frame(height: 18, alignment: .bottom)
         .accessibilityLabel("Microphone level")
+    }
+}
+
+/// The box in the detached prompter where you paste or type your own text to prompt, with or without a deck.
+struct OwnScriptEditor: View {
+    @ObservedObject var prompter: PrompterModel
+    @State private var text: String
+    @FocusState private var focused: Bool
+
+    init(prompter: PrompterModel) {
+        self.prompter = prompter
+        _text = State(initialValue: prompter.lastOwnScript)
+    }
+
+    private var isEmpty: Bool { text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Paste or type what you want to say")
+                .font(.system(size: 13, weight: .semibold)).foregroundStyle(Theme.textSoft)
+            TextEditor(text: $text)
+                .font(.system(size: 15))
+                .scrollContentBackground(.hidden)
+                .focused($focused)
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 8).fill(Theme.bar))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.border))
+            HStack(spacing: 8) {
+                Text(verbatim: "A new line starts a new paragraph. **bold** and [pause] work as in notes.")
+                    .font(.system(size: 11)).foregroundStyle(Theme.dim)
+                    .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 8)
+                if prompter.hasDeckNotes {
+                    Button("Use the deck's notes") { prompter.useDeckNotes() }
+                        .buttonStyle(PillButtonStyle(kind: .normal, height: 30))
+                        .fixedSize()
+                } else if prompter.editingOwnScript, !prompter.words.isEmpty {
+                    Button("Cancel") { prompter.editingOwnScript = false }
+                        .buttonStyle(PillButtonStyle(kind: .normal, height: 30))
+                        .fixedSize()
+                }
+                Button("Prompt this text") { prompter.useOwnScript(text) }
+                    .buttonStyle(PillButtonStyle(kind: .accent, height: 30))
+                    .fixedSize()
+                    .disabled(isEmpty)
+                    .keyboardShortcut(.return, modifiers: .command)
+                    .help("Use this text as the script (⌘↩)")
+            }
+        }
+        .padding(16)
+        .onAppear {
+            NSApp.activate()
+            PrompterWindowRef.window?.makeKeyAndOrderFront(nil)
+            focused = true
+        }
     }
 }
 

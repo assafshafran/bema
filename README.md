@@ -18,7 +18,7 @@ Slides on the projector, everything else with you.</p>
 PowerPoint for Mac locks its presenter view to full screen: you can't resize it, move it, or keep anything else next to it. Bema replaces it. PowerPoint or Keynote still runs the slideshow on the audience display, so animations, transitions and video keep working. Bema gives you your own presenter window, and a lot more.
 
 - **Your presenter window.** Current and next slide, large speaker notes, a filmstrip, a timer that knows your planned length and tells you if you're behind. Resize it, move it, keep it on top.
-- **A prompter that follows your voice.** Your notes become a script that scrolls as you speak, using Apple's speech recognition on your Mac. It keeps up when you skip a sentence or ad-lib, and works in English and Hebrew.
+- **A prompter that follows your voice.** Your notes become a script that scrolls as you speak, using Apple's speech recognition on your Mac. It keeps up when you skip a sentence or ad-lib, and works in English and Hebrew. No deck? Paste any text into the detached prompter and it works the same.
 - **Hidden from screen sharing.** Detach the prompter, put it right under your camera, and it stays out of Zoom, Teams and Meet screen shares.
 - **Point, spotlight, draw.** A laser pointer, spotlight, magnifier, pen, highlighter and stamps, drawn over the slide the audience sees.
 - **Coach and rehearse.** Pace against a time budget for each slide, words per minute, filler words, and a report after a rehearsal.
