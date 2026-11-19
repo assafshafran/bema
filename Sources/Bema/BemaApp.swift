@@ -211,6 +211,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         Task { @MainActor in await PresenterModel.shared.refreshOpenInPowerPoint() }
         Task { @MainActor in BemaMCP.shared.startIfEnabled() }
+        // Right-clicking the menu bar icon opens its panel too.
+        Task { @MainActor in MenuBarRightClick.install() }
         // The PowerPoint button opens a dialog Bema watches for (no "open Bema.app?" prompt).
         Task { @MainActor in PowerPointButtonWatcher.shared.update() }
         // In the Dock only while the presenter window is open; otherwise just the menu bar icon.

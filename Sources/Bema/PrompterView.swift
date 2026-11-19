@@ -148,7 +148,13 @@ struct PrompterView: View {
                 controls
                 Rectangle().fill(Theme.border).frame(height: 1)
             }
-            scriptArea
+            // The paste box sits outside the script area: that area takes every scroll and drag to move the
+            // script (and mirrors and fades it), which would leave the box unable to scroll.
+            if prompter.showsOwnScriptEditor(detached: detached) {
+                OwnScriptEditor(prompter: prompter).background(Theme.panel)
+            } else {
+                scriptArea
+            }
         }
     }
 
@@ -310,9 +316,7 @@ struct PrompterView: View {
             let hpad = max(24, geo.size.width * 0.06)
 
             ZStack(alignment: .topLeading) {
-                if detached && (prompter.editingOwnScript || (prompter.words.isEmpty && prompter.ownScript == nil)) {
-                    OwnScriptEditor(prompter: prompter)
-                } else if prompter.words.isEmpty {
+                if prompter.words.isEmpty {
                     Text("This deck has no speaker notes yet. Add notes in PowerPoint and they become your script.")
                         .font(.system(size: 15)).foregroundStyle(Theme.muted)
                         .padding(24)

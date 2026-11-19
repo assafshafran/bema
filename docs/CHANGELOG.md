@@ -6,6 +6,16 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-19
 
+### Quick prompt on Bema's start screen, and right-click on the menu bar icon (Bema 0.1.16)
+- The start screen has a **Quick prompt** card under the drop zone: paste any text and click **Prompt this text** (⌘↩) to open the detached prompter with it, or **Open empty prompter**. It says what the prompter does, and under the box how long the text is at a speaking pace. Designed in Claude Design first (two layouts; the card under the drop zone was chosen so presenting a deck stays the main path).
+- Right-clicking Bema's menu bar icon now opens its panel, like a left click.
+- Checked: tests of the length line and of which window counts as the menu bar icon, a rendered card, Bema's window with the card, and live by the maintainer.
+
+### The text box in the detached prompter scrolls (Bema 0.1.16)
+- In 0.1.15 the box for your own text couldn't be scrolled: the prompter's script area, which it sat in, took every scroll to move the script. The box now sits outside that area, so it scrolls like any text field and isn't mirrored or faded with the script.
+- The privacy check allows four everyday words its private-names list had started to flag across the code.
+- Checked: a test of when the box shows, and scrolling live by the maintainer.
+
 ### The prompter works without a deck: paste your own text (Bema 0.1.15)
 - The detached prompter can prompt any text, not just a deck's notes. Open it from the menu bar (**Prompter for your own text**), **Slideshow → Prompter for Your Own Text…**, or `bema://prompter?text` (with `text=…` to hand it the text directly, for Shortcuts). With no deck open, the detached prompter starts on the box. Paste or type, click **Prompt this text** (⌘↩), and Voice, Auto and Manual, Mirror, the reading line, the camera placement and hiding from screen sharing all work as before. **Text** in the prompter's controls edits it again or goes back to the deck's notes.
 - While you prompt your own text, opening a deck or changing its notes doesn't replace it, there are no slide headings, and Follow slides is hidden.

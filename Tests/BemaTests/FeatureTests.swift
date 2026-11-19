@@ -86,6 +86,16 @@ final class NoteCueTests: XCTestCase {
         XCTAssertNil(p.ownScript)
     }
 
+    @MainActor func testThePasteBoxShowsOnlyInTheDetachedPrompter() {
+        let p = PrompterModel()
+        XCTAssertTrue(p.showsOwnScriptEditor(detached: true))      // nothing to prompt yet
+        XCTAssertFalse(p.showsOwnScriptEditor(detached: false))    // the panel in the main window keeps its message
+        p.load(slides: [SlideInfo(id: 1, title: "Hello", notes: "Welcome everyone", hidden: false)])
+        XCTAssertFalse(p.showsOwnScriptEditor(detached: true))
+        p.editingOwnScript = true
+        XCTAssertTrue(p.showsOwnScriptEditor(detached: true))
+    }
+
     @MainActor func testOwnTextWorksWithoutADeck() {
         let p = PrompterModel()
         XCTAssertFalse(p.hasDeckNotes)

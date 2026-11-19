@@ -153,6 +153,8 @@ struct WelcomeView: View {
                     .overlay(RoundedRectangle(cornerRadius: 18)
                         .strokeBorder(dropTargeted ? Theme.accent : Color(hex: 0x353B47), style: StrokeStyle(lineWidth: 2, dash: [8, 6])))
 
+                    QuickPromptCard()
+
                     if !model.recents.isEmpty {
                         VStack(alignment: .leading, spacing: 10) {
                             CapsLabel("Recent")

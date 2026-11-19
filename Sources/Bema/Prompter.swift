@@ -299,6 +299,11 @@ final class PrompterModel: ObservableObject {
 
     static let ownScriptKey = "prompterOwnScript"
 
+    /// The detached prompter shows the paste box when asked to, or when there's nothing else to prompt.
+    func showsOwnScriptEditor(detached: Bool) -> Bool {
+        detached && (editingOwnScript || (words.isEmpty && ownScript == nil))
+    }
+
     /// Your own text is one "slide" numbered 0: no slide headings, nothing to follow in a slideshow.
     static func slides(forOwnScript text: String) -> [SlideInfo] {
         [SlideInfo(id: 0, title: "", notes: text, hidden: false)]
