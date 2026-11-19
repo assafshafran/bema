@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-19
 
-### The "only one display" notice goes away when a second display is used
+### The "only one display" notice goes away when a second display is used (Bema 0.1.17)
 - Starting a show with one display left *Only one display is connected…* on screen for good: plugging in a display and restarting the show didn't clear it, even when the slides went full screen on the new display. Restarting now replaces it, and plugging a display in or out updates it straight away (mid-rehearsal it says to restart the show to go full screen). A stale Accessibility notice also goes once full screen works.
 - With two displays but the slides on Bema's own display, the notice now says that and points to **Slides on**, instead of claiming there's only one display.
 - The pre-flight check's display line follows displays plugged in while it's open.
