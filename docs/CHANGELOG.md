@@ -6,7 +6,7 @@ Each entry says what changed and, where it applies, what was **not verified**.
 
 ## 2026-11-19
 
-### The timer looks stopped when the show ends, and each show starts at 0:00
+### The timer looks stopped when the show ends, and each show starts at 0:00 (Bema 0.1.18)
 - When a slideshow ended, Bema paused the timer but kept showing its time in red with *over time*, in the top bar and the menu bar panel, so it looked like it was still running. A paused timer is now dimmed and never says *over time*, and the next slideshow starts it from 0:00 instead of carrying on. Pressing ▶ on the timer after a show still carries on from where it stopped.
 - Closing Bema's window (Bema keeps running in the menu bar) clears the timer outside a show, and the menu bar panel shows a timer only during a show or while one is counting or paused, so an old talk's time doesn't stay there or come back with the window. During a show, closing the window leaves the timer running.
 - Checked: tests of how the timer looks, of stopping at the show's end and restarting at 0:00, and of closing the window clearing it. Not verified: whether the reported timer was still counting after the show (the screenshot showed it paused; the maintainer wasn't sure), or live with PowerPoint.
