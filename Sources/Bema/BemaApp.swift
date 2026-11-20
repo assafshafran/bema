@@ -189,6 +189,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Another Bema was already running when this one started: hand everything to it and quit.
     private var defersTo: SingleInstance.Instance?
     private var dockObserver: Any?
+    private var windowCloseObserver: Any?
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         defersTo = MainActor.assumeIsolated { SingleInstance.current() }
@@ -218,6 +219,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // In the Dock only while the presenter window is open; otherwise just the menu bar icon.
         dockObserver = NotificationCenter.default.addObserver(forName: NSApplication.didUpdateNotification, object: nil, queue: .main) { _ in
             MainActor.assumeIsolated { DockIcon.update() }
+        }
+        // Closing the presenter window clears the timer outside a show.
+        windowCloseObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { note in
+            let isPresenter = (note.object as? NSWindow)?.identifier?.rawValue.hasPrefix("main") == true
+            MainActor.assumeIsolated { if isPresenter { PresenterModel.shared.presenterWindowClosed() } }
         }
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             let handled = MainActor.assumeIsolated { PresenterModel.shared.handleKey(event) }

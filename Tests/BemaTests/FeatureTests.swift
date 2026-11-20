@@ -288,6 +288,56 @@ final class SlideSplitTests: XCTestCase {
     }
 }
 
+@MainActor
+final class ShowTimerTests: XCTestCase {
+    func testAPausedTimerIsDimmedAndNeverOverTime() {
+        XCTAssertEqual(TimerLook.of(running: true, elapsed: 300, target: 1200), .running)
+        XCTAssertEqual(TimerLook.of(running: true, elapsed: 1300, target: 1200), .over)
+        XCTAssertEqual(TimerLook.of(running: true, elapsed: 1300, target: 0), .running)
+        // After the show: 1:37:20 against 20 minutes is paused, not red "over time".
+        XCTAssertEqual(TimerLook.of(running: false, elapsed: 5840, target: 1200), .paused)
+    }
+
+    func testTheTimerStopsWhenTheShowEndsAndTheNextShowStartsAtZero() {
+        let model = PresenterModel()
+        model.startTimerForShow()
+        XCTAssertNotNil(model.timerStartedAt)
+        Thread.sleep(forTimeInterval: 0.05)
+        model.stopTimerForEndedShow()
+        XCTAssertNil(model.timerStartedAt, "the timer stops with the show")
+        XCTAssertTrue(model.timerFromEndedShow)
+        let kept = model.elapsed(at: Date())
+        XCTAssertGreaterThan(kept, 0, "the ended show's time stays on screen")
+        XCTAssertEqual(model.elapsed(at: Date().addingTimeInterval(60)), kept, "and doesn't count on")
+        model.startTimerForShow()
+        XCTAssertLessThan(model.elapsed(at: Date()), kept, "the next show starts from 0:00")
+        XCTAssertFalse(model.timerFromEndedShow)
+    }
+
+    func testClosingTheWindowAfterAShowClearsTheTimer() {
+        let model = PresenterModel()
+        model.startTimerForShow()
+        Thread.sleep(forTimeInterval: 0.05)
+        model.stopTimerForEndedShow()
+        XCTAssertTrue(model.timerShown, "the ended show's time shows until the window closes")
+        model.presenterWindowClosed()
+        XCTAssertEqual(model.elapsed(at: Date()), 0)
+        XCTAssertNil(model.timerStartedAt)
+        XCTAssertFalse(model.timerShown, "the menu bar panel no longer shows a timer")
+    }
+
+    func testResumingByHandKeepsTheTime() {
+        let model = PresenterModel()
+        model.startTimerForShow()
+        Thread.sleep(forTimeInterval: 0.05)
+        model.stopTimerForEndedShow()
+        let kept = model.elapsed(at: Date())
+        model.toggleTimer() // the presenter resumes it on purpose
+        model.startTimerForShow()
+        XCTAssertGreaterThanOrEqual(model.elapsed(at: Date()), kept)
+    }
+}
+
 final class AudienceDisplayTests: XCTestCase {
     let displays = ["Built-in Retina Display", "Hall Projector"]
 

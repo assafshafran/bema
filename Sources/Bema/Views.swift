@@ -710,21 +710,24 @@ struct TimerCluster: View {
         TimelineView(.periodic(from: .now, by: (coach.cueFlashUntil ?? .distantPast) > Date() ? 0.5 : 1)) { context in
             let elapsed = model.elapsed(at: context.date)
             let target = model.targetSeconds
-            let over = target > 0 && elapsed > target
+            let look = model.timerLook(at: context.date)
+            let over = look == .over
+            let paused = look == .paused
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(Self.format(elapsed))
                             .font(Theme.numeral(26))
                             .fixedSize()
-                            .foregroundStyle(over ? Theme.liveSoft : Theme.text)
+                            .foregroundStyle(over ? Theme.liveSoft : paused ? Theme.muted : Theme.text)
+                            .help(paused && elapsed > 0 ? "Paused. The next slideshow starts the timer from 0:00." : "")
                         TargetMenu()
                     }
                     if target > 0 {
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 Capsule().fill(Theme.border)
-                                Capsule().fill(over ? Theme.live : Theme.accent)
+                                Capsule().fill(over ? Theme.live : paused ? Theme.muted.opacity(0.5) : Theme.accent)
                                     .frame(width: geo.size.width * min(elapsed / target, 1))
                             }
                         }
@@ -743,7 +746,7 @@ struct TimerCluster: View {
                         .fixedSize()
                     if CoachModel.shared.paceDelta(at: context.date) != nil {
                         PaceLabel(date: context.date)
-                    } else if target > 0, model.timerStartedAt != nil || elapsed > 0 {
+                    } else if target > 0, !paused {
                         let end = context.date.addingTimeInterval(max(target - elapsed, 0))
                         Text(over ? "over time" : "ends ~\(end.formatted(.dateTime.hour().minute()))")
                             .font(.system(size: 11)).foregroundStyle(over ? Theme.liveSoft : Theme.muted)

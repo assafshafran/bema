@@ -391,7 +391,7 @@ final class PresenterModel: ObservableObject {
                 presentingOn = screen.localizedName
                 audienceFullScreen = fullScreen && ok
                 phase = .presenting
-                if timerStartedAt == nil { toggleTimer() }
+                startTimerForShow()
                 // Replace any display notice left from an earlier start (a stale "only one display" stayed
                 // after a second display was connected and the show restarted).
                 if let displayNotice = AudienceDisplay.noticeAfterStart(fullScreen: fullScreen, displayCount: screens.count) {
@@ -434,7 +434,33 @@ final class PresenterModel: ObservableObject {
         updateOverlay()
         audience = .normal
         showEnded = false
+        stopTimerForEndedShow()
+    }
+
+    /// The show ended: the timer stops, and its time stays on screen (dimmed) until the next show
+    /// starts it from 0:00.
+    func stopTimerForEndedShow() {
         if timerStartedAt != nil { toggleTimer() }
+        timerFromEndedShow = timerAccumulated > 0
+    }
+
+    /// The presenter window was closed (Bema keeps running in the menu bar). Outside a show the timer
+    /// is cleared, so the menu bar panel and the reopened window don't show an old talk's time. During
+    /// a show it keeps counting: the show is still on.
+    func presenterWindowClosed() {
+        guard phase != .presenting else { return }
+        resetTimer()
+    }
+
+    /// Whether there's a time worth showing: during a show, while it counts, or a paused time.
+    var timerShown: Bool {
+        phase == .presenting || timerStartedAt != nil || timerAccumulated > 0
+    }
+
+    /// A show is starting: an ended show's time is cleared first, so each show is timed from 0:00.
+    func startTimerForShow() {
+        if timerFromEndedShow { resetTimer() }
+        if timerStartedAt == nil { toggleTimer() }
     }
 
     /// The deck went away in the app (closed, or the app quit) during the show.
@@ -659,7 +685,17 @@ final class PresenterModel: ObservableObject {
         timerAccumulated + (timerStartedAt.map { date.timeIntervalSince($0) } ?? 0)
     }
 
+    /// The timer holds the time of a show that has ended: shown dimmed, and the next show starts from 0:00.
+    /// Starting, pausing or resetting it by hand makes it the person's own again.
+    @Published private(set) var timerFromEndedShow = false
+
+    /// How the timer looks right now.
+    func timerLook(at date: Date) -> TimerLook {
+        TimerLook.of(running: timerStartedAt != nil, elapsed: elapsed(at: date), target: targetSeconds)
+    }
+
     func toggleTimer() {
+        timerFromEndedShow = false
         if let start = timerStartedAt {
             timerAccumulated += Date().timeIntervalSince(start)
             timerStartedAt = nil
@@ -669,6 +705,7 @@ final class PresenterModel: ObservableObject {
     }
 
     func resetTimer() {
+        timerFromEndedShow = false
         timerAccumulated = 0
         timerStartedAt = phase == .presenting ? Date() : nil
     }
@@ -773,5 +810,21 @@ enum PreviewCheck {
     /// Lower case with all spacing removed: PDF text breaks lines and spaces differently from the deck.
     static func squeeze(_ s: String) -> String {
         String(s.lowercased().unicodeScalars.filter { !CharacterSet.whitespacesAndNewlines.contains($0) }.map(Character.init))
+    }
+}
+
+/// How the timer is drawn. Pure, so it's tested: a paused timer (after a show ends, or paused by hand)
+/// is dimmed and never says "over time", so it doesn't look like it's still counting.
+enum TimerLook: Equatable {
+    /// Counting, within the planned time (or no plan).
+    case running
+    /// Counting, past the planned time: red, "over time".
+    case over
+    /// Not counting: the time stays, dimmed.
+    case paused
+
+    static func of(running: Bool, elapsed: TimeInterval, target: TimeInterval) -> TimerLook {
+        guard running else { return .paused }
+        return target > 0 && elapsed > target ? .over : .running
     }
 }

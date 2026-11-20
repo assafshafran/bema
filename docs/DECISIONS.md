@@ -4,6 +4,9 @@ Choices made while building Bema, with the reason, so they are not re-argued or 
 
 ## 2026-11-19
 
+- **The timer pauses when a show ends, and the next show starts it from 0:00.** Chosen by the maintainer over resetting at once (the time would vanish before it's read) and over resuming (a new show kept an old show's time, red and *over time*). Starting, pausing or resetting by hand clears the ended-show mark, so a presenter who ended by mistake can press ▶ and carry on. A paused timer is drawn dimmed, never red, so it can't look live.
+- **Closing the presenter window clears the timer, except during a show.** Asked for by the maintainer: closing Bema's window feels like closing the app, so the menu bar panel and the reopened window shouldn't keep an old talk's time. During a show the window may be closed by accident while the slides run, so the timer keeps going then. Caught with `NSWindow.willCloseNotification` for the `main` window, since SwiftUI's `onDisappear` doesn't always run when a Window scene closes.
+
 - **Display notices are replaced when displays change, other notices are left.** Bema has one notice line. The display notices describe the displays at one moment, so they're recognised by their text and replaced on each start and on `didChangeScreenParametersNotification`; a notice about something else (previews, the deck) isn't cleared by plugging in a display. A display plugged in mid-show doesn't move the slideshow by itself: the presenter may be rehearsing on purpose, so the notice says to restart.
 
 - **Quick prompt is a card under the drop zone, not a second equal choice.** Two layouts were drawn in Claude Design: the card below the drop zone, and deck and prompt side by side. Bema is first a deck presenter, so the deck keeps the big target; the card still has a paste box so a script is one paste and ⌘↩ away. The box starts empty each time, so a script isn't on the start screen for anyone looking at it.

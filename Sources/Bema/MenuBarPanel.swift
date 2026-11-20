@@ -24,12 +24,16 @@ struct MenuBarPanel: View {
             }
 
             if model.phase == .ready || model.phase == .presenting {
-                TimelineView(.periodic(from: .now, by: 1)) { ctx in
-                    HStack(alignment: .firstTextBaseline) {
-                        Text(TimerCluster.format(model.elapsed(at: ctx.date))).font(Theme.numeral(24))
-                        if model.targetMinutes > 0 { Text("of \(model.targetMinutes):00").font(.system(size: 11)).foregroundStyle(Theme.muted) }
-                        Spacer()
-                        PaceLabel(date: ctx.date)
+                if model.timerShown {
+                    TimelineView(.periodic(from: .now, by: 1)) { ctx in
+                        HStack(alignment: .firstTextBaseline) {
+                            let look = model.timerLook(at: ctx.date)
+                            Text(TimerCluster.format(model.elapsed(at: ctx.date))).font(Theme.numeral(24))
+                                .foregroundStyle(look == .over ? Theme.liveSoft : look == .paused ? Theme.muted : Theme.text)
+                            if model.targetMinutes > 0 { Text("of \(model.targetMinutes):00").font(.system(size: 11)).foregroundStyle(Theme.muted) }
+                            Spacer()
+                            PaceLabel(date: ctx.date)
+                        }
                     }
                 }
                 HStack(spacing: 8) {
